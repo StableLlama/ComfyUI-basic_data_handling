@@ -32,7 +32,7 @@ homepage = "https://github.com/StableLlama/ComfyUI-basic_data_handling"
 
 
 [tool.comfy]
-PublisherId = "StableLlama"
+PublisherId = "stablellama"
 DisplayName = "Basic data handling"
 Icon = ""
 
