@@ -201,7 +201,7 @@ class IntToBytes:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_bytes"
 
-    def to_bytes(self, int_value: int, length: int, byteorder: Literal["big"|"little"], signed: Literal["True"|"False"]) -> tuple[int]:
+    def to_bytes(self, int_value: int, length: int, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[int]:
         signed_bool = (signed == "True")
         return (int_value.to_bytes(length, byteorder=byteorder, signed=signed_bool),)
 
@@ -228,7 +228,7 @@ class IntFromBytes:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_bytes"
 
-    def from_bytes(self, bytes_value, byteorder: Literal["big"|"little"], signed: Literal["True"|"False"]) -> tuple[int]:
+    def from_bytes(self, bytes_value, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[int]:
         signed_bool = (signed == "True")
         return (int.from_bytes(bytes_value, byteorder=byteorder, signed=signed_bool),)
 
