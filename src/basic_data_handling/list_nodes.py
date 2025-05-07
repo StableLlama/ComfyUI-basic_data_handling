@@ -1,143 +1,141 @@
 from typing import Any
-
 from inspect import cleandoc
 
-class ListAppend:
+class ListConvertToDataList:
     """
-    Adds an item to the end of a list.
+    Converts a LIST object into a ComfyUI data list.
 
-    This node takes a list and any item as inputs, then returns the modified
-    list with the new item appended.
+    This node takes a LIST object (Python list as a single variable) and
+    converts it to a ComfyUI data list, allowing its items to be processed
+    individually by nodes that accept data lists.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
-                "list":("*",{}),
-                "item":("*",{}),
+            "required": {
+                "list": ("LIST", {}),
             }
         }
 
     RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "append"
-    INPUT_IS_LIST = True
+    FUNCTION = "convert"
     OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
+    def convert(self, list) -> tuple[list[Any]]:
+        return (list,)
 
-    def append(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        item = kwargs.get('item', [])
-        if len(item) > 0:
-            result.append(item[0])
+
+class ListAppend:
+    """
+    Adds an item to the end of a LIST.
+
+    This node takes a LIST and any item as inputs, then returns a new LIST
+    with the item appended to the end.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+                "item": ("*", {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "append"
+
+    def append(self, list: list[Any], item: Any) -> tuple[list[Any]]:
+        result = list.copy()
+        result.append(item)
         return (result,)
 
 
 class ListExtend:
     """
-    Extends a list by appending elements from another list.
+    Extends a LIST by appending elements from another LIST.
 
-    This node takes two lists as input and returns a new list that contains
+    This node takes two LIST objects as input and returns a new LIST that contains
     all elements from both lists.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
-                "list_a": ("*",{}),
-                "list_b": ("*",{}),
+            "required": {
+                "list1": ("LIST", {}),
+                "list2": ("LIST", {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extend"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def extend(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        return (kwargs.get('list_a', []) + kwargs.get('list_b', []),)
+    def extend(self, list1: list[Any], list2: list[Any]) -> tuple[list[Any]]:
+        result = list1.copy()
+        result.extend(list2)
+        return (result,)
 
 
 class ListInsert:
     """
-    Inserts an item at a specified position in a list.
+    Inserts an item at a specified position in a LIST.
 
-    This node takes a list, an index, and any item as inputs, then returns a new
-    list with the item inserted at the specified index.
+    This node takes a LIST, an index, and any item as inputs, then returns a new
+    LIST with the item inserted at the specified index.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
                 "index": ("INT", {"default": 0}),
-                "item": ("*",),
+                "item": ("*", {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "insert"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def insert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
+    def insert(self, list: list[Any], index: int, item: Any) -> tuple[list[Any]]:
+        result = list.copy()
+        result.insert(index, item)
         return (result,)
 
 
 class ListRemove:
     """
-    Removes the first occurrence of a specified value from a list.
+    Removes the first occurrence of a specified value from a LIST.
 
-    This node takes a list and a value as inputs, then returns a new list with
-    the first occurrence of the value removed. Raises a ValueError if the value is not present.
+    This node takes a LIST and a value as inputs, then returns a new LIST with
+    the first occurrence of the value removed and a success indicator. If the value
+    is not present, the original LIST is returned with success set to False.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": ("LIST", {}),
+                "value": ("*", {}),
             }
         }
 
-    RETURN_TYPES = ("*", "BOOLEAN",)
-    RETURN_NAMES = ("list", "success",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST", "BOOLEAN")
+    RETURN_NAMES = ("list", "success")
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True, False,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def remove(self, **kwargs: dict[str, list]) -> tuple[list[Any], bool]:
-        result = kwargs.get('list', []).copy()
-        value = kwargs.get('value', [])
+    def remove(self, list: list[Any], value: Any) -> tuple[list[Any], bool]:
+        result = list.copy()
         try:
-            result.remove(value[0])
+            result.remove(value)
             return result, True
         except ValueError:
             return result, False
@@ -145,41 +143,32 @@ class ListRemove:
 
 class ListPop:
     """
-    Removes and returns an item at a specified position in a list.
+    Removes and returns an item at a specified position in a LIST.
 
-    This node takes a list and an index as inputs, then returns both the new list
+    This node takes a LIST and an index as inputs, then returns both the new LIST
     with the item removed and the removed item. If no index is specified,
     removes and returns the last item.
-    When the list is empty, the item is None.
+    When the LIST is empty, the item is None.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
             },
             "optional": {
                 "index": ("INT", {"default": -1}),
             }
         }
 
-    RETURN_TYPES = ("*", "*")
+    RETURN_TYPES = ("LIST", "*")
     RETURN_NAMES = ("list", "item")
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True, False)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        if input_types["index"] not in ("INT"):
-            return "index must be an INT type"
-        return True
-
-    def pop(self, **kwargs: dict[str, list]) -> tuple[list[Any], Any]:
-        result = kwargs.get('list', []).copy()
-        index = kwargs.get('index', [-1])[0]
+    def pop(self, list: list[Any], index: int = -1) -> tuple[list[Any], Any]:
+        result = list.copy()
         try:
             item = result.pop(index)
             return result, item
@@ -189,49 +178,41 @@ class ListPop:
 
 class ListClear:
     """
-    Removes all items from a list.
+    Removes all items from a LIST.
 
-    This node takes a list as input and returns a new empty list.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "optional": {
-                "list": ("*",),
-            }
-        }
-
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "clear"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def clear(self, **kwargs: dict[str, list]) -> tuple[[]]:
-        # Return a new empty list rather than modifying the input
-        return ([],)
-
-
-class ListIndex:
-    """
-    Returns the index of the first occurrence of a value in a list.
-
-    This node takes a list and a value as inputs, then returns the index of the first
-    occurrence of the value. Optional start and end parameters limit the search to a slice
-    of the list. Returns -1 if the value is not present.
+    This node takes a LIST as input and returns a new empty LIST.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "clear"
+
+    def clear(self, list: list[Any]) -> tuple[list[Any]]:
+        return ([],)
+
+
+class ListIndex:
+    """
+    Returns the index of the first occurrence of a value in a LIST.
+
+    This node takes a LIST and a value as inputs, then returns the index of the first
+    occurrence of the value. Optional start and end parameters limit the search to a slice
+    of the LIST. Returns -1 if the value is not present.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+                "value": ("*", {}),
             },
             "optional": {
                 "start": ("INT", {"default": 0}),
@@ -241,202 +222,143 @@ class ListIndex:
 
     RETURN_TYPES = ("INT",)
     RETURN_NAMES = ("index",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "list_index"
-    INPUT_IS_LIST = True
+    FUNCTION = "index"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def list_index(self, **kwargs: dict[str, list]) -> tuple[int]:
-        input_list = kwargs.get('list', [])
-        value = kwargs.get('value', [None])[0]
-        start = kwargs.get('start', [0])[0]
-        end = kwargs.get('end', [-1])[0]
+    def index(self, list: list[Any], value: Any, start: int = 0, end: int = -1) -> tuple[int]:
         if end == -1:
-            end = len(input_list)
+            end = len(list)
 
         try:
-            return (input_list.index(value, start, end),)
+            return (list.index(value, start, end),)
         except ValueError:
             return (-1,)
 
 
 class ListCount:
     """
-    Counts the number of occurrences of a value in a list.
+    Counts the number of occurrences of a value in a LIST.
 
-    This node takes a list and a value as inputs, then returns the number of times
-    the value appears in the list.
+    This node takes a LIST and a value as inputs, then returns the number of times
+    the value appears in the LIST.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": ("LIST", {}),
+                "value": ("*", {}),
             }
         }
 
     RETURN_TYPES = ("INT",)
     RETURN_NAMES = ("count",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
-    INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def count(self, **kwargs: dict[str, list]) -> tuple[int]:
-        value = kwargs.get('value', [None])[0]
-        return (kwargs.get('list', []).count(value),)
+    def count(self, list: list[Any], value: Any) -> tuple[int]:
+        return (list.count(value),)
 
 
 class ListSort:
     """
-    Sorts the items in a list.
+    Sorts the items in a LIST.
 
-    This node takes a list as input and returns a new sorted list.
-    Options include sorting in reverse order and using a key function.
+    This node takes a LIST as input and returns a new sorted LIST.
+    Option includes sorting in reverse order.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
             },
             "optional": {
                 "reverse": (["False", "True"], {"default": "False"}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sort"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def sort(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def sort(self, list: list[Any], reverse: str = "False") -> tuple[list[Any]]:
         # Convert string to boolean
-        reverse = kwargs.get('reverse', ["False"])[0] == "True"
+        reverse_bool = (reverse == "True")
 
-        result = sorted(kwargs.get('list', []), reverse=reverse)
-        return (result,)
+        # Use sorted to create a new sorted list
+        try:
+            result = sorted(list, reverse=reverse_bool)
+            return (result,)
+        except TypeError:
+            # If list contains mixed types that can't be compared, return original list
+            return (list.copy(),)
 
 
 class ListReverse:
     """
-    Reverses the order of items in a list.
+    Reverses the order of items in a LIST.
 
-    This node takes a list as input and returns a new list with the items in reversed order.
+    This node takes a LIST as input and returns a new LIST with the items in reversed order.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "reverse"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def reverse(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
+    def reverse(self, list: list[Any]) -> tuple[list[Any]]:
+        result = list.copy()
         result.reverse()
         return (result,)
 
 
-class ListCopy:
-    """
-    Creates a shallow copy of a list.
-
-    This node takes a list as input and returns a new list that is a shallow copy of the original.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*",),
-            }
-        }
-
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "copy"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def copy(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
-
-
 class ListLength:
     """
-    Counts the number of items in a list.
+    Returns the number of items in a LIST.
 
-    This node takes a list as input and returns its length as an integer.
+    This node takes a LIST as input and returns its length as an integer.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
             }
         }
 
     RETURN_TYPES = ("INT",)
     RETURN_NAMES = ("length",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
-    INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def length(self, **kwargs: dict[str, list]) -> tuple[int]:
-        return (len(kwargs.get('list', [])),)
+    def length(self, list: list[Any]) -> tuple[int]:
+        return (len(list),)
 
 
 class ListSlice:
     """
-    Creates a slice of a list.
+    Creates a slice of a LIST.
 
-    This node takes a list and start/stop/step parameters, and returns a new list
-    containing the specified slice of the original list.
+    This node takes a LIST and start/stop/step parameters, and returns a new LIST
+    containing the specified slice of the original LIST.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
             },
             "optional": {
                 "start": ("INT", {"default": 0}),
@@ -445,210 +367,132 @@ class ListSlice:
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def slice(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
-        stop = kwargs.get('stop', [-1])[0]
-        step = kwargs.get('step', [1])[0]
-
+    def slice(self, list: list[Any], start: int = 0, stop: int = -1, step: int = 1) -> tuple[list[Any]]:
         if stop == -1:
-            stop = len(input_list)
+            stop = len(list)
 
-        return (input_list[start:stop:step],)
+        return (list[start:stop:step],)
 
 
 class ListGetItem:
     """
-    Retrieves an item at a specified position in a list.
+    Retrieves an item at a specified position in a LIST.
 
-    This node takes a list and an index as inputs, then returns the item at the specified index.
-    Negative indices count from the end of the list.
+    This node takes a LIST and an index as inputs, then returns the item at the specified index.
+    Negative indices count from the end of the LIST.
     Out of range indices return None.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
+                "list": ("LIST", {}),
                 "index": ("INT", {"default": 0}),
             }
         }
 
     RETURN_TYPES = ("*",)
     RETURN_NAMES = ("item",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_item"
-    INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def get_item(self, **kwargs: dict[str, list]) -> tuple[Any]:
-        index = kwargs.get('index', [0])[0]
+    def get_item(self, list: list[Any], index: int) -> tuple[Any]:
         try:
-            return (kwargs.get('list', [])[index],)
+            return (list[index],)
         except IndexError:
             return (None,)
 
 
 class ListSetItem:
     """
-    Sets an item at a specified position in a list.
+    Sets an item at a specified position in a LIST.
 
-    This node takes a list, an index, and a value, then returns a new list with
+    This node takes a LIST, an index, and a value, then returns a new LIST with
     the item at the specified index replaced by the value.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": ("LIST", {}),
                 "index": ("INT", {"default": 0}),
-                "value": ("*",),
+                "value": ("*", {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_item"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def set_item(self, **kwargs: dict[str, list]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
-        index = kwargs.get('index', [0])[0]
-        value = kwargs.get('value', [None])[0]
+    def set_item(self, list: list[Any], index: int, value: Any) -> tuple[list[Any]]:
+        result = list.copy()
         try:
-            result = input_list.copy()
             result[index] = value
             return (result,)
         except IndexError:
-            raise IndexError(f"Index {index} out of range for list of length {len(input_list)}")
+            raise IndexError(f"Index {index} out of range for LIST of length {len(list)}")
 
 
 class ListContains:
     """
-    Checks if a list contains a specified value.
+    Checks if a LIST contains a specified value.
 
-    This node takes a list and a value as inputs, then returns True if the value
-    is present in the list, and False otherwise.
+    This node takes a LIST and a value as inputs, then returns True if the value
+    is present in the LIST, and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
-                "value": ("*",),
+                "list": ("LIST", {}),
+                "value": ("*", {}),
             }
         }
 
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("contains",)
-    CATEGORY = "Basic/list"
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
-    INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def contains(self, **kwargs: dict[str, list]) -> tuple[bool]:
-        value = kwargs.get('value', [])
-        if len(value) == 0:
-            return (False,)
-        return (value[0] in kwargs.get('list', []),)
+    def contains(self, list: list[Any], value: Any) -> tuple[bool]:
+        return (value in list,)
 
 
-class ListCreateEmpty:
+class AnyToList:
     """
-    Creates a new empty list.
+    Converts any input datatype into a LIST.
 
-    This node creates and returns an empty list.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {}}
-
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "create_empty"
-    OUTPUT_IS_LIST = (True,)
-
-    def create_empty(self) -> tuple[[]]:
-        return ([],)
-
-
-class ListZip:
-    """
-    Combines multiple lists element-wise.
-
-    This node takes multiple data lists as input and returns a new data list
-    where each item is a list containing the corresponding elements from the input lists.
-    The length of the output list will be equal to the length of the shortest input list.
+    This node takes any input value and wraps it in a LIST object,
+    allowing it to be processed by nodes that expect LIST inputs.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list1": ("*",),
-                "list2": ("*",),
-            },
-            "optional": {
-                "list3": ("*",),
-                "list4": ("*",),
+                "input": ("*", {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/list"
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "zip_lists"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
+    FUNCTION = "convert"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def zip_lists(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        lists = [kwargs.get('list1', []), kwargs.get('list2', [])]
-
-        if 'list3' in kwargs:
-            lists.append(kwargs['list3'])
-
-        if 'list4' in kwargs:
-            lists.append(kwargs['list4'])
-
-        # Zip the lists together and convert each tuple to a list
-        result = [list(item) for item in zip(*lists)]
-        return (result,)
+    def convert(self, input: Any) -> tuple[list[Any]]:
+        # Create a new list containing the input value
+        return ([input],)
 
 
 NODE_CLASS_MAPPINGS = {
+    "ListConvertToDataList": ListConvertToDataList,
     "ListAppend": ListAppend,
     "ListExtend": ListExtend,
     "ListInsert": ListInsert,
@@ -659,17 +503,16 @@ NODE_CLASS_MAPPINGS = {
     "ListCount": ListCount,
     "ListSort": ListSort,
     "ListReverse": ListReverse,
-    "ListCopy": ListCopy,
     "ListLength": ListLength,
     "ListSlice": ListSlice,
     "ListGetItem": ListGetItem,
     "ListSetItem": ListSetItem,
     "ListContains": ListContains,
-    "ListCreateEmpty": ListCreateEmpty,
-    "ListZip": ListZip,
+    "AnyToList": AnyToList,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "ListConvertToDataList": "convert to data list",
     "ListAppend": "append",
     "ListExtend": "extend",
     "ListInsert": "insert",
@@ -680,12 +523,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ListCount": "count",
     "ListSort": "sort",
     "ListReverse": "reverse",
-    "ListCopy": "copy",
     "ListLength": "length",
     "ListSlice": "slice",
-    "ListGetItem": "get_item",
-    "ListSetItem": "set_item",
+    "ListGetItem": "get item",
+    "ListSetItem": "set item",
     "ListContains": "contains",
-    "ListCreateEmpty": "create_empty",
-    "ListZip": "zip",
+    "AnyToList": "any to LIST",
 }
