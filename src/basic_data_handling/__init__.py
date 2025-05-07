@@ -1,5 +1,5 @@
 from . import (boolean_nodes, comparison_nodes, control_flow, data_list_nodes, dict_nodes,
-               float_nodes, int_nodes, list_nodes, set_nodes, string_nodes)
+               float_nodes, int_nodes, list_nodes, math_nodes, set_nodes, string_nodes)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_CLASS_MAPPINGS.update(boolean_nodes.NODE_CLASS_MAPPINGS)
@@ -11,6 +11,7 @@ NODE_CLASS_MAPPINGS.update(float_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(int_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(list_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(set_nodes.NODE_CLASS_MAPPINGS)
+NODE_CLASS_MAPPINGS.update(math_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(string_nodes.NODE_CLASS_MAPPINGS)
 
 NODE_DISPLAY_NAME_MAPPINGS = {}
@@ -23,4 +24,5 @@ NODE_DISPLAY_NAME_MAPPINGS.update(float_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(int_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(list_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(set_nodes.NODE_DISPLAY_NAME_MAPPINGS)
+NODE_DISPLAY_NAME_MAPPINGS.update(math_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(string_nodes.NODE_DISPLAY_NAME_MAPPINGS)

@@ -21,7 +21,7 @@ class IfElse:
 
     RETURN_TYPES = ("*",)
     RETURN_NAMES = ("result",)
-    CATEGORY = "Basic/ ⎇ Flow Control"
+    CATEGORY = "Basic/Flow Control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
@@ -40,7 +40,6 @@ class IfElse:
         return needed
 
     def execute(self, condition: bool, if_true: Any, if_false: Any) -> tuple[Any]:
-        """Execute the if/else statement and return the appropriate value."""
         return (if_true if condition else if_false,)
 
 
@@ -73,7 +72,7 @@ class SwitchCase:
 
     RETURN_TYPES = ("*",)
     RETURN_NAMES = ("result",)
-    CATEGORY = "Basic/ ⎇ Flow Control"
+    CATEGORY = "Basic/Flow Control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
@@ -103,7 +102,6 @@ class SwitchCase:
     def execute(self, selector: int, case_0: Any, case_1: Any,
                 case_2: Any = None, case_3: Any = None,
                 case_4: Any = None, default: Any = None) -> tuple[Any]:
-        """Execute the switch/case statement and return the appropriate value."""
         cases = [case_0, case_1, case_2, case_3, case_4]
 
         if 0 <= selector < len(cases) and cases[selector] is not None:

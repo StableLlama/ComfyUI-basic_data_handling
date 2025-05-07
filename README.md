@@ -28,7 +28,7 @@ These nodes are very lightweight and require no additional dependencies.
   - Modification: append, extend, insert, remove, pop, clear, set_item
   - Access: get_item, slice, index, contains
   - Information: length, count
-  - Operations: sort, reverse
+  - Operations: sort, reverse, min, max
 
 - **SET**: Python set manipulation nodes (as a single variable)
   - Conversion: convert to data list, to LIST
@@ -44,7 +44,7 @@ These nodes are very lightweight and require no additional dependencies.
   - Modification: append, filter, extend, insert, remove, pop, clear, set_item
   - Access: get_item, slice, index, contains
   - Information: length, count
-  - Operations: sort, reverse, copy, zip
+  - Operations: sort, reverse, copy, zip, min, max
 
 - **DICT**: Dictionary manipulation nodes
   - Creation: create, from_items, from_lists, fromkeys, any_to_DICT
@@ -75,6 +75,15 @@ These nodes are very lightweight and require no additional dependencies.
 - **Flow Control**: Workflow control nodes
   - Conditional: if/else for branching logic based on conditions
   - Selection: switch/case for selecting from multiple options based on an index
+
+- **Math**: Mathematical operations
+  - Trigonometric: sin, cos, tan, asin, acos, atan, atan2
+  - Logarithmic/Exponential: log, log10, exp, sqrt
+  - Numerical: min, max
+  - Constants: pi, e
+  - Conversion: degrees/radians
+  - Rounding: floor, ceil
+  - Other: abs (absolute value)
 
 ## Understanding LIST vs. data list vs. SET
 

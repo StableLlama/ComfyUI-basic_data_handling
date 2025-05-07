@@ -515,6 +515,70 @@ class AnyToList:
         return ([input],)
 
 
+class ListMin:
+    """
+    Returns the minimum value in a LIST.
+
+    This node takes a LIST of comparable items and returns the minimum value.
+    Returns None if the LIST is empty or if items are not comparable.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("min_value",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "find_min"
+
+    def find_min(self, list: list[Any]) -> tuple[Any]:
+        if not list:
+            return (None,)
+
+        try:
+            return (min(list),)
+        except (TypeError, ValueError):
+            # Handle case where list contains non-comparable elements
+            return (None,)
+
+
+class ListMax:
+    """
+    Returns the maximum value in a LIST.
+
+    This node takes a LIST of comparable items and returns the maximum value.
+    Returns None if the LIST is empty or if items are not comparable.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("max_value",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "find_max"
+
+    def find_max(self, list: list[Any]) -> tuple[Any]:
+        if not list:
+            return (None,)
+
+        try:
+            return (max(list),)
+        except (TypeError, ValueError):
+            # Handle case where list contains non-comparable elements
+            return (None,)
+
+
 NODE_CLASS_MAPPINGS = {
     "ListAppend": ListAppend,
     "ListExtend": ListExtend,
@@ -534,6 +598,8 @@ NODE_CLASS_MAPPINGS = {
     "ListToDataList": ListToDataList,
     "ListToSet": ListToSet,
     "AnyToList": AnyToList,
+    "ListMin": ListMin,
+    "ListMax": ListMax,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -555,4 +621,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ListToDataList": "convert to data list",
     "ListToSet": "convert to SET",
     "AnyToList": "any to LIST",
+    "ListMin": "min",
+    "ListMax": "max",
 }

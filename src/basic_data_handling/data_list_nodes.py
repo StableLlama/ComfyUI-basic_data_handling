@@ -721,6 +721,90 @@ class DataListToList:
         return (kwargs.get('list', []).copy(),)
 
 
+class DataListMin:
+    """
+    Finds the minimum value in a list of numbers.
+
+    This node takes a list of numbers (either FLOAT or INT) and returns
+    the minimum value. Returns None if the list is empty or if it contains
+    non-numeric values.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (["FLOAT", "INT"], {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("min_value",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "find_min"
+    INPUT_IS_LIST = True
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
+        if input_types[0]["list"] not in ("FLOAT", "INT"):
+            return "list must contain FLOAT or INT types"
+        return True
+
+    def find_min(self, **kwargs: dict[str, list]) -> tuple[Any]:
+        values = kwargs.get('list', [])
+        if not values:
+            return (None,)
+
+        try:
+            # Return the same type as found in the minimum value
+            return (min(values),)
+        except (TypeError, ValueError):
+            # Handle case where list contains non-comparable elements
+            return (None,)
+
+
+class DataListMax:
+    """
+    Finds the maximum value in a list of numbers.
+
+    This node takes a list of numbers (either FLOAT or INT) and returns
+    the maximum value. Returns None if the list is empty or if it contains
+    non-numeric values.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (["FLOAT", "INT"], {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("max_value",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "find_max"
+    INPUT_IS_LIST = True
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
+        if input_types[0]["list"] not in ("FLOAT", "INT"):
+            return "list must contain FLOAT or INT types"
+        return True
+
+    def find_max(self, **kwargs: dict[str, list]) -> tuple[Any]:
+        values = kwargs.get('list', [])
+        if not values:
+            return (None,)
+
+        try:
+            # Return the same type as found in the maximum value
+            return (max(values),)
+        except (TypeError, ValueError):
+            # Handle case where list contains non-comparable elements
+            return (None,)
+
+
 NODE_CLASS_MAPPINGS = {
     "DataListAppend": DataListAppend,
     "DataListExtend": DataListExtend,
@@ -742,6 +826,8 @@ NODE_CLASS_MAPPINGS = {
     "DataListZip": DataListZip,
     "DataListFilter": DataListFilter,
     "DataListToList": DataListToList,
+    "DataListMin": DataListMin,
+    "DataListMax": DataListMax,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -765,4 +851,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DataListZip": "zip",
     "DataListFilter": "filter",
     "DataListToList": "convert to LIST",
+    "DataListMin": "min",
+    "DataListMax": "max",
 }
