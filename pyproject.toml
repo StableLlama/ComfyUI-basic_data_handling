@@ -4,18 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.0.2"
-description = """Basic Python functions for manipulating data that every programmer
-is used to. Currently supported: STRING."""
+version = "0.0.3"
+description = """Basic Python functions for manipulating data that every programmer is used to.
+Currently supported: BOOLEAN, FLOAT, INT, STRING and data lists."""
 authors = [
   {name = "Basic data handling"}
 ]
 readme = "README.md"
 license = {text = "MIT license"}
 classifiers = []
-dependencies = [
-
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [

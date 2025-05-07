@@ -914,10 +914,11 @@ class StringRsplit:
             }
         }
 
-    RETURN_TYPES = ("LIST",)
+    RETURN_TYPES = ("STRING",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
+    OUTPUT_IS_LIST = (True,)
 
     def rsplit(self, string, sep=None, maxsplit=-1):
         if sep == "":
@@ -1205,15 +1206,17 @@ class StringRsplit:
             }
         }
 
-    RETURN_TYPES = ("LIST",)
+    RETURN_TYPES = ("STRING",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
+    OUTPUT_IS_LIST = (True,)
 
     def rsplit(self, string, sep=None, maxsplit=-1):
         if sep == "":
             sep = None
         return (string.rsplit(sep, maxsplit),)
+
 
 
 class StringRstrip:
@@ -1244,6 +1247,34 @@ class StringRstrip:
         if chars == "":
             chars = None
         return (string.rstrip(chars),)
+
+
+class StringJoin:
+    """
+    Joins strings from a data list with a specified separator.
+
+    This node takes a data list of strings and concatenates them, with the specified
+    separator string between each element. The separator is inserted between the strings,
+    not at the beginning or end of the result.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "sep": ("STRING", {"default": " ", "defaultInput": True}),
+                "strings": ("STRING", {"forceInput": True}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "join"
+    INPUT_IS_LIST = True  # The "strings" input accepts a data list
+
+    def join(self, sep, strings):
+        separator = sep[0]    # everything comes as a list, so sep is list[str]
+        return (separator.join(strings),)
 
 
 class StringLjust:
@@ -1465,10 +1496,11 @@ class StringRsplit:
             }
         }
 
-    RETURN_TYPES = ("LIST",)
+    RETURN_TYPES = ("STRING",)  # Changed from "LIST" to "STRING"
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
+    OUTPUT_IS_LIST = (True,)  # This indicates that the output is a data list
 
     def rsplit(self, string, sep=None, maxsplit=-1):
         if sep == "":
@@ -1510,8 +1542,10 @@ class StringSplit:
     """
     Splits the string at the specified separator.
 
-    This node returns a list of strings by splitting the input string at the specified separator.
-    If maxsplit is provided, at most maxsplit splits are done.
+    This node splits the input string at the specified separator and returns a
+    data list containing all parts. If maxsplit is provided, at most maxsplit
+    splits are done.
+
     If the separator is not specified or is None, any whitespace string is a separator.
     """
     @classmethod
@@ -1526,15 +1560,19 @@ class StringSplit:
             }
         }
 
-    RETURN_TYPES = ("LIST",)
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "split"
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "split"
+    OUTPUT_IS_LIST = (True,)  # This indicates that the output is a data list
 
     def split(self, string, sep=None, maxsplit=-1):
         if sep == "":
             sep = None
-        return (string.split(sep, maxsplit),)
+
+        parts = string.split(sep, maxsplit)
+        # Return a data list where each item is a separate string
+        return (parts,)
 
 
 class StringSplitlines:
@@ -1551,17 +1589,20 @@ class StringSplitlines:
                 "string": ("STRING", {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "keepends": ("BOOLEAN", {"default": False}),
+                "keepends": (["False", "True"], {"default": "False"}),
             }
         }
 
-    RETURN_TYPES = ("LIST",)
+    RETURN_TYPES = ("STRING",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "splitlines"
+    OUTPUT_IS_LIST = (True,)
 
-    def splitlines(self, string, keepends=False):
-        return (string.splitlines(keepends),)
+    def splitlines(self, string, keepends="False"):
+        keepends_bool = (keepends == "True")
+        lines = string.splitlines(keepends_bool)
+        return (lines,)
 
 
 class StringStartswith:
@@ -1750,6 +1791,7 @@ NODE_CLASS_MAPPINGS = {
     "StringIsSpace": StringIsSpace,
     "StringIsTitle": StringIsTitle,
     "StringIsUpper": StringIsUpper,
+    "StringJoin": StringJoin,
     "StringLjust": StringLjust,
     "StringLower": StringLower,
     "StringLstrip": StringLstrip,
@@ -1795,6 +1837,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "StringIsSpace": "isspace",
     "StringIsTitle": "istitle",
     "StringIsUpper": "isupper",
+    "StringJoin": "join",
     "StringLjust": "ljust",
     "StringLower": "lower",
     "StringLstrip": "lstrip",
