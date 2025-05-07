@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.0.2"
-description = "Basic Python functions for manipulating data that every programmer is used to"
+version = "0.0.1"
+description = """Basic Python functions for manipulating data that every programmer
+is used to. Currently supported: STRING."""
 authors = [
-  {name = "Basic data handling", email = "stablellama@tutanota.com"}
+  {name = "Basic data handling"}
 ]
 readme = "README.md"
 license = {text = "MIT license"}
@@ -29,7 +30,7 @@ dev = [
 [project.urls]
 bugs = "https://github.com/StableLlama/ComfyUI-basic_data_handling/issues"
 homepage = "https://github.com/StableLlama/ComfyUI-basic_data_handling"
-
+Repository = "https://github.com/StableLlama/ComfyUI-basic_data_handling"
 
 [tool.comfy]
 PublisherId = "stablellama"
