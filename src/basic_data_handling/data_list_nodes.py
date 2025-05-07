@@ -2,35 +2,6 @@ from typing import Any
 
 from inspect import cleandoc
 
-class DataListConvertToList:
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/data list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
-
-
 class DataListAppend:
     """
     Adds an item to the end of a list.
@@ -677,8 +648,36 @@ class DataListZip:
         return (result,)
 
 
+class DataListToList:
+    """
+    Converts a ComfyUI data list into a LIST object.
+
+    This node takes a data list input (which is typically a list of items with the same type)
+    and converts it to a LIST object (a Python list as a single variable).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("*", {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    INPUT_IS_LIST = True
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
+        return True
+
+    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+        return (kwargs.get('list', []).copy(),)
+
+
 NODE_CLASS_MAPPINGS = {
-    "DataListConvertToList": DataListConvertToList,
     "DataListAppend": DataListAppend,
     "DataListExtend": DataListExtend,
     "DataListInsert": DataListInsert,
@@ -697,10 +696,10 @@ NODE_CLASS_MAPPINGS = {
     "DataListContains": DataListContains,
     "DataListCreateEmpty": DataListCreateEmpty,
     "DataListZip": DataListZip,
+    "DataListToList": DataListToList,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "DataListConvertToList": "convert to LIST",
     "DataListAppend": "append",
     "DataListExtend": "extend",
     "DataListInsert": "insert",
@@ -719,4 +718,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DataListContains": "contains",
     "DataListCreateEmpty": "create_empty",
     "DataListZip": "zip",
+    "DataListToList": "convert to LIST",
 }

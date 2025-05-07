@@ -537,59 +537,6 @@ class DictRemove:
         return result, False
 
 
-class AnyToDict:
-    """
-    Converts compatible data structures to a dictionary.
-
-    This node attempts to convert an input value to a dictionary. Compatible
-    inputs include sequences of key-value pairs, mapping objects, and objects
-    with a to_dict() or as_dict() method.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("DICT", "BOOLEAN")
-    RETURN_NAMES = ("dict", "success")
-    CATEGORY = "Basic/DICT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-
-    def convert(self, input: Any) -> tuple[dict, bool]:
-        try:
-            if isinstance(input, dict):
-                return input.copy(), True
-
-            # Try converting from items
-            if hasattr(input, "items"):
-                return dict(input.items()), True
-
-            # Try converting from sequence of pairs
-            if hasattr(input, "__iter__") and not isinstance(input, str):
-                try:
-                    result = dict(input)
-                    return result, True
-                except (TypeError, ValueError):
-                    pass
-
-            # Check for to_dict or as_dict methods
-            if hasattr(input, "to_dict") and callable(getattr(input, "to_dict")):
-                return input.to_dict(), True
-
-            if hasattr(input, "as_dict") and callable(getattr(input, "as_dict")):
-                return input.as_dict(), True
-
-            # Failed to convert
-            return {}, False
-
-        except Exception:
-            return {}, False
-
-
 class DictFilterByKeys:
     """
     Creates a new dictionary with only the specified keys.
@@ -772,6 +719,59 @@ class DictCompare:
         return are_equal, only_in_dict1, only_in_dict2, different_values
 
 
+class AnyToDict:
+    """
+    Converts compatible data structures to a dictionary.
+
+    This node attempts to convert an input value to a dictionary. Compatible
+    inputs include sequences of key-value pairs, mapping objects, and objects
+    with a to_dict() or as_dict() method.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input": ("*", {}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT", "BOOLEAN")
+    RETURN_NAMES = ("dict", "success")
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+
+    def convert(self, input: Any) -> tuple[dict, bool]:
+        try:
+            if isinstance(input, dict):
+                return input.copy(), True
+
+            # Try converting from items
+            if hasattr(input, "items"):
+                return dict(input.items()), True
+
+            # Try converting from sequence of pairs
+            if hasattr(input, "__iter__") and not isinstance(input, str):
+                try:
+                    result = dict(input)
+                    return result, True
+                except (TypeError, ValueError):
+                    pass
+
+            # Check for to_dict or as_dict methods
+            if hasattr(input, "to_dict") and callable(getattr(input, "to_dict")):
+                return input.to_dict(), True
+
+            if hasattr(input, "as_dict") and callable(getattr(input, "as_dict")):
+                return input.as_dict(), True
+
+            # Failed to convert
+            return {}, False
+
+        except Exception:
+            return {}, False
+
+
 NODE_CLASS_MAPPINGS = {
     "DictCreate": DictCreate,
     "DictCreateFromItems": DictCreateFromItems,
@@ -792,13 +792,13 @@ NODE_CLASS_MAPPINGS = {
     "DictMerge": DictMerge,
     "DictGetKeysValues": DictGetKeysValues,
     "DictRemove": DictRemove,
-    "AnyToDict": AnyToDict,
     "DictFilterByKeys": DictFilterByKeys,
     "DictExcludeKeys": DictExcludeKeys,
     "DictGetMultiple": DictGetMultiple,
     "DictInvert": DictInvert,
     "DictCreateFromLists": DictCreateFromLists,
     "DictCompare": DictCompare,
+    "AnyToDict": AnyToDict,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -821,11 +821,11 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DictMerge": "merge",
     "DictGetKeysValues": "get_keys_values",
     "DictRemove": "remove",
-    "AnyToDict": "any_to_DICT",
     "DictFilterByKeys": "filter_by_keys",
     "DictExcludeKeys": "exclude_keys",
     "DictGetMultiple": "get_multiple",
     "DictInvert": "invert",
     "DictCreateFromLists": "from_lists",
     "DictCompare": "compare",
+    "AnyToDict": "any_to_DICT",
 }

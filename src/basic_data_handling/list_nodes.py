@@ -1,32 +1,6 @@
 from typing import Any
 from inspect import cleandoc
 
-class ListConvertToDataList:
-    """
-    Converts a LIST object into a ComfyUI data list.
-
-    This node takes a LIST object (Python list as a single variable) and
-    converts it to a ComfyUI data list, allowing its items to be processed
-    individually by nodes that accept data lists.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("LIST", {}),
-            }
-        }
-
-    RETURN_TYPES = ("*",)
-    CATEGORY = "Basic/LIST"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    OUTPUT_IS_LIST = (True,)
-
-    def convert(self, list) -> tuple[list[Any]]:
-        return (list,)
-
-
 class ListAppend:
     """
     Adds an item to the end of a LIST.
@@ -466,6 +440,56 @@ class ListContains:
         return (value in list,)
 
 
+class ListToDataList:
+    """
+    Converts a LIST object into a ComfyUI data list.
+
+    This node takes a LIST object (Python list as a single variable) and
+    converts it to a ComfyUI data list, allowing its items to be processed
+    individually by nodes that accept data lists.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    OUTPUT_IS_LIST = (True,)
+
+    def convert(self, list) -> tuple[list[Any]]:
+        return (list,)
+
+
+class ListToSet:
+    """
+    Converts a LIST into a SET.
+
+    This node takes a LIST input and creates a new SET containing all unique elements
+    from the LIST, removing any duplicates.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+
+    def convert(self, list: list[Any]) -> tuple[set[Any]]:
+        return (set(list),)
+
+
 class AnyToList:
     """
     Converts any input datatype into a LIST.
@@ -492,7 +516,6 @@ class AnyToList:
 
 
 NODE_CLASS_MAPPINGS = {
-    "ListConvertToDataList": ListConvertToDataList,
     "ListAppend": ListAppend,
     "ListExtend": ListExtend,
     "ListInsert": ListInsert,
@@ -508,11 +531,12 @@ NODE_CLASS_MAPPINGS = {
     "ListGetItem": ListGetItem,
     "ListSetItem": ListSetItem,
     "ListContains": ListContains,
+    "ListToDataList": ListToDataList,
+    "ListToSet": ListToSet,
     "AnyToList": AnyToList,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ListConvertToDataList": "convert to data list",
     "ListAppend": "append",
     "ListExtend": "extend",
     "ListInsert": "insert",
@@ -528,5 +552,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ListGetItem": "get item",
     "ListSetItem": "set item",
     "ListContains": "contains",
+    "ListToDataList": "convert to data list",
+    "ListToSet": "convert to SET",
     "AnyToList": "any to LIST",
 }

@@ -30,6 +30,14 @@ These nodes are very lightweight and require no additional dependencies.
   - Information: length, count
   - Operations: sort, reverse
 
+- **SET**: Python set manipulation nodes (as a single variable)
+  - Conversion: convert to data list, to LIST
+  - Creation: any to SET, LIST to SET
+  - Modification: add, remove, discard, pop, clear
+  - Information: length, contains
+  - Set operations: union, intersection, difference, symmetric_difference
+  - Comparison: is_subset, is_superset, is_disjoint
+
 - **data list**: ComfyUI list manipulation nodes (for processing individual items)
   - Conversion: convert to LIST
   - Creation: create_empty
@@ -58,9 +66,9 @@ These nodes are very lightweight and require no additional dependencies.
 - **BOOLEAN**: Boolean logic nodes
   - Logic operations: and, or, not, xor, nand, nor
 
-## Understanding LIST vs. data list
+## Understanding LIST vs. data list vs. SET
 
-ComfyUI has two different list data types that serve different purposes:
+ComfyUI has different data types that serve different purposes:
 
 ### 1. LIST datatype
 - A Python list represented as a **single variable** in the workflow
@@ -72,7 +80,17 @@ ComfyUI has two different list data types that serve different purposes:
   - Passing collections between different parts of your workflow
   - Complex data storage that shouldn't be split apart
 
-### 2. data list
+### 2. SET datatype
+- A Python set represented as a **single variable** in the workflow
+- Stores unique values with no duplicates
+- Supports mathematical set operations (union, intersection, etc.)
+- Best for:
+  - Eliminating duplicate values
+  - Testing membership efficiently
+  - Set operations (union, difference, etc.)
+  - When element order doesn't matter
+
+### 3. data list
 - A native ComfyUI list where **items are processed individually**
 - Acts like a standard array/list in most programming contexts
 - Items can be accessed individually by compatible nodes
@@ -84,15 +102,23 @@ ComfyUI has two different list data types that serve different purposes:
   - When your operation needs to work with individual items separately
 
 ### Converting between types
-- Use `convert to data list` node to transform a LIST into a ComfyUI data list
+- Use `convert to data list` node to transform a LIST or SET into a ComfyUI data list
 - Use `convert to LIST` node to transform a ComfyUI data list into a LIST object
+- Use `LIST to SET` to convert a LIST to a SET (removing duplicates)
+- Use `SET to LIST` to convert a SET to a LIST
 
 ### When to use which type
-- Use **LIST** when you need to:
-  - Keep items grouped together as a single entity
-  - Perform operations on the entire collection (sorting, reversing, etc.)
-  - Pass a collection between workflow sections
-  - Prevent automatic iteration over items
+- Use **LIST** when you need:
+  - Ordered collection with potential duplicates
+  - To preserve insertion order
+  - To access elements by position/index
+  - To use methods like append, extend, etc.
+
+- Use **SET** when you need:
+  - Collection of unique values (no duplicates)
+  - Fast membership testing (x in set)
+  - Set theory operations (union, intersection)
+  - To eliminate duplicates from data
 
 - Use **data list** when you need to:
   - Process each item individually through ComfyUI nodes
