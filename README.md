@@ -41,7 +41,7 @@ These nodes are very lightweight and require no additional dependencies.
 - **data list**: ComfyUI list manipulation nodes (for processing individual items)
   - Conversion: convert to LIST
   - Creation: create_empty
-  - Modification: append, extend, insert, remove, pop, clear, set_item
+  - Modification: append, filter, extend, insert, remove, pop, clear, set_item
   - Access: get_item, slice, index, contains
   - Information: length, count
   - Operations: sort, reverse, copy, zip
@@ -65,6 +65,16 @@ These nodes are very lightweight and require no additional dependencies.
 
 - **BOOLEAN**: Boolean logic nodes
   - Logic operations: and, or, not, xor, nand, nor
+
+- **Comparison**: Value comparison nodes
+  - Basic comparisons: equal (==), not equal (!=), greater than (>), less than (<), etc.
+  - String comparison: case-sensitive/insensitive string comparison with various operators
+  - Special comparisons: number in range, is null, compare length
+  - Container operations: length comparison for strings, lists, and other containers
+
+- **Flow Control**: Workflow control nodes
+  - Conditional: if/else for branching logic based on conditions
+  - Selection: switch/case for selecting from multiple options based on an index
 
 ## Understanding LIST vs. data list vs. SET
 

@@ -1,8 +1,10 @@
-from . import (boolean_nodes, data_list_nodes, dict_nodes, float_nodes, int_nodes,
-               list_nodes, set_nodes, string_nodes)
+from . import (boolean_nodes, comparison_nodes, control_flow, data_list_nodes, dict_nodes,
+               float_nodes, int_nodes, list_nodes, set_nodes, string_nodes)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_CLASS_MAPPINGS.update(boolean_nodes.NODE_CLASS_MAPPINGS)
+NODE_CLASS_MAPPINGS.update(comparison_nodes.NODE_CLASS_MAPPINGS)
+NODE_CLASS_MAPPINGS.update(control_flow.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(data_list_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(dict_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(float_nodes.NODE_CLASS_MAPPINGS)
@@ -13,6 +15,8 @@ NODE_CLASS_MAPPINGS.update(string_nodes.NODE_CLASS_MAPPINGS)
 
 NODE_DISPLAY_NAME_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS.update(boolean_nodes.NODE_DISPLAY_NAME_MAPPINGS)
+NODE_DISPLAY_NAME_MAPPINGS.update(comparison_nodes.NODE_DISPLAY_NAME_MAPPINGS)
+NODE_DISPLAY_NAME_MAPPINGS.update(control_flow.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(data_list_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(dict_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(float_nodes.NODE_DISPLAY_NAME_MAPPINGS)

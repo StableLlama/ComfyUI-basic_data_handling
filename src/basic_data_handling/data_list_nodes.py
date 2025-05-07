@@ -173,7 +173,7 @@ class DataListPop:
 
     @classmethod
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["index"] not in ("INT"):
+        if input_types[0].get("index", "INT") not in ("INT"):
             return "index must be an INT type"
         return True
 
@@ -648,6 +648,50 @@ class DataListZip:
         return (result,)
 
 
+class DataListFilter:
+    """
+    Filters a data list using boolean values.
+
+    This node takes a value data list and a filter data list (containing only boolean values).
+    It returns a new data list containing only the elements from the value list where the
+    corresponding element in the filter list is False.
+
+    If the lists have different lengths, the last element of the shorter list is repeated
+    till the lengths are matching.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": ("*", {}),
+                "filter": ("BOOLEAN", {}),
+            }
+        }
+
+    RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("filtered_list",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "filter_data"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
+        if input_types[0]["filter"] not in ("BOOLEAN"):
+            return "filter must be a BOOLEAN type"
+        return True
+
+    def filter_data(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+        values = kwargs.get('value', [])
+        filters = kwargs.get('filter', [])
+
+        # Create a new list with only items where the filter is False
+        result = [_val for _val, _filter in zip(values, filters) if not _filter]
+
+        return (result,)
+
+
 class DataListToList:
     """
     Converts a ComfyUI data list into a LIST object.
@@ -696,6 +740,7 @@ NODE_CLASS_MAPPINGS = {
     "DataListContains": DataListContains,
     "DataListCreateEmpty": DataListCreateEmpty,
     "DataListZip": DataListZip,
+    "DataListFilter": DataListFilter,
     "DataListToList": DataListToList,
 }
 
@@ -718,5 +763,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DataListContains": "contains",
     "DataListCreateEmpty": "create_empty",
     "DataListZip": "zip",
+    "DataListFilter": "filter",
     "DataListToList": "convert to LIST",
 }
