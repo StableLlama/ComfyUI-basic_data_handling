@@ -664,7 +664,7 @@ class DataListFilter:
         return {
             "required": {
                 "value": ("*", {}),
-                "filter": ("BOOLEAN", {}),
+                "filter": ("BOOLEAN", {"forceInput": True}),
             }
         }
 
@@ -690,35 +690,6 @@ class DataListFilter:
         result = [_val for _val, _filter in zip(values, filters) if not _filter]
 
         return (result,)
-
-
-class DataListToList:
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/data list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
 
 
 class DataListMin:
@@ -825,7 +796,6 @@ NODE_CLASS_MAPPINGS = {
     "DataListCreateEmpty": DataListCreateEmpty,
     "DataListZip": DataListZip,
     "DataListFilter": DataListFilter,
-    "DataListToList": DataListToList,
     "DataListMin": DataListMin,
     "DataListMax": DataListMax,
 }
@@ -844,13 +814,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "DataListCopy": "copy",
     "DataListLength": "length",
     "DataListSlice": "slice",
-    "DataListGetItem": "get_item",
-    "DataListSetItem": "set_item",
+    "DataListGetItem": "get item",
+    "DataListSetItem": "set item",
     "DataListContains": "contains",
-    "DataListCreateEmpty": "create_empty",
+    "DataListCreateEmpty": "create empty",
     "DataListZip": "zip",
     "DataListFilter": "filter",
-    "DataListToList": "convert to LIST",
     "DataListMin": "min",
     "DataListMax": "max",
 }

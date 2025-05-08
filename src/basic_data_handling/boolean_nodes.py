@@ -10,8 +10,8 @@ class BooleanAnd:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": ("BOOLEAN", {"default": False}),
-                "input2": ("BOOLEAN", {"default": False}),
+                "input1": ("BOOLEAN", {"default": False, "forceInput": True}),
+                "input2": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 
@@ -34,8 +34,8 @@ class BooleanOr:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": ("BOOLEAN", {"default": False}),
-                "input2": ("BOOLEAN", {"default": False}),
+                "input1": ("BOOLEAN", {"default": False, "forceInput": True}),
+                "input2": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 
@@ -58,7 +58,7 @@ class BooleanNot:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("BOOLEAN", {"default": False}),
+                "input": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 
@@ -81,8 +81,8 @@ class BooleanXor:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": ("BOOLEAN", {"default": False}),
-                "input2": ("BOOLEAN", {"default": False}),
+                "input1": ("BOOLEAN", {"default": False, "forceInput": True}),
+                "input2": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 
@@ -105,8 +105,8 @@ class BooleanNand:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": ("BOOLEAN", {"default": False}),
-                "input2": ("BOOLEAN", {"default": False}),
+                "input1": ("BOOLEAN", {"default": False, "forceInput": True}),
+                "input2": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 
@@ -129,8 +129,8 @@ class BooleanNor:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": ("BOOLEAN", {"default": False}),
-                "input2": ("BOOLEAN", {"default": False}),
+                "input1": ("BOOLEAN", {"default": False, "forceInput": True}),
+                "input2": ("BOOLEAN", {"default": False, "forceInput": True}),
             }
         }
 

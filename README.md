@@ -39,12 +39,16 @@ These nodes are very lightweight and require no additional dependencies.
   - Comparison: is_subset, is_superset, is_disjoint
 
 - **data list**: ComfyUI list manipulation nodes (for processing individual items)
-  - Conversion: convert to LIST
   - Creation: create_empty
   - Modification: append, filter, extend, insert, remove, pop, clear, set_item
   - Access: get_item, slice, index, contains
   - Information: length, count
   - Operations: sort, reverse, copy, zip, min, max
+
+- **cast**: Type conversion nodes for ComfyUI data types
+  - Basic conversions: to STRING, to INT, to FLOAT, to BOOLEAN
+  - Collection conversions: to LIST, to SET, to DICT
+  - Special conversions: data list to LIST, data list to SET
 
 - **DICT**: Dictionary manipulation nodes
   - Creation: create, from_items, from_lists, fromkeys, any_to_DICT
