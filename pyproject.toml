@@ -4,11 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.0.7"
-description = """Basic Python functions for manipulating data that every programmer is used to.
+version = "0.0.8"
+description = """NOTE: Still in development! Expect breaking changes!
+Basic Python functions for manipulating data that every programmer is used to.
 Currently supported ComfyUI data types: BOOLEAN, FLOAT, INT, STRING and data lists.
 Additionally supported Python data types as custom data types: DICT, LIST.
-Data handling is supported with comparisons and control flow operations."""
+Data handling is supported with comparisons and control flow operations.
+Also contains math, regex, and file system path manipulation functions."""
 authors = [
   {name = "Basic data handling"}
 ]

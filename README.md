@@ -50,6 +50,13 @@ These nodes are very lightweight and require no additional dependencies.
   - Collection conversions: to LIST, to SET, to DICT
   - Special conversions: data list to LIST, data list to SET
 
+- **path**: File system path manipulation nodes
+  - Basic operations: join, split, splitext, basename, dirname, normalize
+  - Path information: abspath, exists, is_file, is_dir, is_absolute, get_size, get_extension
+  - Directory operations: list_dir, get_cwd
+  - Path searching: glob, common_prefix
+  - Path conversions: relative, expand_vars
+
 - **DICT**: Dictionary manipulation nodes
   - Creation: create, from_items, from_lists, fromkeys, any_to_DICT
   - Access: get, get_multiple, keys, values, items
