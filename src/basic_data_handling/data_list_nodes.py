@@ -173,7 +173,7 @@ class DataListPop:
 
     @classmethod
     def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0].get("index", "INT") is not "INT":
+        if input_types[0].get("index", "INT") != "INT":
             return "index must be an INT type"
         return True
 
@@ -678,7 +678,7 @@ class DataListFilter:
 
     @classmethod
     def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0]["filter"] is not "BOOLEAN":
+        if input_types[0]["filter"] != "BOOLEAN":
             return "filter must be a BOOLEAN type"
         return True
 

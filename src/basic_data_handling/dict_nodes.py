@@ -353,7 +353,7 @@ class DictPopItem:
                 return result, key, value, True
             else:
                 return result, "", None, False
-        except Exception as e:
+        except:
             return result, "", None, False
 
 
