@@ -30,7 +30,7 @@ class DataListAppend:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def append(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def append(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
         item = kwargs.get('item', [])
         if len(item) > 0:
@@ -66,7 +66,7 @@ class DataListExtend:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def extend(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def extend(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         return (kwargs.get('list_a', []) + kwargs.get('list_b', []),)
 
 
@@ -99,7 +99,7 @@ class DataListInsert:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def insert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def insert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
         result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
         return (result,)
@@ -133,7 +133,7 @@ class DataListRemove:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def remove(self, **kwargs: dict[str, list]) -> tuple[list[Any], bool]:
+    def remove(self, **kwargs: list[Any]) -> tuple[list[Any], bool]:
         result = kwargs.get('list', []).copy()
         value = kwargs.get('value', [])
         try:
@@ -172,12 +172,12 @@ class DataListPop:
     OUTPUT_IS_LIST = (True, False)
 
     @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types[0].get("index", "INT") not in ("INT"):
+    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
+        if input_types[0].get("index", "INT") != "INT":
             return "index must be an INT type"
         return True
 
-    def pop(self, **kwargs: dict[str, list]) -> tuple[list[Any], Any]:
+    def pop(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
         result = kwargs.get('list', []).copy()
         index = kwargs.get('index', [-1])[0]
         try:
@@ -213,7 +213,7 @@ class DataListClear:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def clear(self, **kwargs: dict[str, list]) -> tuple[[]]:
+    def clear(self, **kwargs: list[Any]) -> tuple[list]:
         # Return a new empty list rather than modifying the input
         return ([],)
 
@@ -250,7 +250,7 @@ class DataListIndex:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def list_index(self, **kwargs: dict[str, list]) -> tuple[int]:
+    def list_index(self, **kwargs: list[Any]) -> tuple[int]:
         input_list = kwargs.get('list', [])
         value = kwargs.get('value', [None])[0]
         start = kwargs.get('start', [0])[0]
@@ -291,7 +291,7 @@ class DataListCount:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def count(self, **kwargs: dict[str, list]) -> tuple[int]:
+    def count(self, **kwargs: list[Any]) -> tuple[int]:
         value = kwargs.get('value', [None])[0]
         return (kwargs.get('list', []).count(value),)
 
@@ -326,7 +326,7 @@ class DataListSort:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def sort(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def sort(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         # Convert string to boolean
         reverse = kwargs.get('reverse', ["False"])[0] == "True"
 
@@ -360,7 +360,7 @@ class DataListReverse:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def reverse(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def reverse(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
         result.reverse()
         return (result,)
@@ -392,7 +392,7 @@ class DataListCopy:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def copy(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def copy(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         return (kwargs.get('list', []).copy(),)
 
 
@@ -421,7 +421,7 @@ class DataListLength:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def length(self, **kwargs: dict[str, list]) -> tuple[int]:
+    def length(self, **kwargs: list[Any]) -> tuple[int]:
         return (len(kwargs.get('list', [])),)
 
 
@@ -457,7 +457,7 @@ class DataListSlice:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def slice(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def slice(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         input_list = kwargs.get('list', [])
         start = kwargs.get('start', [0])[0]
         stop = kwargs.get('stop', [-1])[0]
@@ -481,7 +481,7 @@ class DataListGetItem:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
+                "list": ("*",),
                 "index": ("INT", {"default": 0}),
             }
         }
@@ -497,7 +497,7 @@ class DataListGetItem:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def get_item(self, **kwargs: dict[str, list]) -> tuple[Any]:
+    def get_item(self, **kwargs: list[Any]) -> tuple[Any]:
         index = kwargs.get('index', [0])[0]
         try:
             return (kwargs.get('list', [])[index],)
@@ -534,7 +534,7 @@ class DataListSetItem:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def set_item(self, **kwargs: dict[str, list]) -> tuple[Any]:
+    def set_item(self, **kwargs: list[Any]) -> tuple[Any]:
         input_list = kwargs.get('list', [])
         index = kwargs.get('index', [0])[0]
         value = kwargs.get('value', [None])[0]
@@ -557,7 +557,7 @@ class DataListContains:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
+                "list": ("*",),
                 "value": ("*",),
             }
         }
@@ -573,7 +573,7 @@ class DataListContains:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def contains(self, **kwargs: dict[str, list]) -> tuple[bool]:
+    def contains(self, **kwargs: list[Any]) -> tuple[bool]:
         value = kwargs.get('value', [])
         if len(value) == 0:
             return (False,)
@@ -597,7 +597,7 @@ class DataListCreateEmpty:
     FUNCTION = "create_empty"
     OUTPUT_IS_LIST = (True,)
 
-    def create_empty(self) -> tuple[[]]:
+    def create_empty(self) -> tuple[list]:
         return ([],)
 
 
@@ -634,7 +634,7 @@ class DataListZip:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def zip_lists(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def zip_lists(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         lists = [kwargs.get('list1', []), kwargs.get('list2', [])]
 
         if 'list3' in kwargs:
@@ -677,12 +677,12 @@ class DataListFilter:
     OUTPUT_IS_LIST = (True,)
 
     @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types[0]["filter"] not in ("BOOLEAN"):
+    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
+        if input_types[0]["filter"] != "BOOLEAN":
             return "filter must be a BOOLEAN type"
         return True
 
-    def filter_data(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def filter_data(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         values = kwargs.get('value', [])
         filters = kwargs.get('filter', [])
 
@@ -716,12 +716,12 @@ class DataListMin:
     INPUT_IS_LIST = True
 
     @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
+    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
         if input_types[0]["list"] not in ("FLOAT", "INT"):
             return "list must contain FLOAT or INT types"
         return True
 
-    def find_min(self, **kwargs: dict[str, list]) -> tuple[Any]:
+    def find_min(self, **kwargs: list[Any]) -> tuple[Any]:
         values = kwargs.get('list', [])
         if not values:
             return (None,)
@@ -758,12 +758,12 @@ class DataListMax:
     INPUT_IS_LIST = True
 
     @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
+    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
         if input_types[0]["list"] not in ("FLOAT", "INT"):
             return "list must contain FLOAT or INT types"
         return True
 
-    def find_max(self, **kwargs: dict[str, list]) -> tuple[Any]:
+    def find_max(self, **kwargs: list[Any]) -> tuple[Any]:
         values = kwargs.get('list', [])
         if not values:
             return (None,)

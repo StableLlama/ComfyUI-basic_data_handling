@@ -51,7 +51,7 @@ class CastToInt:
     def convert_to_int(self, input: Any) -> tuple[int]:
         try:
             return (int(input),)
-        except ValueError:
+        except (ValueError, TypeError):
             raise ValueError(f"Cannot convert {input} to an INT.")
 
 
@@ -79,7 +79,7 @@ class CastToFloat:
     def convert_to_float(self, input: Any) -> tuple[float]:
         try:
             return (float(input),)
-        except ValueError:
+        except (ValueError, TypeError):
             raise ValueError(f"Cannot convert {input} to a FLOAT.")
 
 
@@ -161,7 +161,7 @@ class CastDataListToList:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         return (kwargs.get('list', []).copy(),)
 
 
@@ -218,7 +218,7 @@ class CastDataListToSet:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
         return (set(kwargs.get('list', [])),)
 
 
