@@ -776,37 +776,6 @@ class StringRemovesuffix:
         return (string.removesuffix(suffix),)
 
 
-class StringRjust:
-    """
-    Right-aligns the string within a field of a given width.
-
-    This node returns a string right-aligned in a field of the specified width.
-    If fillchar is provided, it is used as the padding character instead of a space.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
-            },
-            "optional": {
-                "fillchar": ("STRING", {"default": " "}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rjust"
-
-    def rjust(self, string, width, fillchar=" "):
-        # Ensure fillchar is only one character
-        if len(fillchar) > 0:
-            fillchar = fillchar[0]
-        return (string.rjust(width, fillchar),)
-
-
 class StringRsplit:
     """
     Splits the string at the specified separator from the right.
@@ -837,68 +806,6 @@ class StringRsplit:
         if sep == "":
             sep = None
         return (string.rsplit(sep, maxsplit),)
-
-
-class StringRstrip:
-    """
-    Removes trailing characters from the string.
-
-    This node returns a copy of the string with trailing characters removed.
-    If chars is provided, it specifies the set of characters to be removed.
-    If chars is not provided, whitespace characters are removed.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-            },
-            "optional": {
-                "chars": ("STRING", {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rstrip"
-
-    def rstrip(self, string, chars=None):
-        if chars == "":
-            chars = None
-        return (string.rstrip(chars),)
-
-
-
-class StringLjust:
-    """
-    Left-aligns the string within a field of a given width.
-
-    This node returns a string left-aligned in a field of the specified width.
-    If fillchar is provided, it is used as the padding character instead of a space.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
-            },
-            "optional": {
-                "fillchar": ("STRING", {"default": " "}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "ljust"
-
-    def ljust(self, string, width, fillchar=" "):
-        # Ensure fillchar is only one character
-        if len(fillchar) > 0:
-            fillchar = fillchar[0]
-        return (string.ljust(width, fillchar),)
 
 
 class StringLower:
@@ -954,65 +861,6 @@ class StringReplace:
         return (string.replace(old, new, count),)
 
 
-class StringRemovesuffix:
-    """
-    Removes suffix from the string if present.
-
-    This node returns a copy of the string with the specified suffix removed
-    if the string ends with that suffix, otherwise returns the original string.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "suffix": ("STRING", {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "removesuffix"
-
-    def removesuffix(self, string, suffix):
-        return (string.removesuffix(suffix),)
-
-
-class StringRfind:
-    """
-    Finds the highest index of the substring in the string.
-
-    This node searches for the last occurrence of the specified substring within the input string.
-    Returns the highest index where the substring is found. If the substring is not found, it returns -1.
-    Optional start and end parameters allow you to limit the search to a specific portion of the string.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "substring": ("STRING", {"default": ""}),
-            },
-            "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
-            }
-        }
-
-    RETURN_TYPES = ("INT",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rfind"
-
-    def rfind(self, string, substring, start=0, end=0):
-        # If end is 0 or negative, search to the end of the string
-        if end <= 0:
-            end = len(string)
-
-        return (string.rfind(substring, start, end),)
-
-
 class StringRjust:
     """
     Right-aligns the string within a field of a given width.
@@ -1042,69 +890,6 @@ class StringRjust:
         if len(fillchar) > 0:
             fillchar = fillchar[0]
         return (string.rjust(width, fillchar),)
-
-
-class StringRsplit:
-    """
-    Splits the string at the specified separator from the right.
-
-    This node returns a list of strings by splitting the input string at the specified separator,
-    starting from the right. If maxsplit is provided, at most maxsplit splits are done.
-    If the separator is not specified or is None, any whitespace string is a separator.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-            },
-            "optional": {
-                "sep": ("STRING", {"default": ""}),
-                "maxsplit": ("INT", {"default": -1, "min": -1}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rsplit"
-    OUTPUT_IS_LIST = (True,)
-
-    def rsplit(self, string, sep=None, maxsplit=-1):
-        if sep == "":
-            sep = None
-        return (string.rsplit(sep, maxsplit),)
-
-
-
-class StringRstrip:
-    """
-    Removes trailing characters from the string.
-
-    This node returns a copy of the string with trailing characters removed.
-    If chars is provided, it specifies the set of characters to be removed.
-    If chars is not provided, whitespace characters are removed.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-            },
-            "optional": {
-                "chars": ("STRING", {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rstrip"
-
-    def rstrip(self, string, chars=None):
-        if chars == "":
-            chars = None
-        return (string.rstrip(chars),)
 
 
 class StringJoin:
@@ -1135,54 +920,6 @@ class StringJoin:
         return (separator.join(strings),)
 
 
-class StringLower:
-    """
-    Converts the string to lowercase.
-
-    This node returns a copy of the string with all uppercase characters converted to lowercase.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "lower"
-
-    def lower(self, string):
-        return (string.lower(),)
-
-
-class StringRemoveprefix:
-    """
-    Removes prefix from the string if present.
-
-    This node returns a copy of the string with the specified prefix removed
-    if the string starts with that prefix, otherwise returns the original string.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "prefix": ("STRING", {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "removeprefix"
-
-    def removeprefix(self, string, prefix):
-        return (string.removeprefix(prefix),)
-
-
 class StringRfind:
     """
     Finds the highest index of the substring in the string.
@@ -1215,69 +952,6 @@ class StringRfind:
             end = len(string)
 
         return (string.rfind(substring, start, end),)
-
-
-class StringRjust:
-    """
-    Right-aligns the string within a field of a given width.
-
-    This node returns a string right-aligned in a field of the specified width.
-    If fillchar is provided, it is used as the padding character instead of a space.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
-            },
-            "optional": {
-                "fillchar": ("STRING", {"default": " "}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rjust"
-
-    def rjust(self, string, width, fillchar=" "):
-        # Ensure fillchar is only one character
-        if len(fillchar) > 0:
-            fillchar = fillchar[0]
-        return (string.rjust(width, fillchar),)
-
-
-class StringRsplit:
-    """
-    Splits the string at the specified separator from the right.
-
-    This node returns a list of strings by splitting the input string at the specified separator,
-    starting from the right. If maxsplit is provided, at most maxsplit splits are done.
-    If the separator is not specified or is None, any whitespace string is a separator.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-            },
-            "optional": {
-                "sep": ("STRING", {"default": ""}),
-                "maxsplit": ("INT", {"default": -1, "min": -1}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)  # Changed from "LIST" to "STRING"
-    CATEGORY = "Basic/STRING"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "rsplit"
-    OUTPUT_IS_LIST = (True,)  # This indicates that the output is a data list
-
-    def rsplit(self, string, sep=None, maxsplit=-1):
-        if sep == "":
-            sep = None
-        return (string.rsplit(sep, maxsplit),)
 
 
 class StringRstrip:
