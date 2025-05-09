@@ -161,7 +161,7 @@ class CastDataListToList:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         return (kwargs.get('list', []).copy(),)
 
 
@@ -218,7 +218,7 @@ class CastDataListToSet:
     def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
         return True
 
-    def convert(self, **kwargs: dict[str, list]) -> tuple[list[Any]]:
+    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
         return (set(kwargs.get('list', [])),)
 
 

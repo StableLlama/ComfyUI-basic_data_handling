@@ -1,4 +1,3 @@
-from typing import Any
 from inspect import cleandoc
 import re
 

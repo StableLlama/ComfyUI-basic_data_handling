@@ -201,7 +201,7 @@ class IntToBytes:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_bytes"
 
-    def to_bytes(self, int_value: int, length: int, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[int]:
+    def to_bytes(self, int_value: int, length: int, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[bytes]:
         signed_bool = (signed == "True")
         return (int_value.to_bytes(length, byteorder=byteorder, signed=signed_bool),)
 
