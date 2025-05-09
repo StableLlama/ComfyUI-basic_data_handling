@@ -79,7 +79,7 @@ class StringCenter:
         return (string.center(width, fillchar),)
 
 
-class StringConcat:
+class DataStringConcat:
     """Combines two text strings together, joining them end-to-end."""
     @classmethod
     def INPUT_TYPES(cls):
@@ -1771,7 +1771,7 @@ NODE_CLASS_MAPPINGS = {
     "StringCapitalize": StringCapitalize,
     "StringCasefold": StringCasefold,
     "StringCenter": StringCenter,
-    "StringConcat": StringConcat,
+    "DataStringConcat": DataStringConcat,
     "StringCount": StringCount,
     "StringDecode": StringDecode,
     "StringEncode": StringEncode,
@@ -1816,7 +1816,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "StringCapitalize": "capitalize",
     "StringCasefold": "casefold",
     "StringCenter": "center",
-    "StringConcat": "concat",
+    "DataStringConcat": "concat",
     "StringCount": "count",
     "StringDecode": "decode",
     "StringEncode": "encode",

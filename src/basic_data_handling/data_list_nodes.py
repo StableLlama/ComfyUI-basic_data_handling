@@ -481,7 +481,7 @@ class DataListGetItem:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
+                "list": ("*",),
                 "index": ("INT", {"default": 0}),
             }
         }
@@ -557,7 +557,7 @@ class DataListContains:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_list": ("*",),
+                "list": ("*",),
                 "value": ("*",),
             }
         }

@@ -4,7 +4,7 @@ from src.basic_data_handling.string_nodes import (
     StringCapitalize,
     StringCasefold,
     StringCenter,
-    StringConcat,
+    DataStringConcat,
     StringCount,
     StringDecode,
     StringEncode,
@@ -72,7 +72,7 @@ def test_center():
     assert node.center("test", 10, "ab") == ("aaatestaaa",)
 
 def test_concat():
-    node = StringConcat()
+    node = DataStringConcat()
     assert node.concat("hello ", "world") == ("hello world",)
     assert node.concat("", "") == ("",)  # Empty strings
     assert node.concat("123", "456") == ("123456",)  # Numbers as strings
