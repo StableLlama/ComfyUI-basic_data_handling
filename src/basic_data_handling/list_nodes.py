@@ -347,9 +347,6 @@ class ListSlice:
     FUNCTION = "slice"
 
     def slice(self, list: list[Any], start: int = 0, stop: int = -1, step: int = 1) -> tuple[list[Any]]:
-        if stop == -1:
-            stop = len(list)
-
         return (list[start:stop:step],)
 
 
