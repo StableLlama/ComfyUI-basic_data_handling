@@ -29,8 +29,8 @@ jobs:
       - name: Run Linting
         run: |
           ruff check .
-      - name: Set PYTHONPATH_TEST
-        run: echo "PYTHONPATH_TEST=$(pwd)" >> $GITHUB_ENV
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
       - name: Run Tests
         run: |
           pytest tests/
