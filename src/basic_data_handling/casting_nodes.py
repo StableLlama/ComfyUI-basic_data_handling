@@ -251,25 +251,25 @@ class CastToDict:
 
 
 NODE_CLASS_MAPPINGS = {
-    "CastToString": CastToString,
-    "CastToInt": CastToInt,
-    "CastToFloat": CastToFloat,
-    "CastToBoolean": CastToBoolean,
-    "CastToList": CastToList,
-    "CastDataListToList": CastDataListToList,
-    "CastToSet": CastToSet,
-    "CastDataListToSet": CastDataListToSet,
-    "CastToDict": CastToDict,
+    "Basic data handling: CastToString": CastToString,
+    "Basic data handling: CastToInt": CastToInt,
+    "Basic data handling: CastToFloat": CastToFloat,
+    "Basic data handling: CastToBoolean": CastToBoolean,
+    "Basic data handling: CastToList": CastToList,
+    "Basic data handling: CastDataListToList": CastDataListToList,
+    "Basic data handling: CastToSet": CastToSet,
+    "Basic data handling: CastDataListToSet": CastDataListToSet,
+    "Basic data handling: CastToDict": CastToDict,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "CastToString": "to STRING",
-    "CastToInt": "to INT",
-    "CastToFloat": "to FLOAT",
-    "CastToBoolean": "to BOOLEAN",
-    "CastToList": "to LIST",
-    "CastDataListToList": "data list to LIST",
-    "CastToSet": "to SET",
-    "CastDataListToSet": "data list to SET",
-    "CastToDict": "to DICT",
+    "Basic data handling: CastToString": "to STRING",
+    "Basic data handling: CastToInt": "to INT",
+    "Basic data handling: CastToFloat": "to FLOAT",
+    "Basic data handling: CastToBoolean": "to BOOLEAN",
+    "Basic data handling: CastToList": "to LIST",
+    "Basic data handling: CastDataListToList": "data list to LIST",
+    "Basic data handling: CastToSet": "to SET",
+    "Basic data handling: CastDataListToSet": "data list to SET",
+    "Basic data handling: CastToDict": "to DICT",
 }

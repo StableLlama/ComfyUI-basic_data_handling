@@ -146,19 +146,19 @@ class RegexTest:
 
 
 NODE_CLASS_MAPPINGS = {
-    "RegexSearchGroups": RegexSearchGroups,
-    "RegexGroupDict": RegexGroupDict,
-    "RegexFindall": RegexFindall,
-    "RegexSplit": RegexSplit,
-    "RegexSub": RegexSub,
-    "RegexTest": RegexTest,
+    "Basic data handling: RegexSearchGroups": RegexSearchGroups,
+    "Basic data handling: RegexGroupDict": RegexGroupDict,
+    "Basic data handling: RegexFindall": RegexFindall,
+    "Basic data handling: RegexSplit": RegexSplit,
+    "Basic data handling: RegexSub": RegexSub,
+    "Basic data handling: RegexTest": RegexTest,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "RegexSearchGroups": "search groups",
-    "RegexGroupDict": "search named groups",
-    "RegexFindall": "find all",
-    "RegexSplit": "split",
-    "RegexSub": "substitute",
-    "RegexTest": "test",
+    "Basic data handling: RegexSearchGroups": "search groups",
+    "Basic data handling: RegexGroupDict": "search named groups",
+    "Basic data handling: RegexFindall": "find all",
+    "Basic data handling: RegexSplit": "split",
+    "Basic data handling: RegexSub": "substitute",
+    "Basic data handling: RegexTest": "test",
 }

@@ -112,11 +112,11 @@ class SwitchCase:
 
 
 NODE_CLASS_MAPPINGS = {
-    "IfElse": IfElse,
-    "SwitchCase": SwitchCase,
+    "Basic data handling: IfElse": IfElse,
+    "Basic data handling: SwitchCase": SwitchCase,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "IfElse": "if/else",
-    "SwitchCase": "switch/case",
+    "Basic data handling: IfElse": "if/else",
+    "Basic data handling: SwitchCase": "switch/case",
 }

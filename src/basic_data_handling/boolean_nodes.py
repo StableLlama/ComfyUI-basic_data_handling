@@ -144,19 +144,19 @@ class BooleanNor:
 
 
 NODE_CLASS_MAPPINGS = {
-    "BooleanAnd": BooleanAnd,
-    "BooleanOr": BooleanOr,
-    "BooleanNot": BooleanNot,
-    "BooleanXor": BooleanXor,
-    "BooleanNand": BooleanNand,
-    "BooleanNor": BooleanNor,
+    "Basic data handling: BooleanAnd": BooleanAnd,
+    "Basic data handling: BooleanOr": BooleanOr,
+    "Basic data handling: BooleanNot": BooleanNot,
+    "Basic data handling: BooleanXor": BooleanXor,
+    "Basic data handling: BooleanNand": BooleanNand,
+    "Basic data handling: BooleanNor": BooleanNor,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "BooleanAnd": "and",
-    "BooleanOr": "or",
-    "BooleanNot": "not",
-    "BooleanXor": "xor",
-    "BooleanNand": "nand",
-    "BooleanNor": "nor",
+    "Basic data handling: BooleanAnd": "and",
+    "Basic data handling: BooleanOr": "or",
+    "Basic data handling: BooleanNot": "not",
+    "Basic data handling: BooleanXor": "xor",
+    "Basic data handling: BooleanNand": "nand",
+    "Basic data handling: BooleanNor": "nor",
 }
