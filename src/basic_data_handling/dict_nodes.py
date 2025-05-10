@@ -67,7 +67,7 @@ class DictGet:
                 "key": ("STRING", {"default": ""}),
             },
             "optional": {
-                "default_value": ("*", {}),
+                "default": ("*", {}),
             }
         }
 
@@ -77,8 +77,8 @@ class DictGet:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get"
 
-    def get(self, input_dict: dict, key: str, default_value=None) -> tuple[Any]:
-        return (input_dict.get(key, default_value),)
+    def get(self, input_dict: dict, key: str, default=None) -> tuple[Any]:
+        return (input_dict.get(key, default),)
 
 
 class DictSet:
@@ -297,28 +297,24 @@ class DictPop:
             },
             "optional": {
                 "default_value": ("*", {}),
-                "has_default": (["False", "True"], {"default": "False"}),
             }
         }
 
-    RETURN_TYPES = ("DICT", "*", "BOOLEAN")
-    RETURN_NAMES = ("dict", "value", "key_found")
+    RETURN_TYPES = ("DICT", "*")
+    RETURN_NAMES = ("dict", "value")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
 
-    def pop(self, input_dict: dict, key: str, default_value=None, has_default: str = "False") -> tuple[dict, Any, bool]:
+    def pop(self, input_dict: dict, key: str, default_value=None) -> tuple[dict, Any]:
         result = input_dict.copy()
-        has_default_bool = (has_default == "True")
 
         try:
             if key in result:
                 value = result.pop(key)
-                return result, value, True
-            elif has_default_bool:
-                return result, default_value, False
+                return result, value
             else:
-                raise KeyError(f"Key '{key}' not found in dictionary")
+                return result, default_value
         except Exception as e:
             raise ValueError(f"Error popping key from dictionary: {str(e)}")
 
@@ -376,7 +372,7 @@ class DictSetDefault:
         }
 
     RETURN_TYPES = ("DICT", "*")
-    RETURN_NAMES = ("dict", "value")
+    RETURN_NAMES = ("DICT", "value")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "setdefault"
@@ -605,7 +601,7 @@ class DictGetMultiple:
                 "keys": ("LIST", {}),
             },
             "optional": {
-                "default_value": ("*", {}),
+                "default": ("*", {}),
             }
         }
 
@@ -615,8 +611,8 @@ class DictGetMultiple:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_multiple"
 
-    def get_multiple(self, input_dict: dict, keys: list, default_value=None) -> tuple[list]:
-        values = [input_dict.get(key, default_value) for key in keys]
+    def get_multiple(self, input_dict: dict, keys: list, default=None) -> tuple[list]:
+        values = [input_dict.get(key, default) for key in keys]
         return (values,)
 
 
@@ -736,40 +732,39 @@ class AnyToDict:
         }
 
     RETURN_TYPES = ("DICT", "BOOLEAN")
-    RETURN_NAMES = ("dict", "success")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
 
-    def convert(self, input: Any) -> tuple[dict, bool]:
+    def convert(self, input: Any) -> tuple[dict]:
         try:
             if isinstance(input, dict):
-                return input.copy(), True
+                return (input.copy(),)
 
             # Try converting from items
             if hasattr(input, "items"):
-                return dict(input.items()), True
+                return (dict(input.items()),)
 
             # Try converting from sequence of pairs
             if hasattr(input, "__iter__") and not isinstance(input, str):
                 try:
                     result = dict(input)
-                    return result, True
+                    return (result,)
                 except (TypeError, ValueError):
                     pass
 
             # Check for to_dict or as_dict methods
             if hasattr(input, "to_dict") and callable(getattr(input, "to_dict")):
-                return input.to_dict(), True
+                return (input.to_dict(),)
 
             if hasattr(input, "as_dict") and callable(getattr(input, "as_dict")):
-                return input.as_dict(), True
+                return (input.as_dict(),)
 
             # Failed to convert
-            return {}, False
+            return ({},)
 
         except Exception:
-            return {}, False
+            return ({},)
 
 
 NODE_CLASS_MAPPINGS = {
