@@ -258,28 +258,28 @@ class IntBitCount:
 
 
 NODE_CLASS_MAPPINGS = {
-    "IntAdd": IntAdd,
-    "IntSubtract": IntSubtract,
-    "IntMultiply": IntMultiply,
-    "IntDivide": IntDivide,
-    "IntModulus": IntModulus,
-    "IntPower": IntPower,
-    "IntBitLength": IntBitLength,
-    "IntToBytes": IntToBytes,
-    "IntFromBytes": IntFromBytes,
-    "IntBitCount": IntBitCount,
+    "Basic data handling: IntAdd": IntAdd,
+    "Basic data handling: IntSubtract": IntSubtract,
+    "Basic data handling: IntMultiply": IntMultiply,
+    "Basic data handling: IntDivide": IntDivide,
+    "Basic data handling: IntModulus": IntModulus,
+    "Basic data handling: IntPower": IntPower,
+    "Basic data handling: IntBitLength": IntBitLength,
+    "Basic data handling: IntToBytes": IntToBytes,
+    "Basic data handling: IntFromBytes": IntFromBytes,
+    "Basic data handling: IntBitCount": IntBitCount,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "IntAdd": "add",
-    "IntSubtract": "subtract",
-    "IntMultiply": "multiply",
-    "IntDivide": "divide",
-    "IntModulus": "modulus",
-    "IntPower": "power",
-    "IntBitLength": "bit_length",
-    "IntToBytes": "to_bytes",
-    "IntFromBytes": "from_bytes",
-    "IntBitCount": "bit_count",
+    "Basic data handling: IntAdd": "add",
+    "Basic data handling: IntSubtract": "subtract",
+    "Basic data handling: IntMultiply": "multiply",
+    "Basic data handling: IntDivide": "divide",
+    "Basic data handling: IntModulus": "modulus",
+    "Basic data handling: IntPower": "power",
+    "Basic data handling: IntBitLength": "bit_length",
+    "Basic data handling: IntToBytes": "to_bytes",
+    "Basic data handling: IntFromBytes": "from_bytes",
+    "Basic data handling: IntBitCount": "bit_count",
 }
 

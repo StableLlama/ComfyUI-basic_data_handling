@@ -156,9 +156,9 @@ class PathGetSize:
 
     def get_size(self, path: str) -> tuple[int]:
         if not os.path.exists(path):
-            raise FileNotFoundError(f"Path does not exist: {path}")
+            raise FileNotFoundError(f"Basic data handling: Path does not exist: {path}")
         if not os.path.isfile(path):
-            raise ValueError(f"Path is not a file: {path}")
+            raise ValueError(f"Basic data handling: Path is not a file: {path}")
         return (os.path.getsize(path),)
 
 
@@ -461,7 +461,7 @@ class PathListDir:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Directory does not exist: {path}")
         if not os.path.isdir(path):
-            raise NotADirectoryError(f"Path is not a directory: {path}")
+            raise NotADirectoryError(f"Basic data handling: Path is not a directory: {path}")
 
         entries = os.listdir(path)
 
@@ -527,45 +527,45 @@ class PathCommonPrefix:
 
 
 NODE_CLASS_MAPPINGS = {
-    "PathJoin": PathJoin,
-    "PathAbspath": PathAbspath,
-    "PathExists": PathExists,
-    "PathIsFile": PathIsFile,
-    "PathIsDir": PathIsDir,
-    "PathGetSize": PathGetSize,
-    "PathSplit": PathSplit,
-    "PathSplitExt": PathSplitExt,
-    "PathBasename": PathBasename,
-    "PathDirname": PathDirname,
-    "PathGetExtension": PathGetExtension,
-    "PathNormalize": PathNormalize,
-    "PathRelative": PathRelative,
-    "PathGlob": PathGlob,
-    "PathExpandVars": PathExpandVars,
-    "PathGetCwd": PathGetCwd,
-    "PathListDir": PathListDir,
-    "PathIsAbsolute": PathIsAbsolute,
-    "PathCommonPrefix": PathCommonPrefix,
+    "Basic data handling: PathJoin": PathJoin,
+    "Basic data handling: PathAbspath": PathAbspath,
+    "Basic data handling: PathExists": PathExists,
+    "Basic data handling: PathIsFile": PathIsFile,
+    "Basic data handling: PathIsDir": PathIsDir,
+    "Basic data handling: PathGetSize": PathGetSize,
+    "Basic data handling: PathSplit": PathSplit,
+    "Basic data handling: PathSplitExt": PathSplitExt,
+    "Basic data handling: PathBasename": PathBasename,
+    "Basic data handling: PathDirname": PathDirname,
+    "Basic data handling: PathGetExtension": PathGetExtension,
+    "Basic data handling: PathNormalize": PathNormalize,
+    "Basic data handling: PathRelative": PathRelative,
+    "Basic data handling: PathGlob": PathGlob,
+    "Basic data handling: PathExpandVars": PathExpandVars,
+    "Basic data handling: PathGetCwd": PathGetCwd,
+    "Basic data handling: PathListDir": PathListDir,
+    "Basic data handling: PathIsAbsolute": PathIsAbsolute,
+    "Basic data handling: PathCommonPrefix": PathCommonPrefix,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "PathJoin": "join",
-    "PathAbspath": "abspath",
-    "PathExists": "exists",
-    "PathIsFile": "is_file",
-    "PathIsDir": "is_dir",
-    "PathGetSize": "get_size",
-    "PathSplit": "split",
-    "PathSplitExt": "splitext",
-    "PathBasename": "basename",
-    "PathDirname": "dirname",
-    "PathGetExtension": "get_extension",
-    "PathNormalize": "normalize",
-    "PathRelative": "relative",
-    "PathGlob": "glob",
-    "PathExpandVars": "expand_vars",
-    "PathGetCwd": "get_cwd",
-    "PathListDir": "list_dir",
-    "PathIsAbsolute": "is_absolute",
-    "PathCommonPrefix": "common_prefix",
+    "Basic data handling: PathJoin": "join",
+    "Basic data handling: PathAbspath": "abspath",
+    "Basic data handling: PathExists": "exists",
+    "Basic data handling: PathIsFile": "is_file",
+    "Basic data handling: PathIsDir": "is_dir",
+    "Basic data handling: PathGetSize": "get_size",
+    "Basic data handling: PathSplit": "split",
+    "Basic data handling: PathSplitExt": "splitext",
+    "Basic data handling: PathBasename": "basename",
+    "Basic data handling: PathDirname": "dirname",
+    "Basic data handling: PathGetExtension": "get_extension",
+    "Basic data handling: PathNormalize": "normalize",
+    "Basic data handling: PathRelative": "relative",
+    "Basic data handling: PathGlob": "glob",
+    "Basic data handling: PathExpandVars": "expand_vars",
+    "Basic data handling: PathGetCwd": "get_cwd",
+    "Basic data handling: PathListDir": "list_dir",
+    "Basic data handling: PathIsAbsolute": "is_absolute",
+    "Basic data handling: PathCommonPrefix": "common_prefix",
 }
