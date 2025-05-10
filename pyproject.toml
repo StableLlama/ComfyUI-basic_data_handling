@@ -44,6 +44,7 @@ Icon = ""
 
 [tool.pytest.ini_options]
 minversion = "8.0"
+pythonpath = "src"
 testpaths = [
     "tests",
 ]
