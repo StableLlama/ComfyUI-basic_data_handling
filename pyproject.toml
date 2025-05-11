@@ -12,7 +12,7 @@ Additionally supported Python data types as custom data types: DICT, LIST.
 Data handling is supported with comparisons and control flow operations.
 Also contains math, regex, and file system path manipulation functions."""
 authors = [
-  {name = "Basic data handling"}
+  {name = "StableLlama"}
 ]
 readme = "README.md"
 license = {text = "MIT license"}
@@ -44,7 +44,10 @@ Icon = ""
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-pythonpath = "src"
+pythonpath = [
+    "src",
+    "../..",  # Path to parent directory containing comfy module
+]
 testpaths = [
     "tests",
 ]
