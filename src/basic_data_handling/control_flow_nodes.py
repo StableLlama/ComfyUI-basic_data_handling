@@ -1,7 +1,8 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class IfElse:
+class IfElse(ComfyNodeABC):
     """
     Implements a conditional branch (if/else) in the workflow.
 
@@ -13,23 +14,17 @@ class IfElse:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "condition": ("BOOLEAN", {}),
-                "if_true": ("*", {"lazy": True}),
-                "if_false": ("*", {"lazy": True}),
+                "condition": (IO.BOOLEAN, {}),
+                "if_true": (IO.ANY, {"lazy": True}),
+                "if_false": (IO.ANY, {"lazy": True}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/Flow Control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["condition"] not in ("BOOLEAN"):
-            return "condition must be a BOOLEAN type"
-        return True
 
     def check_lazy_status(self, condition: bool, if_true: Any, if_false: Any) -> list[str]:
         needed = []
@@ -43,7 +38,7 @@ class IfElse:
         return (if_true if condition else if_false,)
 
 
-class SwitchCase:
+class SwitchCase(ComfyNodeABC):
     """
     Implements a switch/case selection in the workflow.
 
@@ -54,48 +49,45 @@ class SwitchCase:
 
     NOTE: This version of the node will most likely be deprecated in the future.
     """
+    EXPERIMENTAL = True
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "selector": ("INT", {"default": 0, "min": 0}),
-                "case_0": ("*", {"lazy": True}),
-                "case_1": ("*", {"lazy": True}),
+                "selector": (IO.INT, {"default": 0, "min": 0}),
+                "case_0": (IO.ANY, {"lazy": True}),
+                "case_1": (IO.ANY, {"lazy": True}),
             },
             "optional": {
-                "case_2": ("*", {"lazy": True}),
-                "case_3": ("*", {"lazy": True}),
-                "case_4": ("*", {"lazy": True}),
-                "default": ("*", {"lazy": True}),
+                "case_2": (IO.ANY, {"lazy": True}),
+                "case_3": (IO.ANY, {"lazy": True}),
+                "case_4": (IO.ANY, {"lazy": True}),
+                "default": (IO.ANY, {"lazy": True}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/Flow Control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["selector"] not in ("INT"):
-            return "selector must be a INT type"
-        return True
-
-    def check_lazy_status(self, condition: int, case_0: Any, case_1: Any,
-                          case_2: Any, case_3: Any, case_4: Any, default: Any) -> list[str]:
+    def check_lazy_status(self, selector: int, case_0: Any, case_1: Any,
+                          case_2: Any = None, case_3: Any = None,
+                          case_4: Any = None, default: Any = None) -> list[str]:
         needed = []
-        if case_0 is None and condition == 0:
+        if case_0 is None and selector == 0:
             needed.append("case_0")
-        if case_1 is None and condition == 1:
+        if case_1 is None and selector == 1:
             needed.append("case_1")
-        if case_2 is None and condition == 2:
+        if case_2 is None and selector == 2:
             needed.append("case_2")
-        if case_3 is None and condition == 3:
+        if case_3 is None and selector == 3:
             needed.append("case_3")
-        if case_4 is None and condition == 4:
+        if case_4 is None and selector == 4:
             needed.append("case_4")
-        if default is None and not 0 <= condition <= 4:
+        if default is None and not 0 <= selector <= 4:
             needed.append("default")
         return needed
 
