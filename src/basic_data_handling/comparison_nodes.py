@@ -1,7 +1,8 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class Equal:
+class Equal(ComfyNodeABC):
     """
     Checks if two values are equal.
 
@@ -12,26 +13,22 @@ class Equal:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": ("*", {}),
-                "value2": ("*", {}),
+                "value1": (IO.ANY, {}),
+                "value2": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def compare(self, value1: Any, value2: Any) -> tuple[bool]:
         return (value1 == value2,)
 
 
-class NotEqual:
+class NotEqual(ComfyNodeABC):
     """
     Checks if two values are not equal.
 
@@ -42,12 +39,12 @@ class NotEqual:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": ("*", {}),
-                "value2": ("*", {}),
+                "value1": (IO.ANY, {}),
+                "value2": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -72,24 +69,16 @@ class GreaterThan:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {}),
-                "value2": (["FLOAT", "INT"], {}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value1"] not in ("FLOAT", "INT"):
-            return "value1 must be a FLOAT or INT type"
-        if input_types["value2"] not in ("FLOAT", "INT"):
-            return "value2 must be a FLOAT or INT type"
-        return True
 
     def compare(self, value1: float, value2: float) -> tuple[bool]:
         return (value1 > value2,)
@@ -106,24 +95,16 @@ class LessThan:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {}),
-                "value2": (["FLOAT", "INT"], {}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value1"] not in ("FLOAT", "INT"):
-            return "value1 must be a FLOAT or INT type"
-        if input_types["value2"] not in ("FLOAT", "INT"):
-            return "value2 must be a FLOAT or INT type"
-        return True
 
     def compare(self, value1: float, value2: float) -> tuple[bool]:
         return (value1 < value2,)
@@ -140,24 +121,16 @@ class GreaterThanOrEqual:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {}),
-                "value2": (["FLOAT", "INT"], {}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value1"] not in ("FLOAT", "INT"):
-            return "value1 must be a FLOAT or INT type"
-        if input_types["value2"] not in ("FLOAT", "INT"):
-            return "value2 must be a FLOAT or INT type"
-        return True
 
     def compare(self, value1: float, value2: float) -> tuple[bool]:
         return (value1 >= value2,)
@@ -174,24 +147,16 @@ class LessThanOrEqual:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {}),
-                "value2": (["FLOAT", "INT"], {}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value1"] not in ("FLOAT", "INT"):
-            return "value1 must be a FLOAT or INT type"
-        if input_types["value2"] not in ("FLOAT", "INT"):
-            return "value2 must be a FLOAT or INT type"
-        return True
 
     def compare(self, value1: float, value2: float) -> tuple[bool]:
         return (value1 <= value2,)
@@ -211,23 +176,15 @@ class StringComparison:
                 "string1": ("STRING", {"default": ""}),
                 "string2": ("STRING", {"default": ""}),
                 "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "=="}),
-                "case_sensitive": (["True", "False"], {"default": "True"}),
+                "case_sensitive": (IO.BOOLEAN, {"default": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["string1"] != "STRING":
-            return "string1 must be a STRING type"
-        if input_types["string2"] != "STRING":
-            return "string2 must be a STRING type"
-        return True
 
     def compare(self, string1: str, string2: str, operator: str, case_sensitive: str) -> tuple[bool]:
         if case_sensitive == "False":
@@ -262,31 +219,21 @@ class NumberInRange:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (["FLOAT", "INT"], {}),
-                "min_value": (["FLOAT", "INT"], {"default": 0}),
-                "max_value": (["FLOAT", "INT"], {"default": 100}),
+                "value": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "min_value": ("FLOAT", {"default": 0}),
+                "max_value": ("FLOAT", {"default": 100}),
             },
             "optional": {
-                "include_min": (["True", "False"], {"default": "True"}),
-                "include_max": (["True", "False"], {"default": "True"}),
+                "include_min": (IO.BOOLEAN, {"default": "True"}),
+                "include_max": (IO.BOOLEAN, {"default": "True"}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("in_range",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_range"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value"] not in ("FLOAT", "INT"):
-            return "value must be a FLOAT or INT type"
-        if input_types["min_value"] not in ("FLOAT", "INT"):
-            return "min_value must be a FLOAT or INT type"
-        if input_types["max_value"] not in ("FLOAT", "INT"):
-            return "max_value must be a FLOAT or INT type"
-        return True
 
     def check_range(self, value: float, min_value: float, max_value: float,
                    include_min: str = "True", include_max: str = "True") -> tuple[bool]:
@@ -307,19 +254,15 @@ class IsNull:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_null",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_null"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def check_null(self, value: Any) -> tuple[bool]:
         return (value is None,)
@@ -336,23 +279,17 @@ class CompareLength:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "container": ("*", {}),
+                "container": (IO.ANY, {}),
                 "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "=="}),
-                "length": ("INT", {"default": 0, "min": 0}),
+                "length": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN", "INT")
+    RETURN_TYPES = (IO.BOOLEAN, IO.INT)
     RETURN_NAMES = ("result", "actual_length")
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare_length"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["length"] != "INT":
-            return "length must be an INT type"
-        return True
 
     def compare_length(self, container: Any, operator: str, length: int) -> tuple[bool, int]:
         try:
