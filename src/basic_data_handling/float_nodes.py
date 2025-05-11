@@ -1,6 +1,7 @@
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class FloatAdd:
+class FloatAdd(ComfyNodeABC):
     """
     Adds two floating-point numbers.
 
@@ -10,12 +11,12 @@ class FloatAdd:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": ("FLOAT", {"default": 0.0}),
-                "float2": ("FLOAT", {"default": 0.0}),
+                "float1": (IO.FLOAT, {"default": 0.0}),
+                "float2": (IO.FLOAT, {"default": 0.0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -24,7 +25,7 @@ class FloatAdd:
         return (float1 + float2,)
 
 
-class FloatSubtract:
+class FloatSubtract(ComfyNodeABC):
     """
     Subtracts one floating-point number from another.
 
@@ -35,12 +36,12 @@ class FloatSubtract:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": ("FLOAT", {"default": 0.0}),
-                "float2": ("FLOAT", {"default": 0.0}),
+                "float1": (IO.FLOAT, {"default": 0.0}),
+                "float2": (IO.FLOAT, {"default": 0.0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
@@ -49,7 +50,7 @@ class FloatSubtract:
         return (float1 - float2,)
 
 
-class FloatMultiply:
+class FloatMultiply(ComfyNodeABC):
     """
     Multiplies two floating-point numbers.
 
@@ -59,12 +60,12 @@ class FloatMultiply:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": ("FLOAT", {"default": 1.0}),
-                "float2": ("FLOAT", {"default": 1.0}),
+                "float1": (IO.FLOAT, {"default": 1.0}),
+                "float2": (IO.FLOAT, {"default": 1.0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "multiply"
@@ -73,7 +74,7 @@ class FloatMultiply:
         return (float1 * float2,)
 
 
-class FloatDivide:
+class FloatDivide(ComfyNodeABC):
     """
     Divides one floating-point number by another.
 
@@ -84,12 +85,12 @@ class FloatDivide:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": ("FLOAT", {"default": 1.0}),
-                "float2": ("FLOAT", {"default": 1.0}),
+                "float1": (IO.FLOAT, {"default": 1.0}),
+                "float2": (IO.FLOAT, {"default": 1.0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -100,7 +101,34 @@ class FloatDivide:
         return (float1 / float2,)
 
 
-class FloatPower:
+class FloatDivideSafe(ComfyNodeABC):
+    """
+    Divides one floating-point number by another.
+
+    This node takes two floats as input and returns the result of the division.
+    It returns positive or negative infinity if the divisor is 0 (assumed to be +0.0).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "float1": (IO.FLOAT, {"default": 1.0}),
+                "float2": (IO.FLOAT, {"default": 1.0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "divide"
+
+    def divide(self, float1: float, float2: float) -> tuple[float]:
+        if float2 == 0.0:
+            return (float('inf') if float1 > 0 else float('-inf'),)
+        return (float1 / float2,)
+
+
+class FloatPower(ComfyNodeABC):
     """
     Raises one floating-point number to the power of another.
 
@@ -111,12 +139,12 @@ class FloatPower:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "base": ("FLOAT", {"default": 1.0}),
-                "exponent": ("FLOAT", {"default": 1.0}),
+                "base": (IO.FLOAT, {"default": 1.0}),
+                "exponent": (IO.FLOAT, {"default": 1.0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "power"
@@ -125,7 +153,7 @@ class FloatPower:
         return (base ** exponent,)
 
 
-class FloatRound:
+class FloatRound(ComfyNodeABC):
     """
     Rounds a floating-point number to the specified number of decimal places.
 
@@ -136,12 +164,12 @@ class FloatRound:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": ("FLOAT", {"default": 0.0}),
-                "decimal_places": ("INT", {"default": 2, "min": 0}),
+                "float_value": (IO.FLOAT, {"default": 0.0}),
+                "decimal_places": (IO.INT, {"default": 2, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "round"
@@ -150,7 +178,7 @@ class FloatRound:
         return (round(float_value, decimal_places),)
 
 
-class FloatIsInteger:
+class FloatIsInteger(ComfyNodeABC):
     """
     Checks if a floating-point number is an integer.
 
@@ -161,7 +189,7 @@ class FloatIsInteger:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": ("FLOAT", {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0}),
             }
         }
 
@@ -174,7 +202,7 @@ class FloatIsInteger:
         return (float_value.is_integer(),)
 
 
-class FloatAsIntegerRatio:
+class FloatAsIntegerRatio(ComfyNodeABC):
     """
     Returns the integer ratio of a floating-point number.
 
@@ -185,11 +213,11 @@ class FloatAsIntegerRatio:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": ("FLOAT", {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0}),
             }
         }
 
-    RETURN_TYPES = ("INT", "INT")
+    RETURN_TYPES = (IO.INT, IO.INT)
     RETURN_NAMES = ("numerator", "denominator")
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -201,7 +229,7 @@ class FloatAsIntegerRatio:
         return numerator, denominator
 
 
-class FloatHex:
+class FloatHex(ComfyNodeABC):
     """
     Converts a floating-point number to its hexadecimal representation.
 
@@ -211,11 +239,11 @@ class FloatHex:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": ("FLOAT", {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_hex"
@@ -224,7 +252,7 @@ class FloatHex:
         return (float_value.hex(),)
 
 
-class FloatFromHex:
+class FloatFromHex(ComfyNodeABC):
     """
     Converts a hexadecimal string to its corresponding floating-point number.
 
@@ -234,11 +262,11 @@ class FloatFromHex:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "hex_value": ("STRING", {"default": "0x0.0p+0"}),
+                "hex_value": (IO.STRING, {"default": "0x0.0p+0"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_hex"
@@ -252,6 +280,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: FloatSubtract": FloatSubtract,
     "Basic data handling: FloatMultiply": FloatMultiply,
     "Basic data handling: FloatDivide": FloatDivide,
+    "Basic data handling: FloatDivideSafe": FloatDivideSafe,
     "Basic data handling: FloatPower": FloatPower,
     "Basic data handling: FloatRound": FloatRound,
     "Basic data handling: FloatIsInteger": FloatIsInteger,
@@ -265,6 +294,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: FloatSubtract": "subtract",
     "Basic data handling: FloatMultiply": "multiply",
     "Basic data handling: FloatDivide": "divide",
+    "Basic data handling: FloatDivideSafe": "divide (division by zero safe)",
     "Basic data handling: FloatPower": "power",
     "Basic data handling: FloatRound": "round",
     "Basic data handling: FloatIsInteger": "is_integer",

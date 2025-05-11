@@ -1,7 +1,10 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class ListAppend:
+INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
+
+class ListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a LIST.
 
@@ -13,7 +16,7 @@ class ListAppend:
         return {
             "required": {
                 "list": ("LIST", {}),
-                "item": ("*", {}),
+                "item": (IO.ANY, {}),
             }
         }
 
@@ -28,7 +31,26 @@ class ListAppend:
         return (result,)
 
 
-class ListExtend:
+class ListEmpty(ComfyNodeABC):
+    """
+    Create an empty LIST.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {}
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self) -> tuple[list[Any]]:
+        return ([],)
+
+
+class ListExtend(ComfyNodeABC):
     """
     Extends a LIST by appending elements from another LIST.
 
@@ -55,7 +77,7 @@ class ListExtend:
         return (result,)
 
 
-class ListInsert:
+class ListInsert(ComfyNodeABC):
     """
     Inserts an item at a specified position in a LIST.
 
@@ -68,7 +90,7 @@ class ListInsert:
             "required": {
                 "list": ("LIST", {}),
                 "index": ("INT", {"default": 0}),
-                "item": ("*", {}),
+                "item": (IO.ANY, {}),
             }
         }
 
@@ -83,7 +105,7 @@ class ListInsert:
         return (result,)
 
 
-class ListRemove:
+class ListRemove(ComfyNodeABC):
     """
     Removes the first occurrence of a specified value from a LIST.
 
@@ -96,7 +118,7 @@ class ListRemove:
         return {
             "required": {
                 "list": ("LIST", {}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -115,7 +137,7 @@ class ListRemove:
             return result, False
 
 
-class ListPop:
+class ListPop(ComfyNodeABC):
     """
     Removes and returns an item at a specified position in a LIST.
 
@@ -135,7 +157,7 @@ class ListPop:
             }
         }
 
-    RETURN_TYPES = ("LIST", "*")
+    RETURN_TYPES = ("LIST", IO.ANY)
     RETURN_NAMES = ("list", "item")
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -150,30 +172,7 @@ class ListPop:
             return result, None
 
 
-class ListClear:
-    """
-    Removes all items from a LIST.
-
-    This node takes a LIST as input and returns a new empty LIST.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("LIST", {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/LIST"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "clear"
-
-    def clear(self, list: list[Any]) -> tuple[list[Any]]:
-        return ([],)
-
-
-class ListIndex:
+class ListIndex(ComfyNodeABC):
     """
     Returns the index of the first occurrence of a value in a LIST.
 
@@ -186,7 +185,7 @@ class ListIndex:
         return {
             "required": {
                 "list": ("LIST", {}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             },
             "optional": {
                 "start": ("INT", {"default": 0}),
@@ -210,7 +209,7 @@ class ListIndex:
             return (-1,)
 
 
-class ListCount:
+class ListCount(ComfyNodeABC):
     """
     Counts the number of occurrences of a value in a LIST.
 
@@ -222,7 +221,7 @@ class ListCount:
         return {
             "required": {
                 "list": ("LIST", {}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -236,7 +235,7 @@ class ListCount:
         return (list.count(value),)
 
 
-class ListSort:
+class ListSort(ComfyNodeABC):
     """
     Sorts the items in a LIST.
 
@@ -272,7 +271,7 @@ class ListSort:
             return (list.copy(),)
 
 
-class ListReverse:
+class ListReverse(ComfyNodeABC):
     """
     Reverses the order of items in a LIST.
 
@@ -297,7 +296,7 @@ class ListReverse:
         return (result,)
 
 
-class ListLength:
+class ListLength(ComfyNodeABC):
     """
     Returns the number of items in a LIST.
 
@@ -321,7 +320,7 @@ class ListLength:
         return (len(list),)
 
 
-class ListSlice:
+class ListSlice(ComfyNodeABC):
     """
     Creates a slice of a LIST.
 
@@ -336,7 +335,7 @@ class ListSlice:
             },
             "optional": {
                 "start": ("INT", {"default": 0}),
-                "stop": ("INT", {"default": -1}),
+                "stop": ("INT", {"default": INT_MAX}),
                 "step": ("INT", {"default": 1}),
             }
         }
@@ -346,11 +345,12 @@ class ListSlice:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice"
 
-    def slice(self, list: list[Any], start: int = 0, stop: int = -1, step: int = 1) -> tuple[list[Any]]:
+    def slice(self, list: list[Any], start: int = 0, stop: int = INT_MAX,
+              step: int = 1) -> tuple[list[Any]]:
         return (list[start:stop:step],)
 
 
-class ListGetItem:
+class ListGetItem(ComfyNodeABC):
     """
     Retrieves an item at a specified position in a LIST.
 
@@ -367,7 +367,7 @@ class ListGetItem:
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("item",)
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -380,7 +380,7 @@ class ListGetItem:
             return (None,)
 
 
-class ListSetItem:
+class ListSetItem(ComfyNodeABC):
     """
     Sets an item at a specified position in a LIST.
 
@@ -393,7 +393,7 @@ class ListSetItem:
             "required": {
                 "list": ("LIST", {}),
                 "index": ("INT", {"default": 0}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -411,7 +411,7 @@ class ListSetItem:
             raise IndexError(f"Index {index} out of range for LIST of length {len(list)}")
 
 
-class ListContains:
+class ListContains(ComfyNodeABC):
     """
     Checks if a LIST contains a specified value.
 
@@ -423,7 +423,7 @@ class ListContains:
         return {
             "required": {
                 "list": ("LIST", {}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -437,7 +437,7 @@ class ListContains:
         return (value in list,)
 
 
-class ListToDataList:
+class ListToDataList(ComfyNodeABC):
     """
     Converts a LIST object into a ComfyUI data list.
 
@@ -453,7 +453,7 @@ class ListToDataList:
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
@@ -463,7 +463,7 @@ class ListToDataList:
         return (list,)
 
 
-class ListToSet:
+class ListToSet(ComfyNodeABC):
     """
     Converts a LIST into a SET.
 
@@ -487,32 +487,7 @@ class ListToSet:
         return (set(list),)
 
 
-class AnyToList:
-    """
-    Converts any input datatype into a LIST.
-
-    This node takes any input value and wraps it in a LIST object,
-    allowing it to be processed by nodes that expect LIST inputs.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/LIST"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-
-    def convert(self, input: Any) -> tuple[list[Any]]:
-        # Create a new list containing the input value
-        return ([input],)
-
-
-class ListMin:
+class ListMin(ComfyNodeABC):
     """
     Returns the minimum value in a LIST.
 
@@ -527,7 +502,7 @@ class ListMin:
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("min_value",)
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -544,7 +519,7 @@ class ListMin:
             return (None,)
 
 
-class ListMax:
+class ListMax(ComfyNodeABC):
     """
     Returns the maximum value in a LIST.
 
@@ -559,7 +534,7 @@ class ListMax:
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("max_value",)
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -578,11 +553,11 @@ class ListMax:
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListAppend": ListAppend,
+    "Basic data handling: ListEmpty": ListEmpty,
     "Basic data handling: ListExtend": ListExtend,
     "Basic data handling: ListInsert": ListInsert,
     "Basic data handling: ListRemove": ListRemove,
     "Basic data handling: ListPop": ListPop,
-    "Basic data handling: ListClear": ListClear,
     "Basic data handling: ListIndex": ListIndex,
     "Basic data handling: ListCount": ListCount,
     "Basic data handling: ListSort": ListSort,
@@ -594,18 +569,17 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListContains": ListContains,
     "Basic data handling: ListToDataList": ListToDataList,
     "Basic data handling: ListToSet": ListToSet,
-    "Basic data handling: AnyToList": AnyToList,
     "Basic data handling: ListMin": ListMin,
     "Basic data handling: ListMax": ListMax,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListAppend": "append",
+    "Basic data handling: ListEmpty": "empty",
     "Basic data handling: ListExtend": "extend",
     "Basic data handling: ListInsert": "insert",
     "Basic data handling: ListRemove": "remove",
     "Basic data handling: ListPop": "pop",
-    "Basic data handling: ListClear": "clear",
     "Basic data handling: ListIndex": "index",
     "Basic data handling: ListCount": "count",
     "Basic data handling: ListSort": "sort",
@@ -617,7 +591,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListContains": "contains",
     "Basic data handling: ListToDataList": "convert to data list",
     "Basic data handling: ListToSet": "convert to SET",
-    "Basic data handling: AnyToList": "any to LIST",
     "Basic data handling: ListMin": "min",
     "Basic data handling: ListMax": "max",
 }

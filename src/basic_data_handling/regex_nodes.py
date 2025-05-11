@@ -1,7 +1,8 @@
 from inspect import cleandoc
 import re
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class RegexSearchGroups:
+class RegexSearchGroupsDataList(ComfyNodeABC):
     """
     Searches the string for a match to the pattern and returns a LIST of match groups.
     If no match is found, it returns an empty LIST.
@@ -10,8 +11,35 @@ class RegexSearchGroups:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING/regex"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "search_groups"
+    OUTPUT_IS_LIST = (True,)
+
+    def search_groups(self, pattern: str, string: str) -> tuple[list[str]]:
+        match = re.search(pattern, string)
+        if match:
+            return (list(match.groups()),)
+        return ([],)
+
+
+class RegexSearchGroupsList(ComfyNodeABC):
+    """
+    Searches the string for a match to the pattern and returns a data list of match groups.
+    If no match is found, it returns an empty data list.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
             }
         }
 
@@ -27,7 +55,7 @@ class RegexSearchGroups:
         return ([],)
 
 
-class RegexGroupDict:
+class RegexGroupDict(ComfyNodeABC):
     """
     Searches the string with the given pattern and returns a DICT of named groups.
     If no match is found, it returns an empty DICT.
@@ -36,8 +64,8 @@ class RegexGroupDict:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
             }
         }
 
@@ -53,7 +81,7 @@ class RegexGroupDict:
         return ({},)
 
 
-class RegexFindall:
+class RegexFindallDataList(ComfyNodeABC):
     """
     Returns all non-overlapping matches of a pattern in the string as a list of strings.
     """
@@ -61,8 +89,31 @@ class RegexFindall:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING/regex"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "findall"
+    OUTPUT_IS_LIST = (True,)
+
+    def findall(self, pattern: str, string: str) -> tuple[list[str]]:
+        return (re.findall(pattern, string),)
+
+
+class RegexFindallList(ComfyNodeABC):
+    """
+    Returns all non-overlapping matches of a pattern in the string as a list of strings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
             }
         }
 
@@ -75,7 +126,7 @@ class RegexFindall:
         return (re.findall(pattern, string),)
 
 
-class RegexSplit:
+class RegexSplitDataList(ComfyNodeABC):
     """
     Splits the string at each match of the pattern and returns a list of substrings.
     """
@@ -83,8 +134,31 @@ class RegexSplit:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING/regex"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "split"
+    OUTPUT_IS_LIST = (True,)
+
+    def split(self, pattern: str, string: str) -> tuple[list[str]]:
+        return (re.split(pattern, string),)
+
+
+class RegexSplitList(ComfyNodeABC):
+    """
+    Splits the string at each match of the pattern and returns a list of substrings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
             }
         }
 
@@ -97,7 +171,7 @@ class RegexSplit:
         return (re.split(pattern, string),)
 
 
-class RegexSub:
+class RegexSub(ComfyNodeABC):
     """
     Substitutes matches of the pattern in the string with a replacement string.
     """
@@ -105,14 +179,14 @@ class RegexSub:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "repl": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
+                "repl": (IO.STRING, {}),
                 "count": ("INT", {"default": 0}),  # 0 means replace all occurrences
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sub"
@@ -121,7 +195,7 @@ class RegexSub:
         return (re.sub(pattern, repl, string, count),)
 
 
-class RegexTest:
+class RegexTest(ComfyNodeABC):
     """
     Tests whether a given regex pattern matches any part of the input string.
     Returns True if a match is found, otherwise False.
@@ -130,8 +204,8 @@ class RegexTest:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {}),
-                "string": ("STRING", {}),
+                "string": (IO.STRING, {}),
+                "pattern": (IO.STRING, {}),
             }
         }
 
@@ -146,19 +220,25 @@ class RegexTest:
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: RegexSearchGroups": RegexSearchGroups,
+    "Basic data handling: RegexSearchGroupsDataList": RegexSearchGroupsDataList,
+    "Basic data handling: RegexSearchGroupsList": RegexSearchGroupsList,
     "Basic data handling: RegexGroupDict": RegexGroupDict,
-    "Basic data handling: RegexFindall": RegexFindall,
-    "Basic data handling: RegexSplit": RegexSplit,
+    "Basic data handling: RegexFindallDataList": RegexFindallDataList,
+    "Basic data handling: RegexFindallList": RegexFindallList,
+    "Basic data handling: RegexSplitDataList": RegexSplitDataList,
+    "Basic data handling: RegexSplitList": RegexSplitList,
     "Basic data handling: RegexSub": RegexSub,
     "Basic data handling: RegexTest": RegexTest,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: RegexSearchGroups": "search groups",
+    "Basic data handling: RegexSearchGroupsDataList": "search groups (data list)",
+    "Basic data handling: RegexSearchGroupsList": "search groups (LIST)",
     "Basic data handling: RegexGroupDict": "search named groups",
-    "Basic data handling: RegexFindall": "find all",
-    "Basic data handling: RegexSplit": "split",
+    "Basic data handling: RegexFindallDataList": "find all (data list)",
+    "Basic data handling: RegexFindallList": "find all (LIST)",
+    "Basic data handling: RegexSplitDataList": "split (data list)",
+    "Basic data handling: RegexSplitList": "split (LIST)",
     "Basic data handling: RegexSub": "substitute",
     "Basic data handling: RegexTest": "test",
 }

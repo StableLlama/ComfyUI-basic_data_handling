@@ -1,8 +1,10 @@
 from typing import Any
-
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class DataListAppend:
+INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
+
+class DataListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a list.
 
@@ -13,22 +15,18 @@ class DataListAppend:
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list":("*",{}),
-                "item":("*",{}),
+                "list":(IO.ANY,{}),
+                "item":(IO.ANY,{}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "append"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def append(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
@@ -38,7 +36,7 @@ class DataListAppend:
         return (result,)
 
 
-class DataListExtend:
+class DataListExtend(ComfyNodeABC):
     """
     Extends a list by appending elements from another list.
 
@@ -49,12 +47,12 @@ class DataListExtend:
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list_a": ("*",{}),
-                "list_b": ("*",{}),
+                "list_a": (IO.ANY,{}),
+                "list_b": (IO.ANY,{}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -62,15 +60,11 @@ class DataListExtend:
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def extend(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         return (kwargs.get('list_a', []) + kwargs.get('list_b', []),)
 
 
-class DataListInsert:
+class DataListInsert(ComfyNodeABC):
     """
     Inserts an item at a specified position in a list.
 
@@ -81,13 +75,13 @@ class DataListInsert:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "index": ("INT", {"default": 0}),
-                "item": ("*",),
+                "list": (IO.ANY,),
+                "index": (IO.INT, {"default": 0}),
+                "item": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -95,17 +89,13 @@ class DataListInsert:
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def insert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
         result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
         return (result,)
 
 
-class DataListRemove:
+class DataListRemove(ComfyNodeABC):
     """
     Removes the first occurrence of a specified value from a list.
 
@@ -116,22 +106,18 @@ class DataListRemove:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": (IO.ANY,),
+                "value": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("*", "BOOLEAN",)
+    RETURN_TYPES = (IO.ANY, IO.BOOLEAN,)
     RETURN_NAMES = ("list", "success",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True, False,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def remove(self, **kwargs: list[Any]) -> tuple[list[Any], bool]:
         result = kwargs.get('list', []).copy()
@@ -143,7 +129,7 @@ class DataListRemove:
             return result, False
 
 
-class DataListPop:
+class DataListPop(ComfyNodeABC):
     """
     Removes and returns an item at a specified position in a list.
 
@@ -156,26 +142,20 @@ class DataListPop:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": (IO.ANY,),
             },
             "optional": {
-                "index": ("INT", {"default": -1}),
+                "index": (IO.INT, {"default": -1}),
             }
         }
 
-    RETURN_TYPES = ("*", "*")
+    RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("list", "item")
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True, False)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0].get("index", "INT") != "INT":
-            return "index must be an INT type"
-        return True
 
     def pop(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
         result = kwargs.get('list', []).copy()
@@ -187,38 +167,7 @@ class DataListPop:
             return result, None
 
 
-class DataListClear:
-    """
-    Removes all items from a list.
-
-    This node takes a list as input and returns a new empty list.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "optional": {
-                "list": ("*",),
-            }
-        }
-
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "clear"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def clear(self, **kwargs: list[Any]) -> tuple[list]:
-        # Return a new empty list rather than modifying the input
-        return ([],)
-
-
-class DataListIndex:
+class DataListIndex(ComfyNodeABC):
     """
     Returns the index of the first occurrence of a value in a list.
 
@@ -230,25 +179,21 @@ class DataListIndex:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": (IO.ANY,),
+                "value": (IO.ANY,),
             },
             "optional": {
-                "start": ("INT", {"default": 0}),
-                "end": ("INT", {"default": -1}),
+                "start": (IO.INT, {"default": 0}),
+                "end": (IO.INT, {"default": -1}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("index",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_index"
     INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def list_index(self, **kwargs: list[Any]) -> tuple[int]:
         input_list = kwargs.get('list', [])
@@ -264,7 +209,7 @@ class DataListIndex:
             return (-1,)
 
 
-class DataListCount:
+class DataListCount(ComfyNodeABC):
     """
     Counts the number of occurrences of a value in a list.
 
@@ -275,28 +220,24 @@ class DataListCount:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": (IO.ANY,),
+                "value": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("count",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
     INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def count(self, **kwargs: list[Any]) -> tuple[int]:
         value = kwargs.get('value', [None])[0]
         return (kwargs.get('list', []).count(value),)
 
 
-class DataListSort:
+class DataListSort(ComfyNodeABC):
     """
     Sorts the items in a list.
 
@@ -307,24 +248,20 @@ class DataListSort:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": (IO.ANY,),
             },
             "optional": {
                 "reverse": (["False", "True"], {"default": "False"}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sort"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def sort(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         # Convert string to boolean
@@ -334,7 +271,7 @@ class DataListSort:
         return (result,)
 
 
-class DataListReverse:
+class DataListReverse(ComfyNodeABC):
     """
     Reverses the order of items in a list.
 
@@ -344,11 +281,11 @@ class DataListReverse:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -356,47 +293,13 @@ class DataListReverse:
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def reverse(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         result = kwargs.get('list', []).copy()
         result.reverse()
         return (result,)
 
 
-class DataListCopy:
-    """
-    Creates a shallow copy of a list.
-
-    This node takes a list as input and returns a new list that is a shallow copy of the original.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*",),
-            }
-        }
-
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "copy"
-    INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def copy(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
-
-
-class DataListLength:
+class DataListLength(ComfyNodeABC):
     """
     Counts the number of items in a list.
 
@@ -406,26 +309,22 @@ class DataListLength:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("length",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
     INPUT_IS_LIST = True
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def length(self, **kwargs: list[Any]) -> tuple[int]:
         return (len(kwargs.get('list', [])),)
 
 
-class DataListSlice:
+class DataListSlice(ComfyNodeABC):
     """
     Creates a slice of a list.
 
@@ -436,16 +335,16 @@ class DataListSlice:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
+                "list": (IO.ANY,),
             },
             "optional": {
-                "start": ("INT", {"default": 0}),
-                "stop": ("INT", {"default": -1}),
-                "step": ("INT", {"default": 1}),
+                "start": (IO.INT, {"default": 0}),
+                "stop": (IO.INT, {"default": INT_MAX}),
+                "step": (IO.INT, {"default": 1}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -453,23 +352,17 @@ class DataListSlice:
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def slice(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         input_list = kwargs.get('list', [])
         start = kwargs.get('start', [0])[0]
-        stop = kwargs.get('stop', [-1])[0]
+        stop = kwargs.get('stop', [INT_MAX])[0]
         step = kwargs.get('step', [1])[0]
-
-        if stop == -1:
-            stop = len(input_list)
+        print(f"start: {start}, stop: {stop}, step: {step}; input_list: {input_list}")
 
         return (input_list[start:stop:step],)
 
 
-class DataListGetItem:
+class DataListGetItem(ComfyNodeABC):
     """
     Retrieves an item at a specified position in a list.
 
@@ -481,21 +374,17 @@ class DataListGetItem:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "index": ("INT", {"default": 0}),
+                "list": (IO.ANY,),
+                "index": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("item",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_item"
     INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def get_item(self, **kwargs: list[Any]) -> tuple[Any]:
         index = kwargs.get('index', [0])[0]
@@ -505,7 +394,7 @@ class DataListGetItem:
             return (None,)
 
 
-class DataListSetItem:
+class DataListSetItem(ComfyNodeABC):
     """
     Sets an item at a specified position in a list.
 
@@ -516,23 +405,19 @@ class DataListSetItem:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "index": ("INT", {"default": 0}),
-                "value": ("*",),
+                "list": (IO.ANY,),
+                "index": (IO.INT, {"default": 0}),
+                "value": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_item"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def set_item(self, **kwargs: list[Any]) -> tuple[Any]:
         input_list = kwargs.get('list', [])
@@ -546,7 +431,7 @@ class DataListSetItem:
             raise IndexError(f"Index {index} out of range for list of length {len(input_list)}")
 
 
-class DataListContains:
+class DataListContains(ComfyNodeABC):
     """
     Checks if a list contains a specified value.
 
@@ -557,21 +442,17 @@ class DataListContains:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("*",),
-                "value": ("*",),
+                "list": (IO.ANY,),
+                "value": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("contains",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
     INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def contains(self, **kwargs: list[Any]) -> tuple[bool]:
         value = kwargs.get('value', [])
@@ -580,7 +461,7 @@ class DataListContains:
         return (value[0] in kwargs.get('list', []),)
 
 
-class DataListCreateEmpty:
+class DataListCreateEmpty(ComfyNodeABC):
     """
     Creates a new empty list.
 
@@ -590,7 +471,7 @@ class DataListCreateEmpty:
     def INPUT_TYPES(cls):
         return {"required": {}}
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -601,7 +482,7 @@ class DataListCreateEmpty:
         return ([],)
 
 
-class DataListZip:
+class DataListZip(ComfyNodeABC):
     """
     Combines multiple lists element-wise.
 
@@ -613,26 +494,22 @@ class DataListZip:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list1": ("*",),
-                "list2": ("*",),
+                "list1": (IO.ANY,),
+                "list2": (IO.ANY,),
             },
             "optional": {
-                "list3": ("*",),
-                "list4": ("*",),
+                "list3": (IO.ANY,),
+                "list4": (IO.ANY,),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "zip_lists"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def zip_lists(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         lists = [kwargs.get('list1', []), kwargs.get('list2', [])]
@@ -648,7 +525,7 @@ class DataListZip:
         return (result,)
 
 
-class DataListFilter:
+class DataListFilter(ComfyNodeABC):
     """
     Filters a data list using boolean values.
 
@@ -663,24 +540,18 @@ class DataListFilter:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("*", {}),
-                "filter": ("BOOLEAN", {"forceInput": True}),
+                "value": (IO.ANY, {}),
+                "filter": (IO.BOOLEAN, {"forceInput": True}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("filtered_list",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "filter_data"
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True,)
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0]["filter"] != "BOOLEAN":
-            return "filter must be a BOOLEAN type"
-        return True
 
     def filter_data(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         values = kwargs.get('value', [])
@@ -692,7 +563,7 @@ class DataListFilter:
         return (result,)
 
 
-class DataListMin:
+class DataListMin(ComfyNodeABC):
     """
     Finds the minimum value in a list of numbers.
 
@@ -704,22 +575,16 @@ class DataListMin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (["FLOAT", "INT"], {}),
+                "list": (IO.NUMBER, {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("min_value",)
+    RETURN_TYPES = (IO.NUMBER,)
+    RETURN_NAMES = ("min",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_min"
     INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0]["list"] not in ("FLOAT", "INT"):
-            return "list must contain FLOAT or INT types"
-        return True
 
     def find_min(self, **kwargs: list[Any]) -> tuple[Any]:
         values = kwargs.get('list', [])
@@ -734,7 +599,7 @@ class DataListMin:
             return (None,)
 
 
-class DataListMax:
+class DataListMax(ComfyNodeABC):
     """
     Finds the maximum value in a list of numbers.
 
@@ -746,22 +611,16 @@ class DataListMax:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (["FLOAT", "INT"], {}),
+                "list": (IO.NUMBER, {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
-    RETURN_NAMES = ("max_value",)
+    RETURN_TYPES = (IO.NUMBER,)
+    RETURN_NAMES = ("max",)
     CATEGORY = "Basic/data list"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_max"
     INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: list[dict[str, str]]) -> bool|str:
-        if input_types[0]["list"] not in ("FLOAT", "INT"):
-            return "list must contain FLOAT or INT types"
-        return True
 
     def find_max(self, **kwargs: list[Any]) -> tuple[Any]:
         values = kwargs.get('list', [])
@@ -776,18 +635,66 @@ class DataListMax:
             return (None,)
 
 
+class DataListToList(ComfyNodeABC):
+    """
+    Converts a ComfyUI data list into a LIST object.
+
+    This node takes a data list input (which is typically a list of items with the same type)
+    and converts it to a LIST object (a Python list as a single variable).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    INPUT_IS_LIST = True
+
+    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return (kwargs.get('list', []).copy(),)
+
+
+class DataListToSet(ComfyNodeABC):
+    """
+    Converts a ComfyUI data list into a LIST object.
+
+    This node takes a data list input (which is typically a list of items with the same type)
+    and converts it to a LIST object (a Python list as a single variable).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    INPUT_IS_LIST = True
+
+    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set(kwargs.get('list', [])),)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListAppend": DataListAppend,
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListInsert": DataListInsert,
     "Basic data handling: DataListRemove": DataListRemove,
     "Basic data handling: DataListPop": DataListPop,
-    "Basic data handling: DataListClear": DataListClear,
     "Basic data handling: DataListIndex": DataListIndex,
     "Basic data handling: DataListCount": DataListCount,
     "Basic data handling: DataListSort": DataListSort,
     "Basic data handling: DataListReverse": DataListReverse,
-    "Basic data handling: DataListCopy": DataListCopy,
     "Basic data handling: DataListLength": DataListLength,
     "Basic data handling: DataListSlice": DataListSlice,
     "Basic data handling: DataListGetItem": DataListGetItem,
@@ -798,6 +705,8 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListFilter": DataListFilter,
     "Basic data handling: DataListMin": DataListMin,
     "Basic data handling: DataListMax": DataListMax,
+    "Basic data handling: DataListToList": DataListToList,
+    "Basic data handling: DataListToSet": DataListToSet,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -806,12 +715,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListInsert": "insert",
     "Basic data handling: DataListRemove": "remove",
     "Basic data handling: DataListPop": "pop",
-    "Basic data handling: DataListClear": "clear",
     "Basic data handling: DataListIndex": "index",
     "Basic data handling: DataListCount": "count",
     "Basic data handling: DataListSort": "sort",
     "Basic data handling: DataListReverse": "reverse",
-    "Basic data handling: DataListCopy": "copy",
     "Basic data handling: DataListLength": "length",
     "Basic data handling: DataListSlice": "slice",
     "Basic data handling: DataListGetItem": "get item",
@@ -822,4 +729,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListFilter": "filter",
     "Basic data handling: DataListMin": "min",
     "Basic data handling: DataListMax": "max",
+    "Basic data handling: DataListToList": "convert to LIST",
+    "Basic data handling: DataListToSet": "convert to SET",
 }

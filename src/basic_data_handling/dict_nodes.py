@@ -1,7 +1,8 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class DictCreate:
+class DictCreate(ComfyNodeABC):
     """
     Creates a new empty dictionary.
 
@@ -20,7 +21,7 @@ class DictCreate:
         return ({},)
 
 
-class DictCreateFromItems:
+class DictCreateFromItemsList(ComfyNodeABC):
     """
     Creates a dictionary from a list of key-value pairs.
 
@@ -43,7 +44,8 @@ class DictCreateFromItems:
         try:
             # Check if items are valid (key-value pairs)
             for item in items:
-                if not isinstance(item, tuple) or len(item) != 2:
+                print(f'item: "{item}", len(item): {len(item)}, items: "{items}", len(items): {len(items)}')
+                if not isinstance(item, tuple) and len(item) != 2:
                     raise ValueError("Each item must be a (key, value) pair")
 
             return (dict(items),)
@@ -51,7 +53,41 @@ class DictCreateFromItems:
             raise ValueError(f"Error creating dictionary from items: {str(e)}")
 
 
-class DictGet:
+class DictCreateFromItemsDataList(ComfyNodeABC):
+    """
+    Creates a dictionary from a list of key-value pairs.
+
+    This node takes a list of key-value pairs (tuples) and builds a dictionary from them.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "item": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_from_items"
+    INPUT_IS_LIST = True
+
+    def create_from_items(self, **kwargs: list[Any]) -> tuple[dict]:
+        try:
+            # Check if items are valid (key-value pairs)
+            items = kwargs.get('item', [])
+            for item in items:
+                print(f'item: "{item}", len(item): {len(item)}, items: "{items}", len(items): {len(items)}')
+                if not isinstance(item, tuple) and len(item) != 2:
+                    raise ValueError("Each item must be a (key, value) pair")
+
+            return (dict(items),)
+        except Exception as e:
+            raise ValueError(f"Error creating dictionary from items: {str(e)}")
+
+
+class DictGet(ComfyNodeABC):
     """
     Retrieves a value from a dictionary using the specified key.
 
@@ -64,14 +100,14 @@ class DictGet:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
+                "key": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "default": ("*", {}),
+                "default": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("value",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -81,7 +117,7 @@ class DictGet:
         return (input_dict.get(key, default),)
 
 
-class DictSet:
+class DictSet(ComfyNodeABC):
     """
     Adds or updates a key-value pair in a dictionary.
 
@@ -93,8 +129,8 @@ class DictSet:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
-                "value": ("*", {}),
+                "key": (IO.STRING, {"default": ""}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -109,7 +145,7 @@ class DictSet:
         return (result,)
 
 
-class DictKeys:
+class DictKeys(ComfyNodeABC):
     """
     Returns all keys in a dictionary.
 
@@ -132,7 +168,7 @@ class DictKeys:
         return (list(input_dict.keys()),)
 
 
-class DictValues:
+class DictValues(ComfyNodeABC):
     """
     Returns all values in a dictionary.
 
@@ -155,7 +191,7 @@ class DictValues:
         return (list(input_dict.values()),)
 
 
-class DictItems:
+class DictItems(ComfyNodeABC):
     """
     Returns all key-value pairs in a dictionary.
 
@@ -179,7 +215,7 @@ class DictItems:
         return (list(input_dict.items()),)
 
 
-class DictContainsKey:
+class DictContainsKey(ComfyNodeABC):
     """
     Checks if a key exists in a dictionary.
 
@@ -191,11 +227,11 @@ class DictContainsKey:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
+                "key": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains_key"
@@ -204,54 +240,7 @@ class DictContainsKey:
         return (key in input_dict,)
 
 
-class DictClear:
-    """
-    Removes all items from a dictionary.
-
-    This node takes a dictionary as input and returns a new empty dictionary.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input_dict": ("DICT", {}),
-            }
-        }
-
-    RETURN_TYPES = ("DICT",)
-    CATEGORY = "Basic/DICT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "clear"
-
-    def clear(self, input_dict: dict) -> tuple[dict]:
-        return ({},)
-
-
-class DictCopy:
-    """
-    Creates a shallow copy of a dictionary.
-
-    This node takes a dictionary as input and returns a new dictionary that is
-    a shallow copy of the original.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input_dict": ("DICT", {}),
-            }
-        }
-
-    RETURN_TYPES = ("DICT",)
-    CATEGORY = "Basic/DICT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "copy"
-
-    def copy(self, input_dict: dict) -> tuple[dict]:
-        return (input_dict.copy(),)
-
-
-class DictFromKeys:
+class DictFromKeys(ComfyNodeABC):
     """
     Creates a dictionary from a list of keys and a default value.
 
@@ -266,7 +255,7 @@ class DictFromKeys:
                 "keys": ("LIST", {}),
             },
             "optional": {
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
@@ -279,7 +268,7 @@ class DictFromKeys:
         return (dict.fromkeys(keys, value),)
 
 
-class DictPop:
+class DictPop(ComfyNodeABC):
     """
     Removes and returns a key-value pair from a dictionary.
 
@@ -293,14 +282,14 @@ class DictPop:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
+                "key": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "default_value": ("*", {}),
+                "default_value": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("DICT", "*")
+    RETURN_TYPES = ("DICT", IO.ANY)
     RETURN_NAMES = ("dict", "value")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -319,7 +308,7 @@ class DictPop:
             raise ValueError(f"Error popping key from dictionary: {str(e)}")
 
 
-class DictPopItem:
+class DictPopItem(ComfyNodeABC):
     """
     Removes and returns an arbitrary key-value pair from a dictionary.
 
@@ -335,7 +324,7 @@ class DictPopItem:
             }
         }
 
-    RETURN_TYPES = ("DICT", "STRING", "*", "BOOLEAN")
+    RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key", "value", "success")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -353,7 +342,7 @@ class DictPopItem:
             return result, "", None, False
 
 
-class DictSetDefault:
+class DictSetDefault(ComfyNodeABC):
     """
     Returns the value for a key, setting a default if the key doesn't exist.
 
@@ -366,12 +355,12 @@ class DictSetDefault:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
-                "default_value": ("*", {}),
+                "key": (IO.STRING, {"default": ""}),
+                "default_value": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("DICT", "*")
+    RETURN_TYPES = ("DICT", IO.ANY)
     RETURN_NAMES = ("DICT", "value")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -383,7 +372,7 @@ class DictSetDefault:
         return result, value
 
 
-class DictUpdate:
+class DictUpdate(ComfyNodeABC):
     """
     Updates a dictionary with key-value pairs from another dictionary.
 
@@ -411,7 +400,7 @@ class DictUpdate:
         return (result,)
 
 
-class DictLength:
+class DictLength(ComfyNodeABC):
     """
     Returns the number of key-value pairs in a dictionary.
 
@@ -435,7 +424,7 @@ class DictLength:
         return (len(input_dict),)
 
 
-class DictMerge:
+class DictMerge(ComfyNodeABC):
     """
     Merges multiple dictionaries into a single dictionary.
 
@@ -475,7 +464,7 @@ class DictMerge:
         return (result,)
 
 
-class DictGetKeysValues:
+class DictGetKeysValues(ComfyNodeABC):
     """
     Returns keys and values as separate lists.
 
@@ -502,7 +491,7 @@ class DictGetKeysValues:
         return keys, values
 
 
-class DictRemove:
+class DictRemove(ComfyNodeABC):
     """
     Removes a key-value pair from a dictionary.
 
@@ -515,11 +504,11 @@ class DictRemove:
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-                "key": ("STRING", {"default": ""}),
+                "key": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("DICT", "BOOLEAN")
+    RETURN_TYPES = ("DICT", IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key_removed")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -533,7 +522,7 @@ class DictRemove:
         return result, False
 
 
-class DictFilterByKeys:
+class DictFilterByKeys(ComfyNodeABC):
     """
     Creates a new dictionary with only the specified keys.
 
@@ -559,7 +548,7 @@ class DictFilterByKeys:
         return (result,)
 
 
-class DictExcludeKeys:
+class DictExcludeKeys(ComfyNodeABC):
     """
     Creates a new dictionary excluding the specified keys.
 
@@ -585,7 +574,7 @@ class DictExcludeKeys:
         return (result,)
 
 
-class DictGetMultiple:
+class DictGetMultiple(ComfyNodeABC):
     """
     Retrieves multiple values from a dictionary using a list of keys.
 
@@ -601,7 +590,7 @@ class DictGetMultiple:
                 "keys": ("LIST", {}),
             },
             "optional": {
-                "default": ("*", {}),
+                "default": (IO.ANY, {}),
             }
         }
 
@@ -616,7 +605,7 @@ class DictGetMultiple:
         return (values,)
 
 
-class DictInvert:
+class DictInvert(ComfyNodeABC):
     """
     Creates a new dictionary with keys and values swapped.
 
@@ -632,7 +621,7 @@ class DictInvert:
             }
         }
 
-    RETURN_TYPES = ("DICT", "BOOLEAN")
+    RETURN_TYPES = ("DICT", IO.BOOLEAN)
     RETURN_NAMES = ("inverted_dict", "success")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -647,7 +636,7 @@ class DictInvert:
             return input_dict, False
 
 
-class DictCreateFromLists:
+class DictCreateFromLists(ComfyNodeABC):
     """
     Creates a dictionary from separate lists of keys and values.
 
@@ -675,7 +664,7 @@ class DictCreateFromLists:
         return (result,)
 
 
-class DictCompare:
+class DictCompare(ComfyNodeABC):
     """
     Compares two dictionaries and reports differences.
 
@@ -692,7 +681,7 @@ class DictCompare:
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN", "LIST", "LIST", "LIST")
+    RETURN_TYPES = (IO.BOOLEAN, "LIST", "LIST", "LIST")
     RETURN_NAMES = ("are_equal", "only_in_dict1", "only_in_dict2", "different_values")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -715,69 +704,16 @@ class DictCompare:
         return are_equal, only_in_dict1, only_in_dict2, different_values
 
 
-class AnyToDict:
-    """
-    Converts compatible data structures to a dictionary.
-
-    This node attempts to convert an input value to a dictionary. Compatible
-    inputs include sequences of key-value pairs, mapping objects, and objects
-    with a to_dict() or as_dict() method.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("DICT", "BOOLEAN")
-    CATEGORY = "Basic/DICT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-
-    def convert(self, input: Any) -> tuple[dict]:
-        try:
-            if isinstance(input, dict):
-                return (input.copy(),)
-
-            # Try converting from items
-            if hasattr(input, "items"):
-                return (dict(input.items()),)
-
-            # Try converting from sequence of pairs
-            if hasattr(input, "__iter__") and not isinstance(input, str):
-                try:
-                    result = dict(input)
-                    return (result,)
-                except (TypeError, ValueError):
-                    pass
-
-            # Check for to_dict or as_dict methods
-            if hasattr(input, "to_dict") and callable(getattr(input, "to_dict")):
-                return (input.to_dict(),)
-
-            if hasattr(input, "as_dict") and callable(getattr(input, "as_dict")):
-                return (input.as_dict(),)
-
-            # Failed to convert
-            return ({},)
-
-        except Exception:
-            return ({},)
-
-
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DictCreate": DictCreate,
-    "Basic data handling: DictCreateFromItems": DictCreateFromItems,
+    "Basic data handling: DictCreateFromItemsList": DictCreateFromItemsList,
+    "Basic data handling: DictCreateFromItemsDataList": DictCreateFromItemsDataList,
     "Basic data handling: DictGet": DictGet,
     "Basic data handling: DictSet": DictSet,
     "Basic data handling: DictKeys": DictKeys,
     "Basic data handling: DictValues": DictValues,
     "Basic data handling: DictItems": DictItems,
     "Basic data handling: DictContainsKey": DictContainsKey,
-    "Basic data handling: DictClear": DictClear,
-    "Basic data handling: DictCopy": DictCopy,
     "Basic data handling: DictFromKeys": DictFromKeys,
     "Basic data handling: DictPop": DictPop,
     "Basic data handling: DictPopItem": DictPopItem,
@@ -793,20 +729,18 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DictInvert": DictInvert,
     "Basic data handling: DictCreateFromLists": DictCreateFromLists,
     "Basic data handling: DictCompare": DictCompare,
-    "Basic data handling: AnyToDict": AnyToDict,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictCreate": "create",
-    "Basic data handling: DictCreateFromItems": "from_items",
+    "Basic data handling: DictCreateFromItemsList": "from items (LIST)",
+    "Basic data handling: DictCreateFromItemsDataList": "from items (data list)",
     "Basic data handling: DictGet": "get",
     "Basic data handling: DictSet": "set",
     "Basic data handling: DictKeys": "keys",
     "Basic data handling: DictValues": "values",
     "Basic data handling: DictItems": "items",
     "Basic data handling: DictContainsKey": "contains_key",
-    "Basic data handling: DictClear": "clear",
-    "Basic data handling: DictCopy": "copy",
     "Basic data handling: DictFromKeys": "fromkeys",
     "Basic data handling: DictPop": "pop",
     "Basic data handling: DictPopItem": "popitem",
@@ -822,5 +756,4 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictInvert": "invert",
     "Basic data handling: DictCreateFromLists": "from_lists",
     "Basic data handling: DictCompare": "compare",
-    "Basic data handling: AnyToDict": "any_to_DICT",
 }

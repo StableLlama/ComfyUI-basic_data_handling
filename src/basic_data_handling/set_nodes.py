@@ -1,7 +1,8 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class SetAdd:
+class SetAdd(ComfyNodeABC):
     """
     Adds an item to a SET.
 
@@ -13,7 +14,7 @@ class SetAdd:
         return {
             "required": {
                 "set": ("SET", {}),
-                "item": ("*", {}),
+                "item": (IO.ANY, {}),
             }
         }
 
@@ -28,7 +29,7 @@ class SetAdd:
         return (result,)
 
 
-class SetRemove:
+class SetRemove(ComfyNodeABC):
     """
     Removes an item from a SET.
 
@@ -41,11 +42,11 @@ class SetRemove:
         return {
             "required": {
                 "set": ("SET", {}),
-                "item": ("*", {}),
+                "item": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("SET", "BOOLEAN")
+    RETURN_TYPES = ("SET", IO.BOOLEAN)
     RETURN_NAMES = ("set", "success")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -60,7 +61,7 @@ class SetRemove:
             return result, False
 
 
-class SetDiscard:
+class SetDiscard(ComfyNodeABC):
     """
     Removes an item from a SET if it is present.
 
@@ -72,7 +73,7 @@ class SetDiscard:
         return {
             "required": {
                 "set": ("SET", {}),
-                "item": ("*", {}),
+                "item": (IO.ANY, {}),
             }
         }
 
@@ -87,7 +88,7 @@ class SetDiscard:
         return (result,)
 
 
-class SetPop:
+class SetPop(ComfyNodeABC):
     """
     Removes and returns an arbitrary item from a SET.
 
@@ -103,7 +104,7 @@ class SetPop:
             }
         }
 
-    RETURN_TYPES = ("SET", "*")
+    RETURN_TYPES = ("SET", IO.ANY)
     RETURN_NAMES = ("set", "item")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -118,30 +119,7 @@ class SetPop:
             return result, None
 
 
-class SetClear:
-    """
-    Removes all items from a SET.
-
-    This node takes a SET as input and returns a new empty SET.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set": ("SET", {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "clear"
-
-    def clear(self, set: set[Any]) -> tuple[set[Any]]:
-        return (set.__class__(),)
-
-
-class SetUnion:
+class SetUnion(ComfyNodeABC):
     """
     Returns the union of two or more SETs.
 
@@ -179,7 +157,7 @@ class SetUnion:
         return (result,)
 
 
-class SetIntersection:
+class SetIntersection(ComfyNodeABC):
     """
     Returns the intersection of two or more SETs.
 
@@ -217,7 +195,7 @@ class SetIntersection:
         return (result,)
 
 
-class SetDifference:
+class SetDifference(ComfyNodeABC):
     """
     Returns the difference between two SETs.
 
@@ -244,7 +222,7 @@ class SetDifference:
         return (result,)
 
 
-class SetSymmetricDifference:
+class SetSymmetricDifference(ComfyNodeABC):
     """
     Returns the symmetric difference between two SETs.
 
@@ -271,7 +249,7 @@ class SetSymmetricDifference:
         return (result,)
 
 
-class SetIsSubset:
+class SetIsSubset(ComfyNodeABC):
     """
     Checks if set1 is a subset of set2.
 
@@ -287,7 +265,7 @@ class SetIsSubset:
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_subset",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -297,7 +275,7 @@ class SetIsSubset:
         return (set1.issubset(set2),)
 
 
-class SetIsSuperset:
+class SetIsSuperset(ComfyNodeABC):
     """
     Checks if set1 is a superset of set2.
 
@@ -313,7 +291,7 @@ class SetIsSuperset:
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_superset",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -323,7 +301,7 @@ class SetIsSuperset:
         return (set1.issuperset(set2),)
 
 
-class SetIsDisjoint:
+class SetIsDisjoint(ComfyNodeABC):
     """
     Checks if two SETs have no elements in common.
 
@@ -338,7 +316,7 @@ class SetIsDisjoint:
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_disjoint",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -348,7 +326,7 @@ class SetIsDisjoint:
         return (set1.isdisjoint(set2),)
 
 
-class SetContains:
+class SetContains(ComfyNodeABC):
     """
     Checks if a SET contains a specified value.
 
@@ -360,11 +338,11 @@ class SetContains:
         return {
             "required": {
                 "set": ("SET", {}),
-                "value": ("*", {}),
+                "value": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("contains",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -374,7 +352,7 @@ class SetContains:
         return (value in set,)
 
 
-class SetLength:
+class SetLength(ComfyNodeABC):
     """
     Returns the number of items in a SET.
 
@@ -388,7 +366,7 @@ class SetLength:
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("length",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -398,7 +376,7 @@ class SetLength:
         return (len(set),)
 
 
-class ListToSet:
+class ListToSet(ComfyNodeABC):
     """
     Converts a LIST into a SET.
 
@@ -422,7 +400,7 @@ class ListToSet:
         return (set(list),)
 
 
-class SetToDataList:
+class SetToDataList(ComfyNodeABC):
     """
     Converts a SET object into a ComfyUI data list.
 
@@ -438,7 +416,7 @@ class SetToDataList:
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.ANY,)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
@@ -448,7 +426,7 @@ class SetToDataList:
         return (list(set),)
 
 
-class SetToList:
+class SetToList(ComfyNodeABC):
     """
     Converts a SET into a LIST.
 
@@ -478,7 +456,6 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: SetRemove": SetRemove,
     "Basic data handling: SetDiscard": SetDiscard,
     "Basic data handling: SetPop": SetPop,
-    "Basic data handling: SetClear": SetClear,
     "Basic data handling: SetUnion": SetUnion,
     "Basic data handling: SetIntersection": SetIntersection,
     "Basic data handling: SetDifference": SetDifference,
@@ -497,7 +474,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetRemove": "remove",
     "Basic data handling: SetDiscard": "discard",
     "Basic data handling: SetPop": "pop",
-    "Basic data handling: SetClear": "clear",
     "Basic data handling: SetUnion": "union",
     "Basic data handling: SetIntersection": "intersection",
     "Basic data handling: SetDifference": "difference",

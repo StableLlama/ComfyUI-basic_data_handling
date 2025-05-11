@@ -1,8 +1,8 @@
 from typing import Any
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-
-class CastToString:
+class CastToString(ComfyNodeABC):
     """
     Converts any input to a STRING. Non-string values are converted using str().
     """
@@ -10,24 +10,20 @@ class CastToString:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_string"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def convert_to_string(self, input: Any) -> tuple[str]:
         return (str(input),)
 
 
-class CastToInt:
+class CastToInt(ComfyNodeABC):
     """
     Converts any numeric input to an INT. Non-numeric or invalid inputs raise a ValueError.
     """
@@ -35,18 +31,14 @@ class CastToInt:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_int"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def convert_to_int(self, input: Any) -> tuple[int]:
         try:
@@ -55,7 +47,7 @@ class CastToInt:
             raise ValueError(f"Cannot convert {input} to an INT.")
 
 
-class CastToFloat:
+class CastToFloat(ComfyNodeABC):
     """
     Converts any numeric input to a FLOAT. Non-numeric or invalid inputs raise a ValueError.
     """
@@ -63,7 +55,7 @@ class CastToFloat:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
@@ -72,10 +64,6 @@ class CastToFloat:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_float"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def convert_to_float(self, input: Any) -> tuple[float]:
         try:
             return (float(input),)
@@ -83,7 +71,7 @@ class CastToFloat:
             raise ValueError(f"Cannot convert {input} to a FLOAT.")
 
 
-class CastToBoolean:
+class CastToBoolean(ComfyNodeABC):
     """
     Converts any input to a BOOLEAN. Follows standard Python truthy/falsy rules.
     """
@@ -91,7 +79,7 @@ class CastToBoolean:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
@@ -100,15 +88,11 @@ class CastToBoolean:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_boolean"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def convert_to_boolean(self, input: Any) -> tuple[bool]:
         return (bool(input),)
 
 
-class CastToList:
+class CastToList(ComfyNodeABC):
     """
     Converts any input to a LIST. Non-list inputs are wrapped in a list. If input is a ComfyUI data list,
     it converts the individual items into a Python LIST.
@@ -117,7 +101,7 @@ class CastToList:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
@@ -126,46 +110,13 @@ class CastToList:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_list"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def convert_to_list(self, input: Any) -> tuple[list]:
         if isinstance(input, list):
             return (input,)
         return ([input],)
 
 
-class CastDataListToList:
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/cast"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
-
-
-class CastToSet:
+class CastToSet(ComfyNodeABC):
     """
     Converts any input to a SET. Non-set inputs are converted into a set. If input is a ComfyUI data list,
     it casts the individual items into a SET.
@@ -174,7 +125,7 @@ class CastToSet:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
@@ -183,46 +134,13 @@ class CastToSet:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_set"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
     def convert_to_set(self, input: Any) -> tuple[set]:
         if isinstance(input, set):
             return (input,)
         return ({input,} if not isinstance(input, list) else set(input),)
 
 
-class CastDataListToSet:
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": ("*", {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/cast"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
-
-    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set(kwargs.get('list', [])),)
-
-
-class CastToDict:
+class CastToDict(ComfyNodeABC):
     """
     Converts compatible inputs to a DICT. Input must be a mapping or a list of key-value pairs.
     """
@@ -230,7 +148,7 @@ class CastToDict:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": ("*", {})
+                "input": (IO.ANY, {})
             }
         }
 
@@ -238,10 +156,6 @@ class CastToDict:
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_dict"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool:
-        return True
 
     def convert_to_dict(self, input: Any) -> tuple[dict]:
         try:
@@ -256,9 +170,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: CastToFloat": CastToFloat,
     "Basic data handling: CastToBoolean": CastToBoolean,
     "Basic data handling: CastToList": CastToList,
-    "Basic data handling: CastDataListToList": CastDataListToList,
     "Basic data handling: CastToSet": CastToSet,
-    "Basic data handling: CastDataListToSet": CastDataListToSet,
     "Basic data handling: CastToDict": CastToDict,
 }
 
@@ -268,8 +180,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: CastToFloat": "to FLOAT",
     "Basic data handling: CastToBoolean": "to BOOLEAN",
     "Basic data handling: CastToList": "to LIST",
-    "Basic data handling: CastDataListToList": "data list to LIST",
     "Basic data handling: CastToSet": "to SET",
-    "Basic data handling: CastDataListToSet": "data list to SET",
     "Basic data handling: CastToDict": "to DICT",
 }
