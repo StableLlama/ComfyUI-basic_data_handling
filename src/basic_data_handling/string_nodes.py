@@ -1,16 +1,17 @@
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class StringCapitalize:
+class StringCapitalize(ComfyNodeABC):
     """Converts the first character of the input string to uppercase and all other characters to lowercase."""
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "capitalize"
@@ -19,7 +20,7 @@ class StringCapitalize:
         return (string.capitalize(),)
 
 
-class StringCasefold:
+class StringCasefold(ComfyNodeABC):
     """
     Converts text to lowercase in a way optimized for case-insensitive comparisons.
 
@@ -31,11 +32,11 @@ class StringCasefold:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "casefold"
@@ -44,7 +45,7 @@ class StringCasefold:
         return (string.casefold(),)
 
 
-class StringCenter:
+class StringCenter(ComfyNodeABC):
     """
     Centers text within a specified width.
 
@@ -56,15 +57,15 @@ class StringCenter:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 20, "min": 0, "max": 1000}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "width": (IO.INT, {"default": 20, "min": 0, "max": 1000}),
             },
             "optional": {
-                "fillchar": ("STRING", {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " "}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "center"
@@ -79,18 +80,18 @@ class StringCenter:
         return (string.center(width, fillchar),)
 
 
-class StringConcat:
+class StringConcat(ComfyNodeABC):
     """Combines two text strings together, joining them end-to-end."""
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string_a": ("STRING", {"default": "", "defaultInput": True}),
-                "string_b": ("STRING", {"default": "", "defaultInput": True}),
+                "string_a": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string_b": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "concat"
@@ -99,7 +100,7 @@ class StringConcat:
         return (string_a + string_b,)
 
 
-class StringCount:
+class StringCount(ComfyNodeABC):
     """
     Counts occurrences of a substring within a string.
 
@@ -110,16 +111,16 @@ class StringCount:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "substring": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0}),
+                "end": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
@@ -132,7 +133,7 @@ class StringCount:
         return (string.count(substring, start, end),)
 
 
-class StringDecode:
+class StringDecode(ComfyNodeABC):
     """
     Converts a bytes-like string representation back to a text string.
 
@@ -144,13 +145,13 @@ class StringDecode:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "bytes_string": ("STRING", {"default": "b''", "defaultInput": True}),
+                "bytes_string": (IO.STRING, {"default": "b''", "defaultInput": True}),
                 "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
                 "errors": (["strict", "ignore", "replace", "backslashreplace"],),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "decode"
@@ -181,7 +182,7 @@ class StringDecode:
             return (f"Decoding error: {str(e)}",)
 
 
-class StringEncode:
+class StringEncode(ComfyNodeABC):
     """
     Converts a string to bytes using the specified encoding.
 
@@ -193,13 +194,13 @@ class StringEncode:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
                 "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
                 "errors": (["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"],),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "encode"
@@ -217,7 +218,7 @@ class StringEncode:
             return (f"Encoding error: {str(e)}",)
 
 
-class StringEndswith:
+class StringEndswith(ComfyNodeABC):
     """
     Checks if a string ends with the specified suffix.
 
@@ -229,16 +230,16 @@ class StringEndswith:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "suffix": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "suffix": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0}),
+                "end": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "endswith"
@@ -251,7 +252,7 @@ class StringEndswith:
         return (string.endswith(suffix, start, end),)
 
 
-class StringExpandtabs:
+class StringExpandtabs(ComfyNodeABC):
     """
     Replaces tab characters with spaces.
 
@@ -263,14 +264,14 @@ class StringExpandtabs:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "tabsize": ("INT", {"default": 8, "min": 1, "max": 100}),
+                "tabsize": (IO.INT, {"default": 8, "min": 1, "max": 100}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "expandtabs"
@@ -279,7 +280,7 @@ class StringExpandtabs:
         return (string.expandtabs(tabsize),)
 
 
-class StringFind:
+class StringFind(ComfyNodeABC):
     """
     Finds the first occurrence of a substring in a string.
 
@@ -291,16 +292,16 @@ class StringFind:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "substring": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0}),
+                "end": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find"
@@ -313,7 +314,7 @@ class StringFind:
         return (string.find(substring, start, end),)
 
 
-class StringIn:
+class StringIn(ComfyNodeABC):
     """
     Checks if a string contains a specified substring.
 
@@ -325,12 +326,12 @@ class StringIn:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "substring": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "substring": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
@@ -339,7 +340,7 @@ class StringIn:
         return (substring in string,)
 
 
-class StringFormatMap:
+class StringFormatMap(ComfyNodeABC):
     """
     Formats a string using values from a dictionary.
 
@@ -352,12 +353,12 @@ class StringFormatMap:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "template": ("STRING", {"default": "Hello, {key}", "defaultInput": True}),
+                "template": (IO.STRING, {"default": "Hello, {key}", "defaultInput": True}),
                 "mapping": ("DICT", {"default": {}}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "format_map"
@@ -372,7 +373,7 @@ class StringFormatMap:
             return (f"Formatting error: {str(e)}",)
 
 
-class StringIsAlnum:
+class StringIsAlnum(ComfyNodeABC):
     """
     Checks if all characters in the string are alphanumeric.
 
@@ -383,11 +384,11 @@ class StringIsAlnum:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isalnum"
@@ -396,7 +397,7 @@ class StringIsAlnum:
         return (string.isalnum(),)
 
 
-class StringIsAlpha:
+class StringIsAlpha(ComfyNodeABC):
     """
     Checks if all characters in the string are alphabetic.
 
@@ -407,11 +408,11 @@ class StringIsAlpha:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isalpha"
@@ -420,7 +421,7 @@ class StringIsAlpha:
         return (string.isalpha(),)
 
 
-class StringIsAscii:
+class StringIsAscii(ComfyNodeABC):
     """
     Checks if all characters in the string are ASCII characters.
 
@@ -431,11 +432,11 @@ class StringIsAscii:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isascii"
@@ -444,7 +445,7 @@ class StringIsAscii:
         return (string.isascii(),)
 
 
-class StringIsDecimal:
+class StringIsDecimal(ComfyNodeABC):
     """
     Checks if all characters in the string are decimal characters.
 
@@ -457,11 +458,11 @@ class StringIsDecimal:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isdecimal"
@@ -470,7 +471,7 @@ class StringIsDecimal:
         return (string.isdecimal(),)
 
 
-class StringIsDigit:
+class StringIsDigit(ComfyNodeABC):
     """
     Checks if all characters in the string are digits.
 
@@ -481,11 +482,11 @@ class StringIsDigit:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isdigit"
@@ -494,7 +495,7 @@ class StringIsDigit:
         return (string.isdigit(),)
 
 
-class StringIsIdentifier:
+class StringIsIdentifier(ComfyNodeABC):
     """
     Checks if the string is a valid identifier in Python.
 
@@ -506,11 +507,11 @@ class StringIsIdentifier:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isidentifier"
@@ -519,7 +520,7 @@ class StringIsIdentifier:
         return (string.isidentifier(),)
 
 
-class StringIsLower:
+class StringIsLower(ComfyNodeABC):
     """
     Checks if all characters in the string are lowercase.
 
@@ -530,11 +531,11 @@ class StringIsLower:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "islower"
@@ -543,7 +544,7 @@ class StringIsLower:
         return (string.islower(),)
 
 
-class StringIsNumeric:
+class StringIsNumeric(ComfyNodeABC):
     """
     Checks if all characters in the string are numeric.
 
@@ -555,11 +556,11 @@ class StringIsNumeric:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isnumeric"
@@ -568,7 +569,7 @@ class StringIsNumeric:
         return (string.isnumeric(),)
 
 
-class StringIsPrintable:
+class StringIsPrintable(ComfyNodeABC):
     """
     Checks if all characters in the string are printable.
 
@@ -579,11 +580,11 @@ class StringIsPrintable:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isprintable"
@@ -592,7 +593,7 @@ class StringIsPrintable:
         return (string.isprintable(),)
 
 
-class StringIsSpace:
+class StringIsSpace(ComfyNodeABC):
     """
     Checks if all characters in the string are whitespace.
 
@@ -603,11 +604,11 @@ class StringIsSpace:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isspace"
@@ -616,7 +617,7 @@ class StringIsSpace:
         return (string.isspace(),)
 
 
-class StringIsTitle:
+class StringIsTitle(ComfyNodeABC):
     """
     Checks if the string is titlecased.
 
@@ -628,11 +629,11 @@ class StringIsTitle:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "istitle"
@@ -641,7 +642,7 @@ class StringIsTitle:
         return (string.istitle(),)
 
 
-class StringIsUpper:
+class StringIsUpper(ComfyNodeABC):
     """
     Checks if all characters in the string are uppercase.
 
@@ -652,11 +653,11 @@ class StringIsUpper:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isupper"
@@ -665,7 +666,7 @@ class StringIsUpper:
         return (string.isupper(),)
 
 
-class StringLjust:
+class StringLjust(ComfyNodeABC):
     """
     Left-aligns the string within a field of a given width.
 
@@ -676,15 +677,15 @@ class StringLjust:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "width": (IO.INT, {"default": 10, "min": 0}),
             },
             "optional": {
-                "fillchar": ("STRING", {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " "}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "ljust"
@@ -696,7 +697,7 @@ class StringLjust:
         return (string.ljust(width, fillchar),)
 
 
-class StringLstrip:
+class StringLstrip(ComfyNodeABC):
     """
     Removes leading characters from the string.
 
@@ -708,14 +709,14 @@ class StringLstrip:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "chars": ("STRING", {"default": ""}),
+                "chars": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "lstrip"
@@ -726,7 +727,7 @@ class StringLstrip:
         return (string.lstrip(chars),)
 
 
-class StringRemoveprefix:
+class StringRemoveprefix(ComfyNodeABC):
     """
     Removes prefix from the string if present.
 
@@ -737,12 +738,12 @@ class StringRemoveprefix:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "prefix": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "prefix": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "removeprefix"
@@ -751,7 +752,7 @@ class StringRemoveprefix:
         return (string.removeprefix(prefix),)
 
 
-class StringRemovesuffix:
+class StringRemovesuffix(ComfyNodeABC):
     """
     Removes suffix from the string if present.
 
@@ -762,12 +763,12 @@ class StringRemovesuffix:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "suffix": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "suffix": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "removesuffix"
@@ -776,27 +777,28 @@ class StringRemovesuffix:
         return (string.removesuffix(suffix),)
 
 
-class StringRsplit:
+class StringRsplitDataList(ComfyNodeABC):
     """
     Splits the string at the specified separator from the right.
 
     This node returns a list of strings by splitting the input string at the specified separator,
     starting from the right. If maxsplit is provided, at most maxsplit splits are done.
     If the separator is not specified or is None, any whitespace string is a separator.
+    Creates a data list of strings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "sep": ("STRING", {"default": ""}),
-                "maxsplit": ("INT", {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": ""}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
@@ -808,7 +810,39 @@ class StringRsplit:
         return (string.rsplit(sep, maxsplit),)
 
 
-class StringLower:
+class StringRsplitList(ComfyNodeABC):
+    """
+    Splits the string at the specified separator from the right.
+
+    This node returns a list of strings by splitting the input string at the specified separator,
+    starting from the right. If maxsplit is provided, at most maxsplit splits are done.
+    If the separator is not specified or is None, any whitespace string is a separator.
+    Creates a LIST of strings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+            },
+            "optional": {
+                "sep": (IO.STRING, {"default": ""}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "rsplit"
+
+    def rsplit(self, string, sep=None, maxsplit=-1):
+        if sep == "":
+            sep = None
+        return (string.rsplit(sep, maxsplit),)
+
+
+class StringLower(ComfyNodeABC):
     """
     Converts the string to lowercase.
 
@@ -818,11 +852,11 @@ class StringLower:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "lower"
@@ -831,7 +865,7 @@ class StringLower:
         return (string.lower(),)
 
 
-class StringReplace:
+class StringReplace(ComfyNodeABC):
     """
     Replaces occurrences of a substring with another substring.
 
@@ -843,16 +877,16 @@ class StringReplace:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "old": ("STRING", {"default": ""}),
-                "new": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "old": (IO.STRING, {"default": ""}),
+                "new": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "count": ("INT", {"default": -1, "min": -1}),
+                "count": (IO.INT, {"default": -1, "min": -1}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "replace"
@@ -861,7 +895,7 @@ class StringReplace:
         return (string.replace(old, new, count),)
 
 
-class StringRjust:
+class StringRjust(ComfyNodeABC):
     """
     Right-aligns the string within a field of a given width.
 
@@ -872,15 +906,15 @@ class StringRjust:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "width": (IO.INT, {"default": 10, "min": 0}),
             },
             "optional": {
-                "fillchar": ("STRING", {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " "}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rjust"
@@ -892,7 +926,7 @@ class StringRjust:
         return (string.rjust(width, fillchar),)
 
 
-class StringJoin:
+class StringDataListJoin(ComfyNodeABC):
     """
     Joins strings from a data list with a specified separator.
 
@@ -904,12 +938,12 @@ class StringJoin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "sep": ("STRING", {"default": " ", "defaultInput": True}),
-                "strings": ("STRING", {"forceInput": True}),
+                "strings": (IO.STRING, {"forceInput": True}),
+                "sep": (IO.STRING, {"default": " "}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join"
@@ -920,7 +954,34 @@ class StringJoin:
         return (separator.join(strings),)
 
 
-class StringRfind:
+class StringListJoin(ComfyNodeABC):
+    """
+    Joins strings from a LIST with a specified separator.
+
+    This node takes a data list of strings and concatenates them, with the specified
+    separator string between each element. The separator is inserted between the strings,
+    not at the beginning or end of the result.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "strings": ("LIST", {"forceInput": True}),
+                "sep": (IO.STRING, {"default": " "}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "join"
+
+    def join(self, sep, strings):
+        separator = sep[0]    # everything comes as a list, so sep is list[str]
+        return (separator.join(strings),)
+
+
+class StringRfind(ComfyNodeABC):
     """
     Finds the highest index of the substring in the string.
 
@@ -932,16 +993,16 @@ class StringRfind:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "substring": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0}),
+                "end": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rfind"
@@ -954,7 +1015,7 @@ class StringRfind:
         return (string.rfind(substring, start, end),)
 
 
-class StringRstrip:
+class StringRstrip(ComfyNodeABC):
     """
     Removes trailing characters from the string.
 
@@ -966,14 +1027,14 @@ class StringRstrip:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "chars": ("STRING", {"default": ""}),
+                "chars": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rstrip"
@@ -984,7 +1045,7 @@ class StringRstrip:
         return (string.rstrip(chars),)
 
 
-class StringSplit:
+class StringSplitDataList(ComfyNodeABC):
     """
     Splits the string at the specified separator.
 
@@ -993,20 +1054,21 @@ class StringSplit:
     splits are done.
 
     If the separator is not specified or is None, any whitespace string is a separator.
+    Creates a data list of strings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "sep": ("STRING", {"default": ""}),
-                "maxsplit": ("INT", {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": ""}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     FUNCTION = "split"
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -1021,37 +1083,103 @@ class StringSplit:
         return (parts,)
 
 
-class StringSplitlines:
+class StringSplitList(ComfyNodeABC):
     """
-    Splits the string at line boundaries.
+    Splits the string at the specified separator.
 
-    This node returns a list of the lines in the string, breaking at line boundaries.
-    If keepends is True, line breaks are included in the resulting list.
+    This node splits the input string at the specified separator and returns a
+    data list containing all parts. If maxsplit is provided, at most maxsplit
+    splits are done.
+
+    If the separator is not specified or is None, any whitespace string is a separator.
+    Creates a LIST of strings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "keepends": (["False", "True"], {"default": "False"}),
+                "sep": (IO.STRING, {"default": ""}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = ("LIST",)
+    FUNCTION = "split"
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+
+    def split(self, string, sep=None, maxsplit=-1):
+        if sep == "":
+            sep = None
+
+        parts = string.split(sep, maxsplit)
+        # Return a data list where each item is a separate string
+        return (parts,)
+
+
+class StringSplitlinesDataList(ComfyNodeABC):
+    """
+    Splits the string at line boundaries.
+
+    This node returns a list of the lines in the string, breaking at line boundaries.
+    If keepends is True, line breaks are included in the resulting list.
+    Creates a data list of strings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+            },
+            "optional": {
+                "keepends": (IO.BOOLEAN, {"default": False}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "splitlines"
     OUTPUT_IS_LIST = (True,)
 
-    def splitlines(self, string, keepends="False"):
-        keepends_bool = (keepends == "True")
-        lines = string.splitlines(keepends_bool)
+    def splitlines(self, string, keepends=False):
+        lines = string.splitlines(keepends)
         return (lines,)
 
 
-class StringStartswith:
+class StringSplitlinesList(ComfyNodeABC):
+    """
+    Splits the string at line boundaries.
+
+    This node returns a list of the lines in the string, breaking at line boundaries.
+    If keepends is True, line breaks are included in the resulting list.
+    Creates a LIST of strings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+            },
+            "optional": {
+                "keepends": (IO.BOOLEAN, {"default": False}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "splitlines"
+
+    def splitlines(self, string, keepends=False):
+        lines = string.splitlines(keepends)
+        return (lines,)
+
+
+class StringStartswith(ComfyNodeABC):
     """
     Checks if a string starts with the specified prefix.
 
@@ -1063,16 +1191,16 @@ class StringStartswith:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "prefix": ("STRING", {"default": ""}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "prefix": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("INT", {"default": 0, "min": 0}),
-                "end": ("INT", {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0}),
+                "end": (IO.INT, {"default": 0, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "startswith"
@@ -1085,7 +1213,7 @@ class StringStartswith:
         return (string.startswith(prefix, start, end),)
 
 
-class StringStrip:
+class StringStrip(ComfyNodeABC):
     """
     Removes leading and trailing characters from the string.
 
@@ -1097,14 +1225,14 @@ class StringStrip:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             },
             "optional": {
-                "chars": ("STRING", {"default": ""}),
+                "chars": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "strip"
@@ -1115,7 +1243,7 @@ class StringStrip:
         return (string.strip(chars),)
 
 
-class StringSwapcase:
+class StringSwapcase(ComfyNodeABC):
     """
     Swaps case of all characters in the string.
 
@@ -1126,11 +1254,11 @@ class StringSwapcase:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "swapcase"
@@ -1139,7 +1267,7 @@ class StringSwapcase:
         return (string.swapcase(),)
 
 
-class StringTitle:
+class StringTitle(ComfyNodeABC):
     """
     Converts the string to titlecase.
 
@@ -1150,11 +1278,11 @@ class StringTitle:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "title"
@@ -1163,7 +1291,7 @@ class StringTitle:
         return (string.title(),)
 
 
-class StringUpper:
+class StringUpper(ComfyNodeABC):
     """
     Converts the string to uppercase.
 
@@ -1173,11 +1301,11 @@ class StringUpper:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "upper"
@@ -1186,7 +1314,7 @@ class StringUpper:
         return (string.upper(),)
 
 
-class StringZfill:
+class StringZfill(ComfyNodeABC):
     """
     Pads the string with zeros on the left.
 
@@ -1198,12 +1326,12 @@ class StringZfill:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": ("STRING", {"default": "", "defaultInput": True}),
-                "width": ("INT", {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "width": (IO.INT, {"default": 10, "min": 0}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "zfill"
@@ -1211,6 +1339,29 @@ class StringZfill:
     def zfill(self, string, width):
         return (string.zfill(width),)
 
+
+class StringLength(ComfyNodeABC):
+    """
+    Returns the length of a string.
+
+    This node calculates and returns the number of characters in the input string.
+    It works the same way as Python's built-in len() function for strings.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "length"
+
+    def length(self, string):
+        return (len(string),)
 
 
 NODE_CLASS_MAPPINGS = {
@@ -1237,7 +1388,8 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: StringIsSpace": StringIsSpace,
     "Basic data handling: StringIsTitle": StringIsTitle,
     "Basic data handling: StringIsUpper": StringIsUpper,
-    "Basic data handling: StringJoin": StringJoin,
+    "Basic data handling: StringDataListJoin": StringDataListJoin,
+    "Basic data handling: StringListJoin": StringListJoin,
     "Basic data handling: StringLjust": StringLjust,
     "Basic data handling: StringLower": StringLower,
     "Basic data handling: StringLstrip": StringLstrip,
@@ -1246,16 +1398,20 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: StringReplace": StringReplace,
     "Basic data handling: StringRfind": StringRfind,
     "Basic data handling: StringRjust": StringRjust,
-    "Basic data handling: StringRsplit": StringRsplit,
+    "Basic data handling: StringRsplitDataList": StringRsplitDataList,
+    "Basic data handling: StringRsplitList": StringRsplitList,
     "Basic data handling: StringRstrip": StringRstrip,
-    "Basic data handling: StringSplit": StringSplit,
-    "Basic data handling: StringSplitlines": StringSplitlines,
+    "Basic data handling: StringSplitDataList": StringSplitDataList,
+    "Basic data handling: StringSplitList": StringSplitList,
+    "Basic data handling: StringSplitlinesDataList": StringSplitlinesDataList,
+    "Basic data handling: StringSplitlinesList": StringSplitlinesList,
     "Basic data handling: StringStartswith": StringStartswith,
     "Basic data handling: StringStrip": StringStrip,
     "Basic data handling: StringSwapcase": StringSwapcase,
     "Basic data handling: StringTitle": StringTitle,
     "Basic data handling: StringUpper": StringUpper,
     "Basic data handling: StringZfill": StringZfill,
+    "Basic data handling: StringLength": StringLength,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -1283,7 +1439,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: StringIsSpace": "isspace",
     "Basic data handling: StringIsTitle": "istitle",
     "Basic data handling: StringIsUpper": "isupper",
-    "Basic data handling: StringJoin": "join",
+    "Basic data handling: StringDataListJoin": "join (from data list)",
+    "Basic data handling: StringListJoin": "join (from LIST)",
     "Basic data handling: StringLjust": "ljust",
     "Basic data handling: StringLower": "lower",
     "Basic data handling: StringLstrip": "lstrip",
@@ -1292,14 +1449,18 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: StringReplace": "replace",
     "Basic data handling: StringRfind": "rfind",
     "Basic data handling: StringRjust": "rjust",
-    "Basic data handling: StringRsplit": "rsplit",
+    "Basic data handling: StringRsplitDataList": "rsplit (from data list)",
+    "Basic data handling: StringRsplitList": "rsplit (from LIST)",
     "Basic data handling: StringRstrip": "rstrip",
-    "Basic data handling: StringSplit": "split",
-    "Basic data handling: StringSplitlines": "splitlines",
+    "Basic data handling: StringSplitDataList": "split (to data list)",
+    "Basic data handling: StringSplitList": "split (to LIST)",
+    "Basic data handling: StringSplitlinesDataList": "splitlines (from data list)",
+    "Basic data handling: StringSplitlinesList": "splitlines (to LIST)",
     "Basic data handling: StringStartswith": "startswith",
     "Basic data handling: StringStrip": "strip",
     "Basic data handling: StringSwapcase": "swapcase",
     "Basic data handling: StringTitle": "title",
     "Basic data handling: StringUpper": "upper",
     "Basic data handling: StringZfill": "zfill",
+    "Basic data handling: StringLength": "length",
 }

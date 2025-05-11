@@ -1,9 +1,9 @@
 import math
 from inspect import cleandoc
 from typing import Literal, Union
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-
-class MathSin:
+class MathSin(ComfyNodeABC):
     """
     Calculates the sine of an angle in radians or degrees.
 
@@ -15,12 +15,12 @@ class MathSin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": ("FLOAT", {"default": 0.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -32,7 +32,7 @@ class MathSin:
         return (math.sin(angle),)
 
 
-class MathCos:
+class MathCos(ComfyNodeABC):
     """
     Calculates the cosine of an angle in radians or degrees.
 
@@ -44,12 +44,12 @@ class MathCos:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": ("FLOAT", {"default": 0.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -61,7 +61,7 @@ class MathCos:
         return (math.cos(angle),)
 
 
-class MathTan:
+class MathTan(ComfyNodeABC):
     """
     Calculates the tangent of an angle in radians or degrees.
 
@@ -73,12 +73,12 @@ class MathTan:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": ("FLOAT", {"default": 0.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -95,7 +95,7 @@ class MathTan:
         return (math.tan(angle),)
 
 
-class MathAsin:
+class MathAsin(ComfyNodeABC):
     """
     Calculates the arc sine (inverse sine) of a value.
 
@@ -106,12 +106,12 @@ class MathAsin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -123,7 +123,7 @@ class MathAsin:
         return (result,)
 
 
-class MathAcos:
+class MathAcos(ComfyNodeABC):
     """
     Calculates the arc cosine (inverse cosine) of a value.
 
@@ -134,12 +134,12 @@ class MathAcos:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 1.0, "min": -1.0, "max": 1.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -151,7 +151,7 @@ class MathAcos:
         return (result,)
 
 
-class MathAtan:
+class MathAtan(ComfyNodeABC):
     """
     Calculates the arc tangent (inverse tangent) of a value.
 
@@ -162,12 +162,12 @@ class MathAtan:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -179,7 +179,7 @@ class MathAtan:
         return (result,)
 
 
-class MathAtan2:
+class MathAtan2(ComfyNodeABC):
     """
     Calculates the arc tangent of y/x, considering the quadrant.
 
@@ -191,13 +191,13 @@ class MathAtan2:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "y": ("FLOAT", {"default": 0.0}),
-                "x": ("FLOAT", {"default": 1.0}),
-                "unit": (["radians", "degrees"], {"default": "radians"}),
+                "y": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "x": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -209,7 +209,7 @@ class MathAtan2:
         return (result,)
 
 
-class MathSqrt:
+class MathSqrt(ComfyNodeABC):
     """
     Calculates the square root of a non-negative number.
 
@@ -219,11 +219,11 @@ class MathSqrt:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0, "min": 0.0}),
+                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -232,7 +232,7 @@ class MathSqrt:
         return (math.sqrt(value),)
 
 
-class MathExp:
+class MathExp(ComfyNodeABC):
     """
     Calculates the exponential of a number (e^x).
 
@@ -242,11 +242,11 @@ class MathExp:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -255,7 +255,7 @@ class MathExp:
         return (math.exp(value),)
 
 
-class MathLog:
+class MathLog(ComfyNodeABC):
     """
     Calculates the natural logarithm (base e) of a number.
 
@@ -266,14 +266,14 @@ class MathLog:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 1.0, "min": 0.0000001}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "FLOAT"}),
             },
             "optional": {
-                "base": ("FLOAT", {"default": math.e, "min": 0.0000001}),
+                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -285,7 +285,7 @@ class MathLog:
             return (math.log(value, base),)
 
 
-class MathLog10:
+class MathLog10(ComfyNodeABC):
     """
     Calculates the base-10 logarithm of a number.
 
@@ -295,11 +295,11 @@ class MathLog10:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 1.0, "min": 0.0000001}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -308,7 +308,7 @@ class MathLog10:
         return (math.log10(value),)
 
 
-class MathDegrees:
+class MathDegrees(ComfyNodeABC):
     """
     Converts an angle from radians to degrees.
 
@@ -318,11 +318,11 @@ class MathDegrees:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "radians": ("FLOAT", {"default": 0.0}),
+                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -331,7 +331,7 @@ class MathDegrees:
         return (math.degrees(radians),)
 
 
-class MathRadians:
+class MathRadians(ComfyNodeABC):
     """
     Converts an angle from degrees to radians.
 
@@ -341,11 +341,11 @@ class MathRadians:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "degrees": ("FLOAT", {"default": 0.0}),
+                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -354,7 +354,7 @@ class MathRadians:
         return (math.radians(degrees),)
 
 
-class MathFloor:
+class MathFloor(ComfyNodeABC):
     """
     Returns the floor of a number.
 
@@ -364,11 +364,11 @@ class MathFloor:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -377,7 +377,7 @@ class MathFloor:
         return (math.floor(value),)
 
 
-class MathCeil:
+class MathCeil(ComfyNodeABC):
     """
     Returns the ceiling of a number.
 
@@ -387,11 +387,11 @@ class MathCeil:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": ("FLOAT", {"default": 0.0}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -400,7 +400,7 @@ class MathCeil:
         return (math.ceil(value),)
 
 
-class MathAbs:
+class MathAbs(ComfyNodeABC):
     """
     Returns the absolute value of a number.
 
@@ -410,26 +410,20 @@ class MathAbs:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (["FLOAT", "INT"], {}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        if input_types["value"] not in ("FLOAT", "INT"):
-            return "value must be a FLOAT or INT type"
-        return True
 
     def calculate(self, value: Union[float, int]) -> tuple[Union[float, int]]:
         return (abs(value),)
 
 
-class MathPi:
+class MathPi(ComfyNodeABC):
     """
     Returns the mathematical constant π (pi).
 
@@ -439,7 +433,7 @@ class MathPi:
     def INPUT_TYPES(cls):
         return {"required": {}}
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -448,7 +442,7 @@ class MathPi:
         return (math.pi,)
 
 
-class MathE:
+class MathE(ComfyNodeABC):
     """
     Returns the mathematical constant e.
 
@@ -458,7 +452,7 @@ class MathE:
     def INPUT_TYPES(cls):
         return {"required": {}}
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -467,7 +461,7 @@ class MathE:
         return (math.e,)
 
 
-class MathMin:
+class MathMin(ComfyNodeABC):
     """
     Returns the minimum value among the inputs.
 
@@ -478,8 +472,8 @@ class MathMin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {"default": 0}),
-                "value2": (["FLOAT", "INT"], {"default": 0}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
@@ -488,18 +482,11 @@ class MathMin:
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        for key, value in input_types.items():
-            if key.startswith("value") and value not in ("FLOAT", "INT"):
-                return f"{key} must be a FLOAT or INT type"
-        return True
-
     def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
         return (min(value1, value2),)
 
 
-class MathMax:
+class MathMax(ComfyNodeABC):
     """
     Returns the maximum value among the inputs.
 
@@ -510,8 +497,8 @@ class MathMax:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (["FLOAT", "INT"], {"default": 0}),
-                "value2": (["FLOAT", "INT"], {"default": 0}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
@@ -519,13 +506,6 @@ class MathMax:
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types: dict[str, str]) -> bool|str:
-        for key, value in input_types.items():
-            if key.startswith("value") and value not in ("FLOAT", "INT"):
-                return f"{key} must be a FLOAT or INT type"
-        return True
 
     def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
         return (max(value1, value2),)

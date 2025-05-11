@@ -1,6 +1,7 @@
 from inspect import cleandoc
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class MathFormula:
+class MathFormula(ComfyNodeABC):
     """
     A node that evaluates a mathematical formula provided as a string without using eval.
 
@@ -13,21 +14,23 @@ class MathFormula:
     The calculation would be:
         result = 2 + abs(-3 * 4 + 5) = 2 + abs(-7) = 2 + 7 = 9
     """
+    EXPERIMENTAL = True
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "formula": ("STRING", {"default": "a + b"}),
-                "a": ("FLOAT", {"default": 0.0}),
+                "formula": (IO.STRING, {"default": "a + b"}),
+                "a": (IO.NUMBER, {"default": 0.0}),
             },
             "optional": {
-                "b": ("FLOAT", {"default": 0.0}),
-                "c": ("FLOAT", {"default": 0.0}),
-                "d": ("FLOAT", {"default": 0.0}),
+                "b": (IO.NUMBER, {"default": 0.0}),
+                "c": (IO.NUMBER, {"default": 0.0}),
+                "d": (IO.NUMBER, {"default": 0.0}),
             },
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = (IO.NUMBER,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "evaluate"
@@ -35,17 +38,6 @@ class MathFormula:
     OPERATORS = {"**", "//", "/", "*", "-", "+", "%"}
     SUPPORTED_FUNCTIONS = {"abs", "floor", "ceil", "round"}
     VALID_CHARS = set("0123456789.+-*/%(), ")
-
-    @classmethod
-    def VALIDATE_INPUTS(cls, input_types):
-        for input, value in input_types.items():
-            if input == "formula":
-                if value == "STRING":
-                    continue
-                return f"input '{input}' must be a STRING type"
-            if value not in ("INT", "FLOAT"):
-                return f"input '{input}' must be an INT or FLOAT type"
-        return True
 
     def evaluate(self, formula: str, a: float, b: float = 0.0, c: float = 0.0, d: float = 0.0) -> tuple[float]:
         # Tokenize the formula without replacement
@@ -137,34 +129,57 @@ class MathFormula:
         postfix = []  # Output list
         previous_token = None  # Tracks the previous token to distinguish unary vs binary operators
 
+        # Track function-to-parenthesis relationships
+        function_stack = []  # Stack to track pending functions
+
         for token in tokens:
             if self.is_number(token):  # Numbers
                 postfix.append(float(token))
             elif token in self.SUPPORTED_FUNCTIONS:  # Functions (e.g., abs)
+                # Push function onto stack - will be processed when matching parenthesis is found
+                function_stack.append(len(stack))  # Record stack depth for this function
                 stack.append(token)
             elif token == "(":  # Left parentheses
                 stack.append(token)
             elif token == ")":  # Right parentheses
+                # Pop operators until left parenthesis
                 while stack and stack[-1] != "(":
                     postfix.append(stack.pop())
+
                 if not stack:
                     raise ValueError("Mismatched parentheses in expression.")
-                stack.pop()  # Pops the left parenthesis
+
+                stack.pop()  # Discard the left parenthesis
+
+                # Check if this closing parenthesis matches a function call
+                if function_stack and len(stack) == function_stack[-1]:
+                    # We've found our function, add it to postfix
+                    if stack and stack[-1] in self.SUPPORTED_FUNCTIONS:
+                        postfix.append(stack.pop())
+                    function_stack.pop()  # Remove the function marker
             elif token in self.OPERATORS:  # Operators (+, -, *, etc.)
                 # Check for unary negation
                 if token == "-" and (previous_token is None or previous_token in self.OPERATORS or previous_token == "("):
-                    # Treat as unary minus
-                    postfix.append(0.0)
-                    stack.append(token)
+                    # Handle negative numbers directly - place negative value in postfix
+                    if tokens.index(token) + 1 < len(tokens) and self.is_number(tokens[tokens.index(token) + 1]):
+                        next_token = tokens[tokens.index(token) + 1]
+                        # Skip this token and the next number, add negative number to postfix
+                        postfix.append(-float(next_token))
+                        previous_token = next_token  # Skip to after the number
+                        continue
+                    else:
+                        # Traditional unary minus using 0 - operand
+                        postfix.append(0.0)
+                        stack.append(token)
                 else:
                     # Handle regular operators
-                    while stack and precedence.get(stack[-1], 0) >= precedence[token]:
+                    while stack and stack[-1] not in ["("] and precedence.get(stack[-1], 0) >= precedence[token]:
                         postfix.append(stack.pop())
                     stack.append(token)
             else:
                 raise ValueError(f"Unexpected token in infix expression: {token}")
 
-            # Update previous token (e.g., to track variable, number, etc.)
+            # Update previous token
             previous_token = token
 
         # Pop any remaining operators from the stack

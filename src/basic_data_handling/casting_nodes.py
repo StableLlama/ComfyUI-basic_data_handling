@@ -116,31 +116,6 @@ class CastToList(ComfyNodeABC):
         return ([input],)
 
 
-class CastDataListToList(ComfyNodeABC):
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": (IO.ANY, {}),
-            }
-        }
-
-    RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/cast"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
-
-
 class CastToSet(ComfyNodeABC):
     """
     Converts any input to a SET. Non-set inputs are converted into a set. If input is a ComfyUI data list,
@@ -163,31 +138,6 @@ class CastToSet(ComfyNodeABC):
         if isinstance(input, set):
             return (input,)
         return ({input,} if not isinstance(input, list) else set(input),)
-
-
-class CastDataListToSet(ComfyNodeABC):
-    """
-    Converts a ComfyUI data list into a LIST object.
-
-    This node takes a data list input (which is typically a list of items with the same type)
-    and converts it to a LIST object (a Python list as a single variable).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "list": (IO.ANY, {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/cast"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
-    INPUT_IS_LIST = True
-
-    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set(kwargs.get('list', [])),)
 
 
 class CastToDict(ComfyNodeABC):
@@ -220,9 +170,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: CastToFloat": CastToFloat,
     "Basic data handling: CastToBoolean": CastToBoolean,
     "Basic data handling: CastToList": CastToList,
-    "Basic data handling: CastDataListToList": CastDataListToList,
     "Basic data handling: CastToSet": CastToSet,
-    "Basic data handling: CastDataListToSet": CastDataListToSet,
     "Basic data handling: CastToDict": CastToDict,
 }
 
@@ -232,8 +180,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: CastToFloat": "to FLOAT",
     "Basic data handling: CastToBoolean": "to BOOLEAN",
     "Basic data handling: CastToList": "to LIST",
-    "Basic data handling: CastDataListToList": "data list to LIST",
     "Basic data handling: CastToSet": "to SET",
-    "Basic data handling: CastDataListToSet": "data list to SET",
     "Basic data handling: CastToDict": "to DICT",
 }

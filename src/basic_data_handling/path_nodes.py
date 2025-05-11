@@ -1,9 +1,10 @@
 from inspect import cleandoc
 import os
 import glob
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
 
-class PathJoin:
+class PathJoin(ComfyNodeABC):
     """
     Joins multiple path components into a single path.
 
@@ -15,14 +16,14 @@ class PathJoin:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": ("STRING", {"default": ""}),
+                "path1": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "path2": ("STRING", {"default": ""}),
+                "path2": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -33,7 +34,7 @@ class PathJoin:
         return (str(os.path.join(*paths)),)
 
 
-class PathAbspath:
+class PathAbspath(ComfyNodeABC):
     """
     Returns the absolute path of a file or directory.
 
@@ -44,11 +45,11 @@ class PathAbspath:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("absolute_path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -58,7 +59,7 @@ class PathAbspath:
         return (os.path.abspath(path),)
 
 
-class PathExists:
+class PathExists(ComfyNodeABC):
     """
     Checks if a path exists in the filesystem.
 
@@ -69,11 +70,11 @@ class PathExists:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("exists",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -83,7 +84,7 @@ class PathExists:
         return (os.path.exists(path),)
 
 
-class PathIsFile:
+class PathIsFile(ComfyNodeABC):
     """
     Checks if a path points to a file.
 
@@ -94,11 +95,11 @@ class PathIsFile:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_file",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -108,7 +109,7 @@ class PathIsFile:
         return (os.path.isfile(path),)
 
 
-class PathIsDir:
+class PathIsDir(ComfyNodeABC):
     """
     Checks if a path points to a directory.
 
@@ -119,11 +120,11 @@ class PathIsDir:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_dir",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -133,7 +134,7 @@ class PathIsDir:
         return (os.path.isdir(path),)
 
 
-class PathGetSize:
+class PathGetSize(ComfyNodeABC):
     """
     Returns the size of a file in bytes.
 
@@ -144,11 +145,11 @@ class PathGetSize:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("size_bytes",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -162,7 +163,7 @@ class PathGetSize:
         return (os.path.getsize(path),)
 
 
-class PathSplit:
+class PathSplit(ComfyNodeABC):
     """
     Splits a path into directory and filename components.
 
@@ -173,11 +174,11 @@ class PathSplit:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("directory", "filename")
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -187,7 +188,7 @@ class PathSplit:
         return os.path.split(path)
 
 
-class PathSplitExt:
+class PathSplitExt(ComfyNodeABC):
     """
     Splits a path into name and extension components.
 
@@ -198,11 +199,11 @@ class PathSplitExt:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING", "STRING")
+    RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("path_without_ext", "extension")
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -212,7 +213,7 @@ class PathSplitExt:
         return os.path.splitext(path)
 
 
-class PathBasename:
+class PathBasename(ComfyNodeABC):
     """
     Returns the base name of a path.
 
@@ -223,11 +224,11 @@ class PathBasename:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("basename",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -237,7 +238,7 @@ class PathBasename:
         return (os.path.basename(path),)
 
 
-class PathDirname:
+class PathDirname(ComfyNodeABC):
     """
     Returns the directory name of a path.
 
@@ -248,11 +249,11 @@ class PathDirname:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("dirname",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -262,7 +263,7 @@ class PathDirname:
         return (os.path.dirname(path),)
 
 
-class PathGetExtension:
+class PathGetExtension(ComfyNodeABC):
     """
     Returns the extension of a file.
 
@@ -273,11 +274,11 @@ class PathGetExtension:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("extension",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -287,7 +288,7 @@ class PathGetExtension:
         return (os.path.splitext(path)[1],)
 
 
-class PathNormalize:
+class PathNormalize(ComfyNodeABC):
     """
     Normalizes a path.
 
@@ -299,11 +300,11 @@ class PathNormalize:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("normalized_path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -313,7 +314,7 @@ class PathNormalize:
         return (os.path.normpath(path),)
 
 
-class PathRelative:
+class PathRelative(ComfyNodeABC):
     """
     Returns a relative path.
 
@@ -324,14 +325,14 @@ class PathRelative:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "start": ("STRING", {"default": ""}),
+                "start": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("relative_path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -343,7 +344,7 @@ class PathRelative:
         return (os.path.relpath(path, start),)
 
 
-class PathGlob:
+class PathGlob(ComfyNodeABC):
     """
     Finds paths matching a pattern.
 
@@ -358,30 +359,25 @@ class PathGlob:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": ("STRING", {"default": "*.txt"}),
+                "pattern": (IO.STRING, {"default": "*.txt"}),
             },
             "optional": {
-                "recursive": (["False", "True"], {"default": "False"}),
+                "recursive": (IO.BOOLEAN, {"default": False}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("matching_paths",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "glob_paths"
     OUTPUT_IS_LIST = (True,)
 
-    def glob_paths(self, pattern: str, recursive: str = "False") -> tuple[list[str]]:
-        is_recursive = (recursive == "True")
-        if is_recursive:
-            # If recursive, use ** pattern with glob.glob's recursive option
-            return (glob.glob(pattern, recursive=True),)
-        else:
-            return (glob.glob(pattern),)
+    def glob_paths(self, pattern: str, recursive: bool = False) -> tuple[list[str]]:
+        return (glob.glob(pattern, recursive=recursive),)
 
 
-class PathExpandVars:
+class PathExpandVars(ComfyNodeABC):
     """
     Expands environment variables in a path.
 
@@ -392,11 +388,11 @@ class PathExpandVars:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("expanded_path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -406,7 +402,7 @@ class PathExpandVars:
         return (os.path.expandvars(path),)
 
 
-class PathGetCwd:
+class PathGetCwd(ComfyNodeABC):
     """
     Returns the current working directory.
 
@@ -416,7 +412,7 @@ class PathGetCwd:
     def INPUT_TYPES(cls):
         return {"required": {}}
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("current_directory",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -426,7 +422,7 @@ class PathGetCwd:
         return (os.getcwd(),)
 
 
-class PathListDir:
+class PathListDir(ComfyNodeABC):
     """
     Lists the contents of a directory.
 
@@ -439,22 +435,22 @@ class PathListDir:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "files_only": (["False", "True"], {"default": "False"}),
-                "dirs_only": (["False", "True"], {"default": "False"}),
+                "files_only": (IO.BOOLEAN, {"default": False}),
+                "dirs_only": (IO.BOOLEAN, {"default": False}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("entries",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_directory"
     OUTPUT_IS_LIST = (True,)
 
-    def list_directory(self, path: str, files_only: str = "False", dirs_only: str = "False") -> tuple[list[str]]:
+    def list_directory(self, path: str, files_only: str = False, dirs_only: str = False) -> tuple[list[str]]:
         if not path:
             path = os.getcwd()
 
@@ -465,15 +461,15 @@ class PathListDir:
 
         entries = os.listdir(path)
 
-        if files_only == "True":
+        if files_only:
             entries = [e for e in entries if os.path.isfile(os.path.join(path, e))]
-        elif dirs_only == "True":
+        elif dirs_only:
             entries = [e for e in entries if os.path.isdir(os.path.join(path, e))]
 
         return (entries,)
 
 
-class PathIsAbsolute:
+class PathIsAbsolute(ComfyNodeABC):
     """
     Checks if a path is absolute.
 
@@ -484,11 +480,11 @@ class PathIsAbsolute:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": ("STRING", {"default": ""}),
+                "path": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_absolute",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -498,7 +494,7 @@ class PathIsAbsolute:
         return (os.path.isabs(path),)
 
 
-class PathCommonPrefix:
+class PathCommonPrefix(ComfyNodeABC):
     """
     Finds the common prefix of multiple paths.
 
@@ -508,14 +504,14 @@ class PathCommonPrefix:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": ("STRING", {"default": ""}),
+                "path1": (IO.STRING, {"default": ""}),
             },
             "optional": {
-                "path2": ("STRING", {"default": ""}),
+                "path2": (IO.STRING, {"default": ""}),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("common_prefix",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")

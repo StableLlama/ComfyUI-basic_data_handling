@@ -1,8 +1,8 @@
 from inspect import cleandoc
 from typing import Literal
+from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-
-class IntAdd:
+class IntAdd(ComfyNodeABC):
     """
     Adds two integers.
 
@@ -12,12 +12,12 @@ class IntAdd:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": ("INT", {"default": 0}),
-                "int2": ("INT", {"default": 0}),
+                "int1": (IO.INT, {"default": 0}),
+                "int2": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -26,7 +26,7 @@ class IntAdd:
         return (int1 + int2,)
 
 
-class IntSubtract:
+class IntSubtract(ComfyNodeABC):
     """
     Subtracts one integer from another.
 
@@ -37,12 +37,12 @@ class IntSubtract:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": ("INT", {"default": 0}),
-                "int2": ("INT", {"default": 0}),
+                "int1": (IO.INT, {"default": 0}),
+                "int2": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
@@ -51,7 +51,7 @@ class IntSubtract:
         return (int1 - int2,)
 
 
-class IntMultiply:
+class IntMultiply(ComfyNodeABC):
     """
     Multiplies two integers.
 
@@ -61,12 +61,12 @@ class IntMultiply:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": ("INT", {"default": 1}),
-                "int2": ("INT", {"default": 1}),
+                "int1": (IO.INT, {"default": 1}),
+                "int2": (IO.INT, {"default": 1}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "multiply"
@@ -75,7 +75,7 @@ class IntMultiply:
         return (int1 * int2,)
 
 
-class IntDivide:
+class IntDivide(ComfyNodeABC):
     """
     Divides one integer by another.
 
@@ -86,12 +86,12 @@ class IntDivide:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": ("INT", {"default": 1}),
-                "int2": ("INT", {"default": 1}),
+                "int1": (IO.INT, {"default": 1}),
+                "int2": (IO.INT, {"default": 1}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -102,7 +102,35 @@ class IntDivide:
         return (int1 // int2,)
 
 
-class IntModulus:
+class IntDivideSafe(ComfyNodeABC):
+    """
+    Divides one integer by another.
+
+    This node takes two integers as input and returns the result of the integer
+    division. It returns the positive or negative infinity value if the divisor is 0.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "int1": (IO.INT, {"default": 1}),
+                "int2": (IO.INT, {"default": 1}),
+                "infinity": (IO.INT, {"default": 9223372036854775807}), # 2**63 - 1
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "divide"
+
+    def divide(self, int1: int, int2: int, infinity: int) -> tuple[int]:
+        if int2 == 0:
+            return (infinity if int1 > 0 else -infinity,)
+        return (int1 // int2,)
+
+
+class IntModulus(ComfyNodeABC):
     """
     Returns the modulus of two integers.
 
@@ -113,12 +141,12 @@ class IntModulus:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": ("INT", {"default": 0}),
-                "int2": ("INT", {"default": 1}),
+                "int1": (IO.INT, {"default": 0}),
+                "int2": (IO.INT, {"default": 1}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "modulus"
@@ -129,7 +157,7 @@ class IntModulus:
         return (int1 % int2,)
 
 
-class IntPower:
+class IntPower(ComfyNodeABC):
     """
     Raises one integer to the power of another.
 
@@ -140,12 +168,12 @@ class IntPower:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "base": ("INT", {"default": 1}),
-                "exponent": ("INT", {"default": 0}),
+                "base": (IO.INT, {"default": 1}),
+                "exponent": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "power"
@@ -154,7 +182,7 @@ class IntPower:
         return (base**exponent,)
 
 
-class IntBitLength:
+class IntBitLength(ComfyNodeABC):
     """
     Returns the number of bits required to represent an integer in binary.
 
@@ -165,12 +193,12 @@ class IntBitLength:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": ("INT", {"default": 0}),
+                "int_value": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
-    CATEGORY = "Additional Methods/INT"
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "bit_length"
 
@@ -178,7 +206,7 @@ class IntBitLength:
         return (int_value.bit_length(),)
 
 
-class IntToBytes:
+class IntToBytes(ComfyNodeABC):
     """
     Converts an integer to its byte representation.
 
@@ -189,15 +217,15 @@ class IntToBytes:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": ("INT", {"default": 0}),
-                "length": ("INT", {"default": 4, "min": 1}),
+                "int_value": (IO.INT, {"default": 0}),
+                "length": (IO.INT, {"default": 4, "min": 1}),
                 "byteorder": (["big", "little"], {"default": "big"}),
                 "signed": (["True", "False"], {"default": "False"}),
             }
         }
 
     RETURN_TYPES = ("BYTES",)
-    CATEGORY = "Additional Methods/INT"
+    CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_bytes"
 
@@ -206,7 +234,7 @@ class IntToBytes:
         return (int_value.to_bytes(length, byteorder=byteorder, signed=signed_bool),)
 
 
-class IntFromBytes:
+class IntFromBytes(ComfyNodeABC):
     """
     Converts a bytes object to an integer.
 
@@ -223,8 +251,8 @@ class IntFromBytes:
             }
         }
 
-    RETURN_TYPES = ("INT",)
-    CATEGORY = "Additional Methods/INT"
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_bytes"
 
@@ -233,7 +261,7 @@ class IntFromBytes:
         return (int.from_bytes(bytes_value, byteorder=byteorder, signed=signed_bool),)
 
 
-class IntBitCount:
+class IntBitCount(ComfyNodeABC):
     """
     Returns the number of 1 bits in the binary representation of an integer.
 
@@ -243,12 +271,12 @@ class IntBitCount:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": ("INT", {"default": 0}),
+                "int_value": (IO.INT, {"default": 0}),
             }
         }
 
-    RETURN_TYPES = ("INT",)
-    CATEGORY = "Additional Methods/INT"
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "bit_count"
 
@@ -262,6 +290,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: IntSubtract": IntSubtract,
     "Basic data handling: IntMultiply": IntMultiply,
     "Basic data handling: IntDivide": IntDivide,
+    "Basic data handling: IntDivideSafe": IntDivideSafe,
     "Basic data handling: IntModulus": IntModulus,
     "Basic data handling: IntPower": IntPower,
     "Basic data handling: IntBitLength": IntBitLength,
@@ -275,6 +304,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IntSubtract": "subtract",
     "Basic data handling: IntMultiply": "multiply",
     "Basic data handling: IntDivide": "divide",
+    "Basic data handling: IntDivideSafe": "divide (division by zero safe)",
     "Basic data handling: IntModulus": "modulus",
     "Basic data handling: IntPower": "power",
     "Basic data handling: IntBitLength": "bit_length",

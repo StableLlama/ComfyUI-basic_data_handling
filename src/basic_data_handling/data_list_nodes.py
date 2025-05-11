@@ -2,6 +2,8 @@ from typing import Any
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
+INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
+
 class DataListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a list.
@@ -337,7 +339,7 @@ class DataListSlice(ComfyNodeABC):
             },
             "optional": {
                 "start": (IO.INT, {"default": 0}),
-                "stop": (IO.INT, {"default": -1}),
+                "stop": (IO.INT, {"default": INT_MAX}),
                 "step": (IO.INT, {"default": 1}),
             }
         }
@@ -353,11 +355,9 @@ class DataListSlice(ComfyNodeABC):
     def slice(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         input_list = kwargs.get('list', [])
         start = kwargs.get('start', [0])[0]
-        stop = kwargs.get('stop', [-1])[0]
+        stop = kwargs.get('stop', [INT_MAX])[0]
         step = kwargs.get('step', [1])[0]
-
-        if stop == -1:
-            stop = len(input_list)
+        print(f"start: {start}, stop: {stop}, step: {step}; input_list: {input_list}")
 
         return (input_list[start:stop:step],)
 
@@ -635,6 +635,56 @@ class DataListMax(ComfyNodeABC):
             return (None,)
 
 
+class DataListToList(ComfyNodeABC):
+    """
+    Converts a ComfyUI data list into a LIST object.
+
+    This node takes a data list input (which is typically a list of items with the same type)
+    and converts it to a LIST object (a Python list as a single variable).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    INPUT_IS_LIST = True
+
+    def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return (kwargs.get('list', []).copy(),)
+
+
+class DataListToSet(ComfyNodeABC):
+    """
+    Converts a ComfyUI data list into a LIST object.
+
+    This node takes a data list input (which is typically a list of items with the same type)
+    and converts it to a LIST object (a Python list as a single variable).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/data list"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert"
+    INPUT_IS_LIST = True
+
+    def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set(kwargs.get('list', [])),)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListAppend": DataListAppend,
     "Basic data handling: DataListExtend": DataListExtend,
@@ -655,6 +705,8 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListFilter": DataListFilter,
     "Basic data handling: DataListMin": DataListMin,
     "Basic data handling: DataListMax": DataListMax,
+    "Basic data handling: DataListToList": DataListToList,
+    "Basic data handling: DataListToSet": DataListToSet,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -677,4 +729,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListFilter": "filter",
     "Basic data handling: DataListMin": "min",
     "Basic data handling: DataListMax": "max",
+    "Basic data handling: DataListToList": "convert to LIST",
+    "Basic data handling: DataListToSet": "convert to SET",
 }
