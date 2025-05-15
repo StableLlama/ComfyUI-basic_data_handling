@@ -25,77 +25,6 @@ class BooleanAnd(ComfyNodeABC):
         return (input1 and input2,)
 
 
-class BooleanOr(ComfyNodeABC):
-    """
-    Returns the logical OR result of two boolean values.
-
-    This node takes two boolean inputs and returns their logical OR result.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    CATEGORY = "Basic/BOOLEAN"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "or_operation"
-
-    def or_operation(self, input1: bool, input2: bool) -> tuple[bool]:
-        return (input1 or input2,)
-
-
-class BooleanNot(ComfyNodeABC):
-    """
-    Returns the logical NOT result of a boolean value.
-
-    This node takes one boolean input and returns its logical NOT result.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    CATEGORY = "Basic/BOOLEAN"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "not_operation"
-
-    def not_operation(self, input: bool) -> tuple[bool]:
-        return (not input,)
-
-
-class BooleanXor(ComfyNodeABC):
-    """
-    Returns the logical XOR result of two boolean values.
-
-    This node takes two boolean inputs and returns their logical XOR result.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    CATEGORY = "Basic/BOOLEAN"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "xor_operation"
-
-    def xor_operation(self, input1: bool, input2: bool) -> tuple[bool]:
-        return (input1 != input2,)
-
-
 class BooleanNand(ComfyNodeABC):
     """
     Returns the logical NAND result of two boolean values.
@@ -144,20 +73,91 @@ class BooleanNor(ComfyNodeABC):
         return (not (input1 or input2),)
 
 
+class BooleanNot(ComfyNodeABC):
+    """
+    Returns the logical NOT result of a boolean value.
+
+    This node takes one boolean input and returns its logical NOT result.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    CATEGORY = "Basic/BOOLEAN"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "not_operation"
+
+    def not_operation(self, input: bool) -> tuple[bool]:
+        return (not input,)
+
+
+class BooleanOr(ComfyNodeABC):
+    """
+    Returns the logical OR result of two boolean values.
+
+    This node takes two boolean inputs and returns their logical OR result.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    CATEGORY = "Basic/BOOLEAN"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "or_operation"
+
+    def or_operation(self, input1: bool, input2: bool) -> tuple[bool]:
+        return (input1 or input2,)
+
+
+class BooleanXor(ComfyNodeABC):
+    """
+    Returns the logical XOR result of two boolean values.
+
+    This node takes two boolean inputs and returns their logical XOR result.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    CATEGORY = "Basic/BOOLEAN"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "xor_operation"
+
+    def xor_operation(self, input1: bool, input2: bool) -> tuple[bool]:
+        return (input1 != input2,)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: BooleanAnd": BooleanAnd,
-    "Basic data handling: BooleanOr": BooleanOr,
-    "Basic data handling: BooleanNot": BooleanNot,
-    "Basic data handling: BooleanXor": BooleanXor,
     "Basic data handling: BooleanNand": BooleanNand,
     "Basic data handling: BooleanNor": BooleanNor,
+    "Basic data handling: BooleanNot": BooleanNot,
+    "Basic data handling: BooleanOr": BooleanOr,
+    "Basic data handling: BooleanXor": BooleanXor,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: BooleanAnd": "and",
-    "Basic data handling: BooleanOr": "or",
-    "Basic data handling: BooleanNot": "not",
-    "Basic data handling: BooleanXor": "xor",
     "Basic data handling: BooleanNand": "nand",
     "Basic data handling: BooleanNor": "nor",
+    "Basic data handling: BooleanNot": "not",
+    "Basic data handling: BooleanOr": "or",
+    "Basic data handling: BooleanXor": "xor",
 }

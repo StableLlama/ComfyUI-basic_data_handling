@@ -2,30 +2,9 @@ from typing import Any
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class CastToString(ComfyNodeABC):
+class CastToBoolean(ComfyNodeABC):
     """
-    Converts any input to a STRING. Non-string values are converted using str().
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {})
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    CATEGORY = "Basic/cast"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert_to_string"
-
-    def convert_to_string(self, input: Any) -> tuple[str]:
-        return (str(input),)
-
-
-class CastToInt(ComfyNodeABC):
-    """
-    Converts any numeric input to an INT. Non-numeric or invalid inputs raise a ValueError.
+    Converts any input to a BOOLEAN. Follows standard Python truthy/falsy rules.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -35,16 +14,37 @@ class CastToInt(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.INT,)
+    RETURN_TYPES = ("BOOLEAN",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert_to_int"
+    FUNCTION = "convert_to_boolean"
 
-    def convert_to_int(self, input: Any) -> tuple[int]:
+    def convert_to_boolean(self, input: Any) -> tuple[bool]:
+        return (bool(input),)
+
+
+class CastToDict(ComfyNodeABC):
+    """
+    Converts compatible inputs to a DICT. Input must be a mapping or a list of key-value pairs.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input": (IO.ANY, {})
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/cast"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "convert_to_dict"
+
+    def convert_to_dict(self, input: Any) -> tuple[dict]:
         try:
-            return (int(input),)
+            return (dict(input),)
         except (ValueError, TypeError):
-            raise ValueError(f"Cannot convert {input} to an INT.")
+            raise ValueError(f"Cannot convert {input} to a DICT. Ensure it is a mapping or list of key-value pairs.")
 
 
 class CastToFloat(ComfyNodeABC):
@@ -71,9 +71,9 @@ class CastToFloat(ComfyNodeABC):
             raise ValueError(f"Cannot convert {input} to a FLOAT.")
 
 
-class CastToBoolean(ComfyNodeABC):
+class CastToInt(ComfyNodeABC):
     """
-    Converts any input to a BOOLEAN. Follows standard Python truthy/falsy rules.
+    Converts any numeric input to an INT. Non-numeric or invalid inputs raise a ValueError.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -83,13 +83,16 @@ class CastToBoolean(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = ("BOOLEAN",)
+    RETURN_TYPES = (IO.INT,)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert_to_boolean"
+    FUNCTION = "convert_to_int"
 
-    def convert_to_boolean(self, input: Any) -> tuple[bool]:
-        return (bool(input),)
+    def convert_to_int(self, input: Any) -> tuple[int]:
+        try:
+            return (int(input),)
+        except (ValueError, TypeError):
+            raise ValueError(f"Cannot convert {input} to an INT.")
 
 
 class CastToList(ComfyNodeABC):
@@ -140,9 +143,9 @@ class CastToSet(ComfyNodeABC):
         return ({input,} if not isinstance(input, list) else set(input),)
 
 
-class CastToDict(ComfyNodeABC):
+class CastToString(ComfyNodeABC):
     """
-    Converts compatible inputs to a DICT. Input must be a mapping or a list of key-value pairs.
+    Converts any input to a STRING. Non-string values are converted using str().
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -152,34 +155,31 @@ class CastToDict(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = ("DICT",)
+    RETURN_TYPES = (IO.STRING,)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert_to_dict"
+    FUNCTION = "convert_to_string"
 
-    def convert_to_dict(self, input: Any) -> tuple[dict]:
-        try:
-            return (dict(input),)
-        except (ValueError, TypeError):
-            raise ValueError(f"Cannot convert {input} to a DICT. Ensure it is a mapping or list of key-value pairs.")
+    def convert_to_string(self, input: Any) -> tuple[str]:
+        return (str(input),)
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: CastToString": CastToString,
-    "Basic data handling: CastToInt": CastToInt,
-    "Basic data handling: CastToFloat": CastToFloat,
     "Basic data handling: CastToBoolean": CastToBoolean,
+    "Basic data handling: CastToDict": CastToDict,
+    "Basic data handling: CastToFloat": CastToFloat,
+    "Basic data handling: CastToInt": CastToInt,
     "Basic data handling: CastToList": CastToList,
     "Basic data handling: CastToSet": CastToSet,
-    "Basic data handling: CastToDict": CastToDict,
+    "Basic data handling: CastToString": CastToString,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: CastToString": "to STRING",
-    "Basic data handling: CastToInt": "to INT",
-    "Basic data handling: CastToFloat": "to FLOAT",
     "Basic data handling: CastToBoolean": "to BOOLEAN",
+    "Basic data handling: CastToDict": "to DICT",
+    "Basic data handling: CastToFloat": "to FLOAT",
+    "Basic data handling: CastToInt": "to INT",
     "Basic data handling: CastToList": "to LIST",
     "Basic data handling: CastToSet": "to SET",
-    "Basic data handling: CastToDict": "to DICT",
+    "Basic data handling: CastToString": "to STRING",
 }
