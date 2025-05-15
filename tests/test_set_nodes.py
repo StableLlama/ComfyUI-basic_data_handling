@@ -4,7 +4,6 @@ from src.basic_data_handling.set_nodes import (
     SetRemove,
     SetDiscard,
     SetPop,
-    SetClear,
     SetUnion,
     SetIntersection,
     SetDifference,
@@ -14,7 +13,6 @@ from src.basic_data_handling.set_nodes import (
     SetIsDisjoint,
     SetContains,
     SetLength,
-    ListToSet,
     SetToList
 )
 
@@ -45,12 +43,6 @@ def test_set_pop():
 
     empty_set = set()
     assert node.pop(empty_set) == (set(), None)  # Handle empty set
-
-
-def test_set_clear():
-    node = SetClear()
-    assert node.clear({1, 2, 3}) == (set(),)
-    assert node.clear(set()) == (set(),)  # Already empty set remains empty
 
 
 def test_set_union():
@@ -109,12 +101,6 @@ def test_set_length():
     node = SetLength()
     assert node.length({1, 2, 3}) == (3,)
     assert node.length(set()) == (0,)  # Empty set
-
-
-def test_list_to_set():
-    node = ListToSet()
-    assert node.convert([1, 2, 3, 2]) == ({1, 2, 3},)
-    assert node.convert([]) == (set(),)  # Empty list
 
 
 def test_set_to_list():

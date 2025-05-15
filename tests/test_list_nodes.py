@@ -5,7 +5,6 @@ from src.basic_data_handling.list_nodes import (
     ListInsert,
     ListRemove,
     ListPop,
-    ListClear,
     ListIndex,
     ListCount,
     ListSort,
@@ -53,12 +52,6 @@ def test_list_pop():
     assert node.pop([1, 2, 3], 1) == ([1, 3], 2)
     assert node.pop([1, 2, 3]) == ([1, 2], 3)  # Default: last item
     assert node.pop([], 0) == ([], None)  # Empty list pop
-
-
-def test_list_clear():
-    node = ListClear()
-    assert node.clear([1, 2, 3]) == ([],)
-    assert node.clear([]) == ([],)
 
 
 def test_list_index():

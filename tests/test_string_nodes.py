@@ -6,13 +6,14 @@ from src.basic_data_handling.string_nodes import (
     StringCenter,
     StringConcat,
     StringCount,
+    StringDataListJoin,
     StringDecode,
     StringEncode,
     StringEndswith,
     StringExpandtabs,
     StringFind,
-    StringIn,
     StringFormatMap,
+    StringIn,
     StringIsAlnum,
     StringIsAlpha,
     StringIsAscii,
@@ -25,7 +26,8 @@ from src.basic_data_handling.string_nodes import (
     StringIsSpace,
     StringIsTitle,
     StringIsUpper,
-    StringJoin,
+    StringLength,
+    StringListJoin,
     StringLjust,
     StringLower,
     StringLstrip,
@@ -34,10 +36,13 @@ from src.basic_data_handling.string_nodes import (
     StringReplace,
     StringRfind,
     StringRjust,
-    StringRsplit,
+    StringRsplitDataList,
+    StringRsplitList,
     StringRstrip,
-    StringSplit,
-    StringSplitlines,
+    StringSplitDataList,
+    StringSplitList,
+    StringSplitlinesDataList,
+    StringSplitlinesList,
     StringStartswith,
     StringStrip,
     StringSwapcase,
@@ -211,11 +216,17 @@ def test_isupper():
     assert node.isupper("") == (False,)  # Empty string
 
 def test_join():
-    node = StringJoin()
+    node = StringDataListJoin()
     # join expects a data list as input, so we need to simulate this
     assert node.join([", "], ["apple", "banana", "cherry"]) == ("apple, banana, cherry",)
     assert node.join([""], ["a", "b", "c"]) == ("abc",)
     assert node.join(["-"], []) == ("",)  # Empty list
+
+    # Test ListJoin variant
+    node_list = StringListJoin()
+    assert node_list.join([", "], ["apple", "banana", "cherry"]) == ("apple, banana, cherry",)
+    assert node_list.join([""], ["a", "b", "c"]) == ("abc",)
+    assert node_list.join(["-"], []) == ("",)  # Empty list
 
 def test_ljust():
     node = StringLjust()
@@ -269,10 +280,16 @@ def test_rjust():
     assert node.rjust("test", 2) == ("test",)  # Width smaller than string length
 
 def test_rsplit():
-    node = StringRsplit()
+    node = StringRsplitDataList()
     assert node.rsplit("apple,banana,cherry", ",") == (["apple", "banana", "cherry"],)
     assert node.rsplit("apple,banana,cherry", ",", 1) == (["apple,banana", "cherry"],)
     assert node.rsplit("   words  with   spaces   ") == (["words", "with", "spaces"],)  # Default splits on whitespace
+
+    # Test List variant
+    node_list = StringRsplitList()
+    assert node_list.rsplit("apple,banana,cherry", ",") == (["apple", "banana", "cherry"],)
+    assert node_list.rsplit("apple,banana,cherry", ",", 1) == (["apple,banana", "cherry"],)
+    assert node_list.rsplit("   words  with   spaces   ") == (["words", "with", "spaces"],)  # Default splits on whitespace
 
 def test_rstrip():
     node = StringRstrip()
@@ -282,17 +299,30 @@ def test_rstrip():
     assert node.rstrip("") == ("",)  # Empty string
 
 def test_split():
-    node = StringSplit()
+    node = StringSplitDataList()
     assert node.split("apple,banana,cherry", ",") == (["apple", "banana", "cherry"],)
     assert node.split("apple,banana,cherry", ",", 1) == (["apple", "banana,cherry"],)
     assert node.split("   words  with   spaces   ") == (["words", "with", "spaces"],)  # Default splits on whitespace
 
+    # Test List variant
+    node_list = StringSplitList()
+    assert node_list.split("apple,banana,cherry", ",") == (["apple", "banana", "cherry"],)
+    assert node_list.split("apple,banana,cherry", ",", 1) == (["apple", "banana,cherry"],)
+    assert node_list.split("   words  with   spaces   ") == (["words", "with", "spaces"],)  # Default splits on whitespace
+
 def test_splitlines():
-    node = StringSplitlines()
+    node = StringSplitlinesDataList()
     assert node.splitlines("line1\nline2\nline3") == (["line1", "line2", "line3"],)
     assert node.splitlines("line1\r\nline2\rline3") == (["line1", "line2", "line3"],)
-    assert node.splitlines("line1\nline2\nline3", "True") == (["line1\n", "line2\n", "line3"],)  # Keep line endings
+    assert node.splitlines("line1\nline2\nline3", True) == (["line1\n", "line2\n", "line3"],)  # Keep line endings
     assert node.splitlines("no newlines") == (["no newlines"],)
+
+    # Test List variant
+    node_list = StringSplitlinesList()
+    assert node_list.splitlines("line1\nline2\nline3") == (["line1", "line2", "line3"],)
+    assert node_list.splitlines("line1\r\nline2\rline3") == (["line1", "line2", "line3"],)
+    assert node_list.splitlines("line1\nline2\nline3", True) == (["line1\n", "line2\n", "line3"],)  # Keep line endings
+    assert node_list.splitlines("no newlines") == (["no newlines"],)
 
 def test_startswith():
     node = StringStartswith()
@@ -333,3 +363,9 @@ def test_zfill():
     assert node.zfill("-123", 5) == ("-0123",)  # Preserves sign
     assert node.zfill("123", 2) == ("123",)  # Width smaller than string length
     assert node.zfill("", 3) == ("000",)  # Empty string
+
+def test_length():
+    node = StringLength()
+    assert node.length("hello") == (5,)
+    assert node.length("") == (0,)  # Empty string
+    assert node.length("hello world") == (11,)  # String with spaces
