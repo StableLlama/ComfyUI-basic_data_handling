@@ -1,7 +1,6 @@
 import pytest
 from src.basic_data_handling.casting_nodes import (CastToString, CastToInt, CastToFloat, CastToBoolean,
-                           CastToList, CastDataListToList, CastToSet, CastDataListToSet,
-                           CastToDict)
+                           CastToList, CastToSet, CastToDict)
 
 
 def test_cast_to_string():
@@ -49,26 +48,12 @@ def test_cast_to_list():
     assert node.convert_to_list(None) == ([None],)
 
 
-def test_cast_data_list_to_list():
-    node = CastDataListToList()
-    assert node.convert(list=[1, 2, 3]) == ([1, 2, 3],)
-    assert node.convert(list=[]) == ([],)
-    assert node.convert(list=["a", "b", "c"]) == (["a", "b", "c"],)
-
-
 def test_cast_to_set():
     node = CastToSet()
     assert node.convert_to_set(123) == ({123},)
     assert node.convert_to_set([1, 2, 2]) == ({1, 2},)
     assert node.convert_to_set("abc") == ({"abc"},)
     assert node.convert_to_set(None) == ({None},)
-
-
-def test_cast_data_list_to_set():
-    node = CastDataListToSet()
-    assert node.convert(list=[1, 2, 3, 3]) == ({1, 2, 3},)
-    assert node.convert(list=["a", "b", "b"]) == ({"a", "b"},)
-    assert node.convert(list=[]) == (set(),)
 
 
 def test_cast_to_dict():

@@ -4,36 +4,6 @@ import glob
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
 
-class PathJoin(ComfyNodeABC):
-    """
-    Joins multiple path components into a single path.
-
-    This node takes multiple path components and joins them intelligently
-    to form a single path. It handles directory separators correctly
-    for the operating system.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path1": (IO.STRING, {"default": ""}),
-            },
-            "optional": {
-                "path2": (IO.STRING, {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("path",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "join_paths"
-
-    def join_paths(self, path1: str, path2: str = "") -> tuple[str]:
-        paths = [p for p in [path1, path2] if p]
-        return (str(os.path.join(*paths)),)
-
-
 class PathAbspath(ComfyNodeABC):
     """
     Returns the absolute path of a file or directory.
@@ -57,6 +27,84 @@ class PathAbspath(ComfyNodeABC):
 
     def get_abspath(self, path: str) -> tuple[str]:
         return (os.path.abspath(path),)
+
+
+class PathBasename(ComfyNodeABC):
+    """
+    Returns the base name of a path.
+
+    This node extracts the filename component from a path,
+    removing any directory information.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("basename",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_basename"
+
+    def get_basename(self, path: str) -> tuple[str]:
+        return (os.path.basename(path),)
+
+
+class PathCommonPrefix(ComfyNodeABC):
+    """
+    Finds the common prefix of multiple paths.
+
+    This node returns the longest common leading component of the given paths.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path1": (IO.STRING, {"default": ""}),
+            },
+            "optional": {
+                "path2": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("common_prefix",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_common_prefix"
+
+    def get_common_prefix(self, path1: str, path2: str = "") -> tuple[str]:
+        paths = [p for p in [path1, path2] if p]
+        return (os.path.commonprefix(paths),)
+
+
+class PathDirname(ComfyNodeABC):
+    """
+    Returns the directory name of a path.
+
+    This node extracts the directory component from a path,
+    removing the filename.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("dirname",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_dirname"
+
+    def get_dirname(self, path: str) -> tuple[str]:
+        return (os.path.dirname(path),)
 
 
 class PathExists(ComfyNodeABC):
@@ -84,37 +132,12 @@ class PathExists(ComfyNodeABC):
         return (os.path.exists(path),)
 
 
-class PathIsFile(ComfyNodeABC):
+class PathExpandVars(ComfyNodeABC):
     """
-    Checks if a path points to a file.
+    Expands environment variables in a path.
 
-    This node returns True if the path exists and is a regular file,
-    and False otherwise.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path": (IO.STRING, {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_file",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "check_is_file"
-
-    def check_is_file(self, path: str) -> tuple[bool]:
-        return (os.path.isfile(path),)
-
-
-class PathIsDir(ComfyNodeABC):
-    """
-    Checks if a path points to a directory.
-
-    This node returns True if the path exists and is a directory,
-    and False otherwise.
+    This node replaces environment variables in a path with their values.
+    For example, $HOME or ${HOME} on Unix, or %USERPROFILE% on Windows.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -124,14 +147,59 @@ class PathIsDir(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_dir",)
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("expanded_path",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "check_is_dir"
+    FUNCTION = "expand_vars"
 
-    def check_is_dir(self, path: str) -> tuple[bool]:
-        return (os.path.isdir(path),)
+    def expand_vars(self, path: str) -> tuple[str]:
+        return (os.path.expandvars(path),)
+
+
+class PathGetCwd(ComfyNodeABC):
+    """
+    Returns the current working directory.
+
+    This node returns the current working directory as an absolute path.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {}}
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("current_directory",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_cwd"
+
+    def get_cwd(self) -> tuple[str]:
+        return (os.getcwd(),)
+
+
+class PathGetExtension(ComfyNodeABC):
+    """
+    Returns the extension of a file.
+
+    This node extracts the file extension from a path,
+    including the dot (e.g., '.txt').
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("extension",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_extension"
+
+    def get_extension(self, path: str) -> tuple[str]:
+        return (os.path.splitext(path)[1],)
 
 
 class PathGetSize(ComfyNodeABC):
@@ -163,87 +231,45 @@ class PathGetSize(ComfyNodeABC):
         return (os.path.getsize(path),)
 
 
-class PathSplit(ComfyNodeABC):
+class PathGlob(ComfyNodeABC):
     """
-    Splits a path into directory and filename components.
+    Finds paths matching a pattern.
 
-    This node takes a path and returns a tuple containing the directory path
-    and the filename.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path": (IO.STRING, {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING, IO.STRING)
-    RETURN_NAMES = ("directory", "filename")
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "split_path"
-
-    def split_path(self, path: str) -> tuple[str, str]:
-        return os.path.split(path)
-
-
-class PathSplitExt(ComfyNodeABC):
-    """
-    Splits a path into name and extension components.
-
-    This node takes a path and returns a tuple containing the path without
-    the extension and the extension (including the dot).
+    This node returns a list of paths matching the given pattern.
+    The pattern follows shell-style wildcard rules:
+    * - matches any number of characters
+    ? - matches a single character
+    [seq] - matches any character in seq
+    [!seq] - matches any character not in seq
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING, IO.STRING)
-    RETURN_NAMES = ("path_without_ext", "extension")
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "split_ext"
-
-    def split_ext(self, path: str) -> tuple[str, str]:
-        return os.path.splitext(path)
-
-
-class PathBasename(ComfyNodeABC):
-    """
-    Returns the base name of a path.
-
-    This node extracts the filename component from a path,
-    removing any directory information.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "pattern": (IO.STRING, {"default": "*.txt"}),
+            },
+            "optional": {
+                "recursive": (IO.BOOLEAN, {"default": False}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("basename",)
+    RETURN_NAMES = ("matching_paths",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "get_basename"
+    FUNCTION = "glob_paths"
+    OUTPUT_IS_LIST = (True,)
 
-    def get_basename(self, path: str) -> tuple[str]:
-        return (os.path.basename(path),)
+    def glob_paths(self, pattern: str, recursive: bool = False) -> tuple[list[str]]:
+        return (glob.glob(pattern, recursive=recursive),)
 
 
-class PathDirname(ComfyNodeABC):
+class PathIsAbsolute(ComfyNodeABC):
     """
-    Returns the directory name of a path.
+    Checks if a path is absolute.
 
-    This node extracts the directory component from a path,
-    removing the filename.
+    This node returns True if the path is absolute (begins at the root directory),
+    and False if it's relative.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -253,22 +279,22 @@ class PathDirname(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("dirname",)
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("is_absolute",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "get_dirname"
+    FUNCTION = "check_is_absolute"
 
-    def get_dirname(self, path: str) -> tuple[str]:
-        return (os.path.dirname(path),)
+    def check_is_absolute(self, path: str) -> tuple[bool]:
+        return (os.path.isabs(path),)
 
 
-class PathGetExtension(ComfyNodeABC):
+class PathIsDir(ComfyNodeABC):
     """
-    Returns the extension of a file.
+    Checks if a path points to a directory.
 
-    This node extracts the file extension from a path,
-    including the dot (e.g., '.txt').
+    This node returns True if the path exists and is a directory,
+    and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -278,14 +304,116 @@ class PathGetExtension(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("extension",)
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("is_dir",)
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "get_extension"
+    FUNCTION = "check_is_dir"
 
-    def get_extension(self, path: str) -> tuple[str]:
-        return (os.path.splitext(path)[1],)
+    def check_is_dir(self, path: str) -> tuple[bool]:
+        return (os.path.isdir(path),)
+
+
+class PathIsFile(ComfyNodeABC):
+    """
+    Checks if a path points to a file.
+
+    This node returns True if the path exists and is a regular file,
+    and False otherwise.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("is_file",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_is_file"
+
+    def check_is_file(self, path: str) -> tuple[bool]:
+        return (os.path.isfile(path),)
+
+
+class PathJoin(ComfyNodeABC):
+    """
+    Joins multiple path components into a single path.
+
+    This node takes multiple path components and joins them intelligently
+    to form a single path. It handles directory separators correctly
+    for the operating system.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path1": (IO.STRING, {"default": ""}),
+            },
+            "optional": {
+                "path2": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("path",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "join_paths"
+
+    def join_paths(self, path1: str, path2: str = "") -> tuple[str]:
+        paths = [p for p in [path1, path2] if p]
+        return (str(os.path.join(*paths)),)
+
+
+class PathListDir(ComfyNodeABC):
+    """
+    Lists the contents of a directory.
+
+    This node returns a list of files and directories in the specified path.
+    If 'files_only' is True, it only returns files.
+    If 'dirs_only' is True, it only returns directories.
+    If both are False, it returns all contents.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            },
+            "optional": {
+                "files_only": (IO.BOOLEAN, {"default": False}),
+                "dirs_only": (IO.BOOLEAN, {"default": False}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("entries",)
+    CATEGORY = "Basic/path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "list_directory"
+    OUTPUT_IS_LIST = (True,)
+
+    def list_directory(self, path: str, files_only: str = False, dirs_only: str = False) -> tuple[list[str]]:
+        if not path:
+            path = os.getcwd()
+
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Directory does not exist: {path}")
+        if not os.path.isdir(path):
+            raise NotADirectoryError(f"Basic data handling: Path is not a directory: {path}")
+
+        entries = os.listdir(path)
+
+        if files_only:
+            entries = [e for e in entries if os.path.isfile(os.path.join(path, e))]
+        elif dirs_only:
+            entries = [e for e in entries if os.path.isdir(os.path.join(path, e))]
+
+        return (entries,)
 
 
 class PathNormalize(ComfyNodeABC):
@@ -344,45 +472,12 @@ class PathRelative(ComfyNodeABC):
         return (os.path.relpath(path, start),)
 
 
-class PathGlob(ComfyNodeABC):
+class PathSplit(ComfyNodeABC):
     """
-    Finds paths matching a pattern.
+    Splits a path into directory and filename components.
 
-    This node returns a list of paths matching the given pattern.
-    The pattern follows shell-style wildcard rules:
-    * - matches any number of characters
-    ? - matches a single character
-    [seq] - matches any character in seq
-    [!seq] - matches any character not in seq
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "pattern": (IO.STRING, {"default": "*.txt"}),
-            },
-            "optional": {
-                "recursive": (IO.BOOLEAN, {"default": False}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("matching_paths",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "glob_paths"
-    OUTPUT_IS_LIST = (True,)
-
-    def glob_paths(self, pattern: str, recursive: bool = False) -> tuple[list[str]]:
-        return (glob.glob(pattern, recursive=recursive),)
-
-
-class PathExpandVars(ComfyNodeABC):
-    """
-    Expands environment variables in a path.
-
-    This node replaces environment variables in a path with their values.
-    For example, $HOME or ${HOME} on Unix, or %USERPROFILE% on Windows.
+    This node takes a path and returns a tuple containing the directory path
+    and the filename.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -392,89 +487,22 @@ class PathExpandVars(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("expanded_path",)
+    RETURN_TYPES = (IO.STRING, IO.STRING)
+    RETURN_NAMES = ("directory", "filename")
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "expand_vars"
+    FUNCTION = "split_path"
 
-    def expand_vars(self, path: str) -> tuple[str]:
-        return (os.path.expandvars(path),)
+    def split_path(self, path: str) -> tuple[str, str]:
+        return os.path.split(path)
 
 
-class PathGetCwd(ComfyNodeABC):
+class PathSplitExt(ComfyNodeABC):
     """
-    Returns the current working directory.
+    Splits a path into name and extension components.
 
-    This node returns the current working directory as an absolute path.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {}}
-
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("current_directory",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "get_cwd"
-
-    def get_cwd(self) -> tuple[str]:
-        return (os.getcwd(),)
-
-
-class PathListDir(ComfyNodeABC):
-    """
-    Lists the contents of a directory.
-
-    This node returns a list of files and directories in the specified path.
-    If 'files_only' is True, it only returns files.
-    If 'dirs_only' is True, it only returns directories.
-    If both are False, it returns all contents.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path": (IO.STRING, {"default": ""}),
-            },
-            "optional": {
-                "files_only": (IO.BOOLEAN, {"default": False}),
-                "dirs_only": (IO.BOOLEAN, {"default": False}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("entries",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "list_directory"
-    OUTPUT_IS_LIST = (True,)
-
-    def list_directory(self, path: str, files_only: str = False, dirs_only: str = False) -> tuple[list[str]]:
-        if not path:
-            path = os.getcwd()
-
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Directory does not exist: {path}")
-        if not os.path.isdir(path):
-            raise NotADirectoryError(f"Basic data handling: Path is not a directory: {path}")
-
-        entries = os.listdir(path)
-
-        if files_only:
-            entries = [e for e in entries if os.path.isfile(os.path.join(path, e))]
-        elif dirs_only:
-            entries = [e for e in entries if os.path.isdir(os.path.join(path, e))]
-
-        return (entries,)
-
-
-class PathIsAbsolute(ComfyNodeABC):
-    """
-    Checks if a path is absolute.
-
-    This node returns True if the path is absolute (begins at the root directory),
-    and False if it's relative.
+    This node takes a path and returns a tuple containing the path without
+    the extension and the extension (including the dot).
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -484,84 +512,56 @@ class PathIsAbsolute(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_absolute",)
+    RETURN_TYPES = (IO.STRING, IO.STRING)
+    RETURN_NAMES = ("path_without_ext", "extension")
     CATEGORY = "Basic/path"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "check_is_absolute"
+    FUNCTION = "split_ext"
 
-    def check_is_absolute(self, path: str) -> tuple[bool]:
-        return (os.path.isabs(path),)
-
-
-class PathCommonPrefix(ComfyNodeABC):
-    """
-    Finds the common prefix of multiple paths.
-
-    This node returns the longest common leading component of the given paths.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "path1": (IO.STRING, {"default": ""}),
-            },
-            "optional": {
-                "path2": (IO.STRING, {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("common_prefix",)
-    CATEGORY = "Basic/path"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "get_common_prefix"
-
-    def get_common_prefix(self, path1: str, path2: str = "") -> tuple[str]:
-        paths = [p for p in [path1, path2] if p]
-        return (os.path.commonprefix(paths),)
+    def split_ext(self, path: str) -> tuple[str, str]:
+        return os.path.splitext(path)
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: PathJoin": PathJoin,
     "Basic data handling: PathAbspath": PathAbspath,
-    "Basic data handling: PathExists": PathExists,
-    "Basic data handling: PathIsFile": PathIsFile,
-    "Basic data handling: PathIsDir": PathIsDir,
-    "Basic data handling: PathGetSize": PathGetSize,
-    "Basic data handling: PathSplit": PathSplit,
-    "Basic data handling: PathSplitExt": PathSplitExt,
     "Basic data handling: PathBasename": PathBasename,
+    "Basic data handling: PathCommonPrefix": PathCommonPrefix,
     "Basic data handling: PathDirname": PathDirname,
-    "Basic data handling: PathGetExtension": PathGetExtension,
-    "Basic data handling: PathNormalize": PathNormalize,
-    "Basic data handling: PathRelative": PathRelative,
-    "Basic data handling: PathGlob": PathGlob,
+    "Basic data handling: PathExists": PathExists,
     "Basic data handling: PathExpandVars": PathExpandVars,
     "Basic data handling: PathGetCwd": PathGetCwd,
-    "Basic data handling: PathListDir": PathListDir,
+    "Basic data handling: PathGetExtension": PathGetExtension,
+    "Basic data handling: PathGetSize": PathGetSize,
+    "Basic data handling: PathGlob": PathGlob,
     "Basic data handling: PathIsAbsolute": PathIsAbsolute,
-    "Basic data handling: PathCommonPrefix": PathCommonPrefix,
+    "Basic data handling: PathIsDir": PathIsDir,
+    "Basic data handling: PathIsFile": PathIsFile,
+    "Basic data handling: PathJoin": PathJoin,
+    "Basic data handling: PathListDir": PathListDir,
+    "Basic data handling: PathNormalize": PathNormalize,
+    "Basic data handling: PathRelative": PathRelative,
+    "Basic data handling: PathSplit": PathSplit,
+    "Basic data handling: PathSplitExt": PathSplitExt,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: PathJoin": "join",
     "Basic data handling: PathAbspath": "abspath",
-    "Basic data handling: PathExists": "exists",
-    "Basic data handling: PathIsFile": "is_file",
-    "Basic data handling: PathIsDir": "is_dir",
-    "Basic data handling: PathGetSize": "get_size",
-    "Basic data handling: PathSplit": "split",
-    "Basic data handling: PathSplitExt": "splitext",
     "Basic data handling: PathBasename": "basename",
+    "Basic data handling: PathCommonPrefix": "common prefix",
     "Basic data handling: PathDirname": "dirname",
-    "Basic data handling: PathGetExtension": "get_extension",
+    "Basic data handling: PathExists": "exists",
+    "Basic data handling: PathExpandVars": "expand vars",
+    "Basic data handling: PathGetCwd": "get current working directory",
+    "Basic data handling: PathGetExtension": "get extension",
+    "Basic data handling: PathGetSize": "get size",
+    "Basic data handling: PathGlob": "glob",
+    "Basic data handling: PathIsAbsolute": "is absolute",
+    "Basic data handling: PathIsDir": "is dir",
+    "Basic data handling: PathIsFile": "is file",
+    "Basic data handling: PathJoin": "join",
+    "Basic data handling: PathListDir": "list dir",
     "Basic data handling: PathNormalize": "normalize",
     "Basic data handling: PathRelative": "relative",
-    "Basic data handling: PathGlob": "glob",
-    "Basic data handling: PathExpandVars": "expand_vars",
-    "Basic data handling: PathGetCwd": "get_cwd",
-    "Basic data handling: PathListDir": "list_dir",
-    "Basic data handling: PathIsAbsolute": "is_absolute",
-    "Basic data handling: PathCommonPrefix": "common_prefix",
+    "Basic data handling: PathSplit": "split",
+    "Basic data handling: PathSplitExt": "splitext",
 }

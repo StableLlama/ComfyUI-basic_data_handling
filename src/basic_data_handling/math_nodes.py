@@ -3,111 +3,17 @@ from inspect import cleandoc
 from typing import Literal, Union
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
-class MathSin(ComfyNodeABC):
+class MathAbs(ComfyNodeABC):
     """
-    Calculates the sine of an angle in radians or degrees.
+    Returns the absolute value of a number.
 
-    This node takes an angle value and unit type, and returns the sine of that angle.
-    The sine of an angle is the ratio of the length of the opposite side to the length
-    of the hypotenuse in a right-angled triangle.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        if unit == "degrees":
-            # Convert degrees to radians
-            angle = math.radians(angle)
-        return (math.sin(angle),)
-
-
-class MathCos(ComfyNodeABC):
-    """
-    Calculates the cosine of an angle in radians or degrees.
-
-    This node takes an angle value and unit type, and returns the cosine of that angle.
-    The cosine of an angle is the ratio of the length of the adjacent side to the length
-    of the hypotenuse in a right-angled triangle.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        if unit == "degrees":
-            # Convert degrees to radians
-            angle = math.radians(angle)
-        return (math.cos(angle),)
-
-
-class MathTan(ComfyNodeABC):
-    """
-    Calculates the tangent of an angle in radians or degrees.
-
-    This node takes an angle value and unit type, and returns the tangent of that angle.
-    The tangent of an angle is the ratio of the length of the opposite side to the length
-    of the adjacent side in a right-angled triangle.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        if unit == "degrees":
-            # Convert degrees to radians
-            angle = math.radians(angle)
-
-        # Handle specific angles that would result in division by zero
-        if abs(math.cos(angle)) < 1e-10:
-            raise ValueError("Tangent is undefined at this angle (division by zero)")
-
-        return (math.tan(angle),)
-
-
-class MathAsin(ComfyNodeABC):
-    """
-    Calculates the arc sine (inverse sine) of a value.
-
-    This node takes a value between -1 and 1, and returns the arc sine in radians or degrees.
-    The arc sine is the inverse operation of sine, returning the angle whose sine is the input value.
+    This node takes a number and returns its absolute value (magnitude without sign).
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
@@ -116,11 +22,8 @@ class MathAsin(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        result = math.asin(value)
-        if unit == "degrees":
-            result = math.degrees(result)
-        return (result,)
+    def calculate(self, value: Union[float, int]) -> tuple[Union[float, int]]:
+        return (abs(value),)
 
 
 class MathAcos(ComfyNodeABC):
@@ -146,6 +49,34 @@ class MathAcos(ComfyNodeABC):
 
     def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
         result = math.acos(value)
+        if unit == "degrees":
+            result = math.degrees(result)
+        return (result,)
+
+
+class MathAsin(ComfyNodeABC):
+    """
+    Calculates the arc sine (inverse sine) of a value.
+
+    This node takes a value between -1 and 1, and returns the arc sine in radians or degrees.
+    The arc sine is the inverse operation of sine, returning the angle whose sine is the input value.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+        result = math.asin(value)
         if unit == "degrees":
             result = math.degrees(result)
         return (result,)
@@ -209,17 +140,43 @@ class MathAtan2(ComfyNodeABC):
         return (result,)
 
 
-class MathSqrt(ComfyNodeABC):
+class MathCeil(ComfyNodeABC):
     """
-    Calculates the square root of a non-negative number.
+    Returns the ceiling of a number.
 
-    This node takes a non-negative number and returns its square root.
+    This node takes a number and returns the smallest integer greater than or equal to the input value.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, value: float) -> tuple[int]:
+        return (math.ceil(value),)
+
+
+class MathCos(ComfyNodeABC):
+    """
+    Calculates the cosine of an angle in radians or degrees.
+
+    This node takes an angle value and unit type, and returns the cosine of that angle.
+    The cosine of an angle is the ratio of the length of the adjacent side to the length
+    of the hypotenuse in a right-angled triangle.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
 
@@ -228,8 +185,53 @@ class MathSqrt(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[float]:
-        return (math.sqrt(value),)
+    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+        if unit == "degrees":
+            # Convert degrees to radians
+            angle = math.radians(angle)
+        return (math.cos(angle),)
+
+
+class MathDegrees(ComfyNodeABC):
+    """
+    Converts an angle from radians to degrees.
+
+    This node takes an angle in radians and returns the equivalent angle in degrees.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, radians: float) -> tuple[float]:
+        return (math.degrees(radians),)
+
+
+class MathE(ComfyNodeABC):
+    """
+    Returns the mathematical constant e.
+
+    This node returns the value of e (Euler's number), which is approximately 2.71828.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {}}
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self) -> tuple[float]:
+        return (math.e,)
 
 
 class MathExp(ComfyNodeABC):
@@ -253,6 +255,29 @@ class MathExp(ComfyNodeABC):
 
     def calculate(self, value: float) -> tuple[float]:
         return (math.exp(value),)
+
+
+class MathFloor(ComfyNodeABC):
+    """
+    Returns the floor of a number.
+
+    This node takes a number and returns the largest integer less than or equal to the input value.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, value: float) -> tuple[int]:
+        return (math.floor(value),)
 
 
 class MathLog(ComfyNodeABC):
@@ -308,157 +333,29 @@ class MathLog10(ComfyNodeABC):
         return (math.log10(value),)
 
 
-class MathDegrees(ComfyNodeABC):
+class MathMax(ComfyNodeABC):
     """
-    Converts an angle from radians to degrees.
+    Returns the maximum value among the inputs.
 
-    This node takes an angle in radians and returns the equivalent angle in degrees.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, radians: float) -> tuple[float]:
-        return (math.degrees(radians),)
-
-
-class MathRadians(ComfyNodeABC):
-    """
-    Converts an angle from degrees to radians.
-
-    This node takes an angle in degrees and returns the equivalent angle in radians.
+    This node takes two or more values and returns the maximum value among them.
+    The function works with both FLOAT and INT types.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = (IO.FLOAT,)
+    RETURN_TYPES = ("*",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, degrees: float) -> tuple[float]:
-        return (math.radians(degrees),)
-
-
-class MathFloor(ComfyNodeABC):
-    """
-    Returns the floor of a number.
-
-    This node takes a number and returns the largest integer less than or equal to the input value.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.INT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, value: float) -> tuple[int]:
-        return (math.floor(value),)
-
-
-class MathCeil(ComfyNodeABC):
-    """
-    Returns the ceiling of a number.
-
-    This node takes a number and returns the smallest integer greater than or equal to the input value.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.INT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, value: float) -> tuple[int]:
-        return (math.ceil(value),)
-
-
-class MathAbs(ComfyNodeABC):
-    """
-    Returns the absolute value of a number.
-
-    This node takes a number and returns its absolute value (magnitude without sign).
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self, value: Union[float, int]) -> tuple[Union[float, int]]:
-        return (abs(value),)
-
-
-class MathPi(ComfyNodeABC):
-    """
-    Returns the mathematical constant π (pi).
-
-    This node returns the value of π, which is approximately 3.14159.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {}}
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self) -> tuple[float]:
-        return (math.pi,)
-
-
-class MathE(ComfyNodeABC):
-    """
-    Returns the mathematical constant e.
-
-    This node returns the value of e (Euler's number), which is approximately 2.71828.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {}}
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/maths"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "calculate"
-
-    def calculate(self) -> tuple[float]:
-        return (math.e,)
+    def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
+        return (max(value1, value2),)
 
 
 class MathMin(ComfyNodeABC):
@@ -486,73 +383,176 @@ class MathMin(ComfyNodeABC):
         return (min(value1, value2),)
 
 
-class MathMax(ComfyNodeABC):
+class MathPi(ComfyNodeABC):
     """
-    Returns the maximum value among the inputs.
+    Returns the mathematical constant π (pi).
 
-    This node takes two or more values and returns the maximum value among them.
-    The function works with both FLOAT and INT types.
+    This node returns the value of π, which is approximately 3.14159.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {}}
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self) -> tuple[float]:
+        return (math.pi,)
+
+
+class MathRadians(ComfyNodeABC):
+    """
+    Converts an angle from degrees to radians.
+
+    This node takes an angle in degrees and returns the equivalent angle in radians.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
             }
         }
 
-    RETURN_TYPES = ("*",)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
-        return (max(value1, value2),)
+    def calculate(self, degrees: float) -> tuple[float]:
+        return (math.radians(degrees),)
+
+
+class MathSin(ComfyNodeABC):
+    """
+    Calculates the sine of an angle in radians or degrees.
+
+    This node takes an angle value and unit type, and returns the sine of that angle.
+    The sine of an angle is the ratio of the length of the opposite side to the length
+    of the hypotenuse in a right-angled triangle.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+        if unit == "degrees":
+            # Convert degrees to radians
+            angle = math.radians(angle)
+        return (math.sin(angle),)
+
+
+class MathSqrt(ComfyNodeABC):
+    """
+    Calculates the square root of a non-negative number.
+
+    This node takes a non-negative number and returns its square root.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "FLOAT"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, value: float) -> tuple[float]:
+        return (math.sqrt(value),)
+
+
+class MathTan(ComfyNodeABC):
+    """
+    Calculates the tangent of an angle in radians or degrees.
+
+    This node takes an angle value and unit type, and returns the tangent of that angle.
+    The tangent of an angle is the ratio of the length of the opposite side to the length
+    of the adjacent side in a right-angled triangle.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "unit": (["radians", "degrees"], {"default": "degrees"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/maths"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "calculate"
+
+    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+        if unit == "degrees":
+            # Convert degrees to radians
+            angle = math.radians(angle)
+
+        # Handle specific angles that would result in division by zero
+        if abs(math.cos(angle)) < 1e-10:
+            raise ValueError("Tangent is undefined at this angle (division by zero)")
+
+        return (math.tan(angle),)
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: MathSin": MathSin,
-    "Basic data handling: MathCos": MathCos,
-    "Basic data handling: MathTan": MathTan,
-    "Basic data handling: MathAsin": MathAsin,
+    "Basic data handling: MathAbs": MathAbs,
     "Basic data handling: MathAcos": MathAcos,
+    "Basic data handling: MathAsin": MathAsin,
     "Basic data handling: MathAtan": MathAtan,
     "Basic data handling: MathAtan2": MathAtan2,
-    "Basic data handling: MathSqrt": MathSqrt,
+    "Basic data handling: MathCeil": MathCeil,
+    "Basic data handling: MathCos": MathCos,
+    "Basic data handling: MathDegrees": MathDegrees,
+    "Basic data handling: MathE": MathE,
     "Basic data handling: MathExp": MathExp,
+    "Basic data handling: MathFloor": MathFloor,
     "Basic data handling: MathLog": MathLog,
     "Basic data handling: MathLog10": MathLog10,
-    "Basic data handling: MathDegrees": MathDegrees,
-    "Basic data handling: MathRadians": MathRadians,
-    "Basic data handling: MathFloor": MathFloor,
-    "Basic data handling: MathCeil": MathCeil,
-    "Basic data handling: MathAbs": MathAbs,
-    "Basic data handling: MathPi": MathPi,
-    "Basic data handling: MathE": MathE,
-    "Basic data handling: MathMin": MathMin,
     "Basic data handling: MathMax": MathMax,
+    "Basic data handling: MathMin": MathMin,
+    "Basic data handling: MathPi": MathPi,
+    "Basic data handling: MathRadians": MathRadians,
+    "Basic data handling: MathSin": MathSin,
+    "Basic data handling: MathSqrt": MathSqrt,
+    "Basic data handling: MathTan": MathTan,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: MathSin": "sin",
-    "Basic data handling: MathCos": "cos",
-    "Basic data handling: MathTan": "tan",
-    "Basic data handling: MathAsin": "asin",
+    "Basic data handling: MathAbs": "abs",
     "Basic data handling: MathAcos": "acos",
+    "Basic data handling: MathAsin": "asin",
     "Basic data handling: MathAtan": "atan",
     "Basic data handling: MathAtan2": "atan2",
-    "Basic data handling: MathSqrt": "sqrt",
+    "Basic data handling: MathCeil": "ceil",
+    "Basic data handling: MathCos": "cos",
+    "Basic data handling: MathDegrees": "degrees",
+    "Basic data handling: MathE": "e (2.71828)",
     "Basic data handling: MathExp": "exp",
+    "Basic data handling: MathFloor": "floor",
     "Basic data handling: MathLog": "log",
     "Basic data handling: MathLog10": "log10",
-    "Basic data handling: MathDegrees": "degrees",
-    "Basic data handling: MathRadians": "radians",
-    "Basic data handling: MathFloor": "floor",
-    "Basic data handling: MathCeil": "ceil",
-    "Basic data handling: MathAbs": "abs",
-    "Basic data handling: MathPi": "pi",
-    "Basic data handling: MathE": "e",
-    "Basic data handling: MathMin": "min",
     "Basic data handling: MathMax": "max",
+    "Basic data handling: MathMin": "min",
+    "Basic data handling: MathPi": "pi (3.14159)",
+    "Basic data handling: MathRadians": "radians",
+    "Basic data handling: MathSin": "sin",
+    "Basic data handling: MathSqrt": "sqrt",
+    "Basic data handling: MathTan": "tan",
 }

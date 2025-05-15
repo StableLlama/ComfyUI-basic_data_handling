@@ -128,6 +128,103 @@ class FloatDivideSafe(ComfyNodeABC):
         return (float1 / float2,)
 
 
+class FloatAsIntegerRatio(ComfyNodeABC):
+    """
+    Returns the integer ratio of a floating-point number.
+
+    This node takes a floating-point number and returns two integers,
+    which represent the ratio as numerator and denominator.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "float_value": (IO.FLOAT, {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT, IO.INT)
+    RETURN_NAMES = ("numerator", "denominator")
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "as_integer_ratio"
+
+    def as_integer_ratio(self, float_value: float) -> tuple[int, int]:
+        # Decompose the float into numerator and denominator
+        numerator, denominator = float_value.as_integer_ratio()
+        return numerator, denominator
+
+
+class FloatFromHex(ComfyNodeABC):
+    """
+    Converts a hexadecimal string to its corresponding floating-point number.
+
+    This node takes a hexadecimal float string as input and returns the float.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "hex_value": (IO.STRING, {"default": "0x0.0p+0"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "from_hex"
+
+    def from_hex(self, hex_value: str) -> tuple[float]:
+        return (float.fromhex(hex_value),)
+
+
+class FloatHex(ComfyNodeABC):
+    """
+    Converts a floating-point number to its hexadecimal representation.
+
+    This node takes a float as input and returns its hexadecimal string representation.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "float_value": (IO.FLOAT, {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "to_hex"
+
+    def to_hex(self, float_value: float) -> tuple[str]:
+        return (float_value.hex(),)
+
+
+class FloatIsInteger(ComfyNodeABC):
+    """
+    Checks if a floating-point number is an integer.
+
+    This node takes a floating-point number as input and returns True if the number
+    is an integer, otherwise False.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "float_value": (IO.FLOAT, {"default": 0.0}),
+            }
+        }
+
+    RETURN_TYPES = ("BOOLEAN",)
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "is_integer"
+
+    def is_integer(self, float_value: float) -> tuple[bool]:
+        return (float_value.is_integer(),)
+
+
 class FloatPower(ComfyNodeABC):
     """
     Raises one floating-point number to the power of another.
@@ -178,115 +275,18 @@ class FloatRound(ComfyNodeABC):
         return (round(float_value, decimal_places),)
 
 
-class FloatIsInteger(ComfyNodeABC):
-    """
-    Checks if a floating-point number is an integer.
-
-    This node takes a floating-point number as input and returns True if the number
-    is an integer, otherwise False.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
-            }
-        }
-
-    RETURN_TYPES = ("BOOLEAN",)
-    CATEGORY = "Basic/FLOAT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "is_integer"
-
-    def is_integer(self, float_value: float) -> tuple[bool]:
-        return (float_value.is_integer(),)
-
-
-class FloatAsIntegerRatio(ComfyNodeABC):
-    """
-    Returns the integer ratio of a floating-point number.
-
-    This node takes a floating-point number and returns two integers,
-    which represent the ratio as numerator and denominator.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
-            }
-        }
-
-    RETURN_TYPES = (IO.INT, IO.INT)
-    RETURN_NAMES = ("numerator", "denominator")
-    CATEGORY = "Basic/FLOAT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "as_integer_ratio"
-
-    def as_integer_ratio(self, float_value: float) -> tuple[int, int]:
-        # Decompose the float into numerator and denominator
-        numerator, denominator = float_value.as_integer_ratio()
-        return numerator, denominator
-
-
-class FloatHex(ComfyNodeABC):
-    """
-    Converts a floating-point number to its hexadecimal representation.
-
-    This node takes a float as input and returns its hexadecimal string representation.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
-            }
-        }
-
-    RETURN_TYPES = (IO.STRING,)
-    CATEGORY = "Basic/FLOAT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "to_hex"
-
-    def to_hex(self, float_value: float) -> tuple[str]:
-        return (float_value.hex(),)
-
-
-class FloatFromHex(ComfyNodeABC):
-    """
-    Converts a hexadecimal string to its corresponding floating-point number.
-
-    This node takes a hexadecimal float string as input and returns the float.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "hex_value": (IO.STRING, {"default": "0x0.0p+0"}),
-            }
-        }
-
-    RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "Basic/FLOAT"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "from_hex"
-
-    def from_hex(self, hex_value: str) -> tuple[float]:
-        return (float.fromhex(hex_value),)
-
-
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: FloatAdd": FloatAdd,
     "Basic data handling: FloatSubtract": FloatSubtract,
     "Basic data handling: FloatMultiply": FloatMultiply,
     "Basic data handling: FloatDivide": FloatDivide,
     "Basic data handling: FloatDivideSafe": FloatDivideSafe,
+    "Basic data handling: FloatAsIntegerRatio": FloatAsIntegerRatio,
+    "Basic data handling: FloatFromHex": FloatFromHex,
+    "Basic data handling: FloatHex": FloatHex,
+    "Basic data handling: FloatIsInteger": FloatIsInteger,
     "Basic data handling: FloatPower": FloatPower,
     "Basic data handling: FloatRound": FloatRound,
-    "Basic data handling: FloatIsInteger": FloatIsInteger,
-    "Basic data handling: FloatAsIntegerRatio": FloatAsIntegerRatio,
-    "Basic data handling: FloatHex": FloatHex,
-    "Basic data handling: FloatFromHex": FloatFromHex,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -295,10 +295,10 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: FloatMultiply": "multiply",
     "Basic data handling: FloatDivide": "divide",
     "Basic data handling: FloatDivideSafe": "divide (division by zero safe)",
+    "Basic data handling: FloatAsIntegerRatio": "integer ratio",
+    "Basic data handling: FloatFromHex": "from hex",
+    "Basic data handling: FloatHex": "to hex",
+    "Basic data handling: FloatIsInteger": "is integer",
     "Basic data handling: FloatPower": "power",
     "Basic data handling: FloatRound": "round",
-    "Basic data handling: FloatIsInteger": "is_integer",
-    "Basic data handling: FloatAsIntegerRatio": "as_integer_ratio",
-    "Basic data handling: FloatHex": "to_hex",
-    "Basic data handling: FloatFromHex": "from_hex",
 }

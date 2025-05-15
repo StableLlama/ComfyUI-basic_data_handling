@@ -1,15 +1,15 @@
 #import pytest
 from src.basic_data_handling.regex_nodes import (
-    RegexSearchGroups,
+    RegexSearchGroupsDataList,
     RegexGroupDict,
-    RegexFindall,
-    RegexSplit,
+    RegexFindallDataList,
+    RegexSplitDataList,
     RegexSub,
     RegexTest
 )
 
 def test_regex_search_groups():
-    node = RegexSearchGroups()
+    node = RegexSearchGroupsDataList()
     assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
     assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
     assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
@@ -26,7 +26,7 @@ def test_regex_group_dict():
 
 
 def test_regex_findall():
-    node = RegexFindall()
+    node = RegexFindallDataList()
     assert node.findall(r"\d+", "abc 123 def 456") == (["123", "456"],)
     assert node.findall(r"\b[a-zA-Z]+\b", "Multiple words here") == (["Multiple", "words", "here"],)
     assert node.findall(r"nonexistent", "no match") == ([],)  # No match
@@ -34,7 +34,7 @@ def test_regex_findall():
 
 
 def test_regex_split():
-    node = RegexSplit()
+    node = RegexSplitDataList()
     pattern = r",\s*"
     string = "one, two, three"
     assert node.split(pattern, string) == (["one", "two", "three"],)

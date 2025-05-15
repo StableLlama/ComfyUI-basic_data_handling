@@ -5,12 +5,10 @@ from src.basic_data_handling.data_list_nodes import (
     DataListInsert,
     DataListRemove,
     DataListPop,
-    DataListClear,
     DataListIndex,
     DataListCount,
     DataListSort,
     DataListReverse,
-    DataListCopy,
     DataListLength,
     DataListSlice,
     DataListGetItem,
@@ -59,12 +57,6 @@ def test_pop():
     assert node.pop(list=[], index=[0]) == ([], None)  # Pop from empty list
 
 
-def test_clear():
-    node = DataListClear()
-    assert node.clear(list=[1, 2, 3]) == ([],)
-    assert node.clear(list=[]) == ([],)
-
-
 def test_index():
     node = DataListIndex()
     assert node.list_index(list=["a", "b", "c"], value=["b"]) == (1,)
@@ -90,12 +82,6 @@ def test_reverse():
     node = DataListReverse()
     assert node.reverse(list=[1, 2, 3]) == ([3, 2, 1],)
     assert node.reverse(list=[]) == ([],)
-
-
-def test_copy():
-    node = DataListCopy()
-    assert node.copy(list=[1, 2, 3]) == ([1, 2, 3],)
-    assert node.copy(list=[]) == ([],)
 
 
 def test_length():

@@ -29,36 +29,57 @@ class SetAdd(ComfyNodeABC):
         return (result,)
 
 
-class SetRemove(ComfyNodeABC):
+class SetContains(ComfyNodeABC):
     """
-    Removes an item from a SET.
+    Checks if a SET contains a specified value.
 
-    This node takes a SET and any item as inputs, then returns a new SET
-    with the item removed and a success indicator. If the item is not present,
-    the original SET is returned with success set to False.
+    This node takes a SET and a value as inputs, then returns True if the value
+    is present in the SET, and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "set": ("SET", {}),
-                "item": (IO.ANY, {}),
+                "value": (IO.ANY, {}),
             }
         }
 
-    RETURN_TYPES = ("SET", IO.BOOLEAN)
-    RETURN_NAMES = ("set", "success")
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("contains",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "remove"
+    FUNCTION = "contains"
 
-    def remove(self, set: set[Any], item: Any) -> tuple[set[Any], bool]:
-        result = set.copy()
-        try:
-            result.remove(item)
-            return result, True
-        except KeyError:
-            return result, False
+    def contains(self, set: set[Any], value: Any) -> tuple[bool]:
+        return (value in set,)
+
+
+class SetDifference(ComfyNodeABC):
+    """
+    Returns the difference between two SETs.
+
+    This node takes two SETs as input and returns a new SET containing
+    elements in the first SET but not in the second SET.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set1": ("SET", {}),
+                "set2": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "difference"
+
+    def difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
+        result = set1.copy()
+        result.difference_update(set2)
+        return (result,)
 
 
 class SetDiscard(ComfyNodeABC):
@@ -85,75 +106,6 @@ class SetDiscard(ComfyNodeABC):
     def discard(self, set: set[Any], item: Any) -> tuple[set[Any]]:
         result = set.copy()
         result.discard(item)
-        return (result,)
-
-
-class SetPop(ComfyNodeABC):
-    """
-    Removes and returns an arbitrary item from a SET.
-
-    This node takes a SET as input and returns both the new SET
-    with an arbitrary item removed and the removed item.
-    When the SET is empty, the item is None.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set": ("SET", {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET", IO.ANY)
-    RETURN_NAMES = ("set", "item")
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "pop"
-
-    def pop(self, set: set[Any]) -> tuple[set[Any], Any]:
-        result = set.copy()
-        try:
-            item = result.pop()
-            return result, item
-        except KeyError:
-            return result, None
-
-
-class SetUnion(ComfyNodeABC):
-    """
-    Returns the union of two or more SETs.
-
-    This node takes multiple SETs as input and returns a new SET containing
-    all elements from all the input SETs.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
-            },
-            "optional": {
-                "set3": ("SET", {}),
-                "set4": ("SET", {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "union"
-
-    def union(self, set1: set[Any], set2: set[Any], set3=None, set4=None) -> tuple[set[Any]]:
-        result = set1.copy()
-        result.update(set2)
-
-        if set3 is not None:
-            result.update(set3)
-
-        if set4 is not None:
-            result.update(set4)
-
         return (result,)
 
 
@@ -195,39 +147,11 @@ class SetIntersection(ComfyNodeABC):
         return (result,)
 
 
-class SetDifference(ComfyNodeABC):
+class SetIsDisjoint(ComfyNodeABC):
     """
-    Returns the difference between two SETs.
+    Checks if two SETs have no elements in common.
 
-    This node takes two SETs as input and returns a new SET containing
-    elements in the first SET but not in the second SET.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
-            }
-        }
-
-    RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "difference"
-
-    def difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
-        result = set1.copy()
-        result.difference_update(set2)
-        return (result,)
-
-
-class SetSymmetricDifference(ComfyNodeABC):
-    """
-    Returns the symmetric difference between two SETs.
-
-    This node takes two SETs as input and returns a new SET containing
-    elements in either SET but not in both.
+    This node takes two SETs as input and returns True if they have no elements in common.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -238,15 +162,14 @@ class SetSymmetricDifference(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = ("SET",)
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("is_disjoint",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "symmetric_difference"
+    FUNCTION = "is_disjoint"
 
-    def symmetric_difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
-        result = set1.copy()
-        result.symmetric_difference_update(set2)
-        return (result,)
+    def is_disjoint(self, set1: set[Any], set2: set[Any]) -> tuple[bool]:
+        return (set1.isdisjoint(set2),)
 
 
 class SetIsSubset(ComfyNodeABC):
@@ -301,57 +224,6 @@ class SetIsSuperset(ComfyNodeABC):
         return (set1.issuperset(set2),)
 
 
-class SetIsDisjoint(ComfyNodeABC):
-    """
-    Checks if two SETs have no elements in common.
-
-    This node takes two SETs as input and returns True if they have no elements in common.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_disjoint",)
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "is_disjoint"
-
-    def is_disjoint(self, set1: set[Any], set2: set[Any]) -> tuple[bool]:
-        return (set1.isdisjoint(set2),)
-
-
-class SetContains(ComfyNodeABC):
-    """
-    Checks if a SET contains a specified value.
-
-    This node takes a SET and a value as inputs, then returns True if the value
-    is present in the SET, and False otherwise.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "set": ("SET", {}),
-                "value": (IO.ANY, {}),
-            }
-        }
-
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("contains",)
-    CATEGORY = "Basic/SET"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "contains"
-
-    def contains(self, set: set[Any], value: Any) -> tuple[bool]:
-        return (value in set,)
-
-
 class SetLength(ComfyNodeABC):
     """
     Returns the number of items in a SET.
@@ -376,28 +248,132 @@ class SetLength(ComfyNodeABC):
         return (len(set),)
 
 
-class ListToSet(ComfyNodeABC):
+class SetPop(ComfyNodeABC):
     """
-    Converts a LIST into a SET.
+    Removes and returns an arbitrary item from a SET.
 
-    This node takes a LIST input and creates a new SET containing all unique elements
-    from the LIST, removing any duplicates.
+    This node takes a SET as input and returns both the new SET
+    with an arbitrary item removed and the removed item.
+    When the SET is empty, the item is None.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": ("LIST", {}),
+                "set": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET", IO.ANY)
+    RETURN_NAMES = ("set", "item")
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "pop"
+
+    def pop(self, set: set[Any]) -> tuple[set[Any], Any]:
+        result = set.copy()
+        try:
+            item = result.pop()
+            return result, item
+        except KeyError:
+            return result, None
+
+
+class SetRemove(ComfyNodeABC):
+    """
+    Removes an item from a SET.
+
+    This node takes a SET and any item as inputs, then returns a new SET
+    with the item removed and a success indicator. If the item is not present,
+    the original SET is returned with success set to False.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+                "item": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET", IO.BOOLEAN)
+    RETURN_NAMES = ("set", "success")
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "remove"
+
+    def remove(self, set: set[Any], item: Any) -> tuple[set[Any], bool]:
+        result = set.copy()
+        try:
+            result.remove(item)
+            return result, True
+        except KeyError:
+            return result, False
+
+
+class SetSymmetricDifference(ComfyNodeABC):
+    """
+    Returns the symmetric difference between two SETs.
+
+    This node takes two SETs as input and returns a new SET containing
+    elements in either SET but not in both.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set1": ("SET", {}),
+                "set2": ("SET", {}),
             }
         }
 
     RETURN_TYPES = ("SET",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "convert"
+    FUNCTION = "symmetric_difference"
 
-    def convert(self, list: list[Any]) -> tuple[set[Any]]:
-        return (set(list),)
+    def symmetric_difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
+        result = set1.copy()
+        result.symmetric_difference_update(set2)
+        return (result,)
+
+
+class SetUnion(ComfyNodeABC):
+    """
+    Returns the union of two or more SETs.
+
+    This node takes multiple SETs as input and returns a new SET containing
+    all elements from all the input SETs.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set1": ("SET", {}),
+                "set2": ("SET", {}),
+            },
+            "optional": {
+                "set3": ("SET", {}),
+                "set4": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "union"
+
+    def union(self, set1: set[Any], set2: set[Any], set3=None, set4=None) -> tuple[set[Any]]:
+        result = set1.copy()
+        result.update(set2)
+
+        if set3 is not None:
+            result.update(set3)
+
+        if set4 is not None:
+            result.update(set4)
+
+        return (result,)
 
 
 class SetToDataList(ComfyNodeABC):
@@ -453,36 +429,36 @@ class SetToList(ComfyNodeABC):
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: SetAdd": SetAdd,
-    "Basic data handling: SetRemove": SetRemove,
-    "Basic data handling: SetDiscard": SetDiscard,
-    "Basic data handling: SetPop": SetPop,
-    "Basic data handling: SetUnion": SetUnion,
-    "Basic data handling: SetIntersection": SetIntersection,
+    "Basic data handling: SetContains": SetContains,
     "Basic data handling: SetDifference": SetDifference,
-    "Basic data handling: SetSymmetricDifference": SetSymmetricDifference,
+    "Basic data handling: SetDiscard": SetDiscard,
+    "Basic data handling: SetIntersection": SetIntersection,
+    "Basic data handling: SetIsDisjoint": SetIsDisjoint,
     "Basic data handling: SetIsSubset": SetIsSubset,
     "Basic data handling: SetIsSuperset": SetIsSuperset,
-    "Basic data handling: SetIsDisjoint": SetIsDisjoint,
-    "Basic data handling: SetContains": SetContains,
     "Basic data handling: SetLength": SetLength,
+    "Basic data handling: SetPop": SetPop,
+    "Basic data handling: SetRemove": SetRemove,
+    "Basic data handling: SetSymmetricDifference": SetSymmetricDifference,
+    "Basic data handling: SetUnion": SetUnion,
     "Basic data handling: SetToDataList": SetToDataList,
     "Basic data handling: SetToList": SetToList,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetAdd": "add",
-    "Basic data handling: SetRemove": "remove",
-    "Basic data handling: SetDiscard": "discard",
-    "Basic data handling: SetPop": "pop",
-    "Basic data handling: SetUnion": "union",
-    "Basic data handling: SetIntersection": "intersection",
-    "Basic data handling: SetDifference": "difference",
-    "Basic data handling: SetSymmetricDifference": "symmetric_difference",
-    "Basic data handling: SetIsSubset": "is_subset",
-    "Basic data handling: SetIsSuperset": "is_superset",
-    "Basic data handling: SetIsDisjoint": "is_disjoint",
     "Basic data handling: SetContains": "contains",
+    "Basic data handling: SetDifference": "difference",
+    "Basic data handling: SetDiscard": "discard",
+    "Basic data handling: SetIntersection": "intersection",
+    "Basic data handling: SetIsDisjoint": "is disjoint",
+    "Basic data handling: SetIsSubset": "is subset",
+    "Basic data handling: SetIsSuperset": "is superset",
     "Basic data handling: SetLength": "length",
+    "Basic data handling: SetPop": "pop",
+    "Basic data handling: SetRemove": "remove",
+    "Basic data handling: SetSymmetricDifference": "symmetric difference",
+    "Basic data handling: SetUnion": "union",
     "Basic data handling: SetToDataList": "convert to data list",
     "Basic data handling: SetToList": "convert to LIST",
 }
