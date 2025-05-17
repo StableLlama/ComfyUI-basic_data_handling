@@ -56,13 +56,9 @@ class SwitchCase(ComfyNodeABC):
         return {
             "required": {
                 "selector": (IO.INT, {"default": 0, "min": 0}),
-                "case_0": (IO.ANY, {"lazy": True}),
-                "case_1": (IO.ANY, {"lazy": True}),
+                "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number"}),
             },
             "optional": {
-                "case_2": (IO.ANY, {"lazy": True}),
-                "case_3": (IO.ANY, {"lazy": True}),
-                "case_4": (IO.ANY, {"lazy": True}),
                 "default": (IO.ANY, {"lazy": True}),
             }
         }

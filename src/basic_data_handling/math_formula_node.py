@@ -21,16 +21,11 @@ class MathFormula(ComfyNodeABC):
         return {
             "required": {
                 "formula": (IO.STRING, {"default": "a + b"}),
-                "a": (IO.NUMBER, {"default": 0.0}),
-            },
-            "optional": {
-                "b": (IO.NUMBER, {"default": 0.0}),
-                "c": (IO.NUMBER, {"default": 0.0}),
-                "d": (IO.NUMBER, {"default": 0.0}),
+                "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter"}),
             },
         }
 
-    RETURN_TYPES = (IO.NUMBER,)
+    RETURN_TYPES = (IO.FLOAT,)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "evaluate"
