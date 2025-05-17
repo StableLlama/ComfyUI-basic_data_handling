@@ -124,7 +124,7 @@ class SetCreateFromString(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set([string(value) for value in kwargs.values()]),)
+        return (set([str(value) for value in kwargs.values()]),)
 
 
 class SetAdd(ComfyNodeABC):
