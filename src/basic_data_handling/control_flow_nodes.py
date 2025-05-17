@@ -34,8 +34,111 @@ class IfElse(ComfyNodeABC):
             needed.append("if_false")
         return needed
 
-    def execute(self, condition: bool, if_true: Any, if_false: Any) -> tuple[Any]:
-        return (if_true if condition else if_false,)
+    def execute(self, **kwargs) -> tuple[Any]:
+        # Check if the main condition is true
+        if kwargs.get("if", False):
+            return (kwargs.get("then"),)
+
+        # Check each elif condition
+        elif_index = 0
+        while True:
+            elif_key = f"elif_{elif_index}"
+            then_key = f"then_{elif_index}"
+
+            if elif_key not in kwargs:
+                break
+
+            if kwargs.get(elif_key, False):
+                return (kwargs.get(then_key),)
+
+            elif_index += 1
+
+        # If no conditions were true, return the else value
+        return (kwargs.get("else"),)
+
+
+class IfElifElse(ComfyNodeABC):
+    """
+    Implements a conditional branch (if/elif/else) in the workflow.
+
+    This node takes a condition input and two value inputs. If the condition
+    evaluates to True, the first value is returned; otherwise, the elif (else if)
+    is evaluated and returned when true. This continues for all additional elifs.
+    When none is true, the value of the else is returned.
+    This allows conditional data flow in ComfyUI workflows.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "if": (IO.BOOLEAN, {}),
+                "then": (IO.ANY, {"lazy": True}),
+            },
+            "optional": {
+                "elif_0": (IO.BOOLEAN, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
+                "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
+                "else": (IO.ANY, {"lazy": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("result",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    def check_lazy_status(self, **kwargs) -> list[str]:
+        needed = []
+
+        # Check if condition
+        if kwargs.get("if", False) and kwargs.get("then") is None:
+            needed.append("then")
+            return needed  # If main condition is true, we only need "then"
+
+        # Check each elif condition
+        elif_index = 0
+        while True:
+            elif_key = f"elif_{elif_index}"
+            then_key = f"then_{elif_index}"
+
+            if elif_key not in kwargs:
+                break
+
+            # If this elif condition is true and its value is None, add it to needed
+            if kwargs.get(elif_key, False) and kwargs.get(then_key) is None:
+                needed.append(then_key)
+                return needed  # If any elif is true, we need only its then value
+
+            elif_index += 1
+
+        # If no conditions were true, check if we need the else
+        if "else" in kwargs and kwargs["else"] is None:
+            needed.append("else")
+
+        return needed
+
+    def execute(self, **kwargs) -> tuple[Any]:
+        # Check if the main condition is true
+        if kwargs.get("if", False):
+            return (kwargs.get("then"),)
+
+        # Check each elif condition
+        elif_index = 0
+        while True:
+            elif_key = f"elif_{elif_index}"
+            then_key = f"then_{elif_index}"
+
+            if elif_key not in kwargs:
+                break
+
+            if kwargs.get(elif_key, False):
+                return (kwargs.get(then_key),)
+
+            elif_index += 1
+
+        # If no conditions were true, return the else value
+        return (kwargs.get("else"),)
 
 
 class SwitchCase(ComfyNodeABC):
@@ -69,42 +172,53 @@ class SwitchCase(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
-    def check_lazy_status(self, selector: int, case_0: Any, case_1: Any,
-                          case_2: Any = None, case_3: Any = None,
-                          case_4: Any = None, default: Any = None) -> list[str]:
+    def check_lazy_status(self, selector: int, **kwargs) -> list[str]:
         needed = []
-        if case_0 is None and selector == 0:
-            needed.append("case_0")
-        if case_1 is None and selector == 1:
-            needed.append("case_1")
-        if case_2 is None and selector == 2:
-            needed.append("case_2")
-        if case_3 is None and selector == 3:
-            needed.append("case_3")
-        if case_4 is None and selector == 4:
-            needed.append("case_4")
-        if default is None and not 0 <= selector <= 4:
+
+        # Check for needed case inputs based on selector
+        case_count = 0
+        for key, value in kwargs.items():
+            if key.startswith("case_"):
+                try:
+                    case_index = int(key.split("_")[1])
+                    case_count = max(case_count, case_index + 1)
+                    if value is None and selector == case_index:
+                        needed.append(key)
+                except ValueError:
+                    pass  # Not a numeric case key
+
+        # Check if default is needed when selector is out of range
+        if "default" in kwargs and kwargs["default"] is None and not 0 <= selector < case_count:
             needed.append("default")
+
         return needed
 
-    def execute(self, selector: int, case_0: Any, case_1: Any,
-                case_2: Any = None, case_3: Any = None,
-                case_4: Any = None, default: Any = None) -> tuple[Any]:
-        cases = [case_0, case_1, case_2, case_3, case_4]
+    def execute(self, selector: int, **kwargs) -> tuple[Any]:
+        # Build cases array from all case_X inputs
+        cases = []
+        for i in range(len(kwargs)):
+            case_key = f"case_{i}"
+            if case_key in kwargs:
+                cases.append(kwargs[case_key])
+            else:
+                break
 
+        # Return the selected case if valid
         if 0 <= selector < len(cases) and cases[selector] is not None:
             return (cases[selector],)
 
         # If selector is out of range or the selected case is None, return default
-        return (default,)
+        return (kwargs.get("default"),)
 
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
+    "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
+    "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
 }
