@@ -34,27 +34,8 @@ class IfElse(ComfyNodeABC):
             needed.append("if_false")
         return needed
 
-    def execute(self, **kwargs) -> tuple[Any]:
-        # Check if the main condition is true
-        if kwargs.get("if", False):
-            return (kwargs.get("then"),)
-
-        # Check each elif condition
-        elif_index = 0
-        while True:
-            elif_key = f"elif_{elif_index}"
-            then_key = f"then_{elif_index}"
-
-            if elif_key not in kwargs:
-                break
-
-            if kwargs.get(elif_key, False):
-                return (kwargs.get(then_key),)
-
-            elif_index += 1
-
-        # If no conditions were true, return the else value
-        return (kwargs.get("else"),)
+    def execute(self, condition: bool, if_true: Any, if_false: Any) -> tuple[Any]:
+        return (if_true if condition else if_false,)
 
 
 class IfElifElse(ComfyNodeABC):
