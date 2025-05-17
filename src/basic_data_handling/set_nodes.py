@@ -2,6 +2,131 @@ from typing import Any
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
+
+class SetCreate(ComfyNodeABC):
+    """
+    Creates a new SET from items.
+
+    This node creates and returns a SET. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.ANY, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_set"
+
+    def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set(kwargs.values()),)
+
+
+class SetCreateFromBoolean(ComfyNodeABC):
+    """
+    Creates a new SET from items.
+
+    This node creates and returns a SET. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_set"
+
+    def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set([bool(value) for value in kwargs.values()]),)
+
+
+class SetCreateFromFloat(ComfyNodeABC):
+    """
+    Creates a new SET from items.
+
+    This node creates and returns a SET. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_set"
+
+    def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set([float(value) for value in kwargs.values()]),)
+
+
+class SetCreateFromInt(ComfyNodeABC):
+    """
+    Creates a new SET from items.
+
+    This node creates and returns a SET. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.INT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_set"
+
+    def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set([int(value) for value in kwargs.values()]),)
+
+
+class SetCreateFromString(ComfyNodeABC):
+    """
+    Creates a new SET from items.
+
+    This node creates and returns a SET. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.STRING, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("SET",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_set"
+
+    def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
+        return (set([string(value) for value in kwargs.values()]),)
+
+
 class SetAdd(ComfyNodeABC):
     """
     Adds an item to a SET.
@@ -428,6 +553,11 @@ class SetToList(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
+    "Basic data handling: SetCreate": SetCreate,
+    "Basic data handling: SetCreateFromBoolean": SetCreateFromBoolean,
+    "Basic data handling: SetCreateFromFloat": SetCreateFromFloat,
+    "Basic data handling: SetCreateFromInt": SetCreateFromInt,
+    "Basic data handling: SetCreateFromString": SetCreateFromString,
     "Basic data handling: SetAdd": SetAdd,
     "Basic data handling: SetContains": SetContains,
     "Basic data handling: SetDifference": SetDifference,
@@ -446,6 +576,11 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "Basic data handling: SetCreate": "create SET",
+    "Basic data handling: SetCreateFromBoolean": "create SET from BOOLEANs",
+    "Basic data handling: SetCreateFromFloat": "create SET from FLOATs",
+    "Basic data handling: SetCreateFromInt": "create SET from INTs",
+    "Basic data handling: SetCreateFromString": "create SET from STRINGs",
     "Basic data handling: SetAdd": "add",
     "Basic data handling: SetContains": "contains",
     "Basic data handling: SetDifference": "difference",
@@ -459,6 +594,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetRemove": "remove",
     "Basic data handling: SetSymmetricDifference": "symmetric difference",
     "Basic data handling: SetUnion": "union",
-    "Basic data handling: SetToDataList": "convert to data list",
+    "Basic data handling: SetToDataList": "convert to Data List",
     "Basic data handling: SetToList": "convert to LIST",
 }

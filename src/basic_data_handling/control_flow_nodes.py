@@ -22,7 +22,7 @@ class IfElse(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
-    CATEGORY = "Basic/Flow Control"
+    CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
@@ -65,7 +65,7 @@ class SwitchCase(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
-    CATEGORY = "Basic/Flow Control"
+    CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 

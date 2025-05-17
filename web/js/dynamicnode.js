@@ -41,9 +41,14 @@ app.registerExtension({
             return;
         }
 
+        const combinedInputData = {
+            ...nodeData?.input?.required ?? {},
+            ...nodeData?.input?.optional ?? {}
+        };
+
         const dynamicInputs = [];
-        for (const name in nodeData?.input?.required ?? {}) {
-            const dynamic = nodeData.input.required[name][1]?._dynamic;
+        for (const name in combinedInputData) {
+            const dynamic = combinedInputData[name][1]?._dynamic;
 
             if (dynamic) {
                 let matcher;
@@ -61,7 +66,8 @@ app.registerExtension({
                         continue;
                 }
                 const baseName = name.match(matcher)?.[1] ?? name;
-                dynamicInputs.push({name, baseName, matcher, dynamic});
+                const dynamicType = combinedInputData[name][0];
+                dynamicInputs.push({name, baseName, matcher, dynamic, dynamicType});
             }
         }
         if (dynamicInputs.length === 0) {
@@ -119,6 +125,7 @@ app.registerExtension({
 
         // Add helper method to insert input at a specific position
         nodeType.prototype.addInputAtPosition = function (name, type, position) {
+            console.warn("Adding input at position:", name, type, position);
             this.addInput(name, type); // Add new input
             const newInput = this.inputs.pop(); // Fetch the newly added input (last item)
             this.inputs.splice(position, 0, newInput); // Place it at the desired position
@@ -143,7 +150,8 @@ app.registerExtension({
 
             try {
                 const baseName = dynamicInputs[0].baseName;
-                const dynamicType = nodeData.input.required[dynamicInputs[0].name][0];
+                //const dynamicType = nodeData.input.required[dynamicInputs[0].name][0];
+                const dynamicType = dynamicInputs[0].dynamicType;
 
                 // Get dynamic input slots
                 const dynamicSlots = this.inputs
@@ -189,7 +197,7 @@ app.registerExtension({
                     let hasEmptyDynamic = false;
                     for (let idx = 0; idx < this.inputs.length; idx++) {
                         const input = this.inputs[idx];
-                        const isDynamic = dynamicInputs.some(di => di.matcher.test(input.name));
+                        const isDynamic = isDynamicInput(input.name);
                         if (hasEmptyDynamic && isDynamic) {
                             if (input.link === null) {
                                 // last input is empty and this input is empty
@@ -251,7 +259,7 @@ app.registerExtension({
 
             for (let i = 0; i < this.inputs.length; i++) {
                 const input = this.inputs[i];
-                const isDynamic = dynamicInputs.some(di => di.matcher.test(input.name));
+                const isDynamic = isDynamicInput(input.name);
 
                 if (isDynamic) {
                     dynamicInputInfo.push({
@@ -269,8 +277,6 @@ app.registerExtension({
                 }
                 return a.index - b.index; // Keep order for same connection status
             });
-
-            this.properties.dynamicInputs = dynamicInputInfo.length;
 
             // Just rename the inputs in place - don't remove/add to keep connections intact
             for (let i = 0; i < dynamicInputInfo.length; i++) {

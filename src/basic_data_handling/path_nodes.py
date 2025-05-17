@@ -20,8 +20,8 @@ class PathAbspath(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("absolute_path",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("absolute path",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_abspath"
 
@@ -46,7 +46,7 @@ class PathBasename(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("basename",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_basename"
 
@@ -72,8 +72,8 @@ class PathCommonPrefix(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("common_prefix",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("common prefix",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_common_prefix"
 
@@ -99,7 +99,7 @@ class PathDirname(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("dirname",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_dirname"
 
@@ -124,7 +124,7 @@ class PathExists(ComfyNodeABC):
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("exists",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_exists"
 
@@ -148,8 +148,8 @@ class PathExpandVars(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("expanded_path",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("expanded path",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "expand_vars"
 
@@ -168,8 +168,8 @@ class PathGetCwd(ComfyNodeABC):
         return {"required": {}}
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("current_directory",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("current directory",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_cwd"
 
@@ -194,7 +194,7 @@ class PathGetExtension(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("extension",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_extension"
 
@@ -218,8 +218,8 @@ class PathGetSize(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.INT,)
-    RETURN_NAMES = ("size_bytes",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("size (bytes)",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_size"
 
@@ -254,8 +254,8 @@ class PathGlob(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("matching_paths",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("matching paths",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "glob_paths"
     OUTPUT_IS_LIST = (True,)
@@ -280,8 +280,8 @@ class PathIsAbsolute(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_absolute",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("is absolute",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_absolute"
 
@@ -305,8 +305,8 @@ class PathIsDir(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_dir",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("is dir",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_dir"
 
@@ -330,8 +330,8 @@ class PathIsFile(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("is_file",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("is file",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_file"
 
@@ -360,7 +360,7 @@ class PathJoin(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join_paths"
 
@@ -392,7 +392,7 @@ class PathListDir(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("entries",)
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_directory"
     OUTPUT_IS_LIST = (True,)
@@ -433,8 +433,8 @@ class PathNormalize(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("normalized_path",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("normalized path",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "normalize_path"
 
@@ -461,8 +461,8 @@ class PathRelative(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("relative_path",)
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("relative path",)
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_relative_path"
 
@@ -489,7 +489,7 @@ class PathSplit(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("directory", "filename")
-    CATEGORY = "Basic/path"
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_path"
 
@@ -513,8 +513,8 @@ class PathSplitExt(ComfyNodeABC):
         }
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
-    RETURN_NAMES = ("path_without_ext", "extension")
-    CATEGORY = "Basic/path"
+    RETURN_NAMES = ("path without ext", "extension")
+    CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_ext"
 

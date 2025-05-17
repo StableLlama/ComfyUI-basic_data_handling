@@ -2,6 +2,61 @@ from inspect import cleandoc
 from typing import Literal
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
+
+class IntCreate(ComfyNodeABC):
+    """
+    Create an INT from a STRING widget.
+
+    The input string must be a valid integer number and will be
+    directly converted to an INT without any further processing.
+
+    Strings starting with "0b" are interpreted as binary numbers,
+    "0o" as octal numbers, and "0x" as hexadecimal numbers.
+
+    Note: This doesn't handle ones' complement as the data size is unknown.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {"default": "0", "widgetType": "STRING"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, value: str) -> tuple[int]:
+        return (int(value, 0),)  # Automatically detects base using prefixes
+
+
+class IntCreateWithBase(ComfyNodeABC):
+    """
+    Create an INT from a STRING with a given base.
+
+    The input string must be a valid integer number and will be
+    directly converted to an INT without any further processing.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.STRING, {"default": "0"}),
+                "base": (IO.INT, {"default": "10", "min": 2}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    CATEGORY = "Basic/INT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, value: str, base: int) -> tuple[int]:
+        return (int(value, base),)
+
+
 class IntAdd(ComfyNodeABC):
     """
     Adds two integers.
@@ -286,6 +341,8 @@ class IntToBytes(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
+    "Basic data handling: IntCreate": IntCreate,
+    "Basic data handling: IntCreateWithBase": IntCreateWithBase,
     "Basic data handling: IntAdd": IntAdd,
     "Basic data handling: IntSubtract": IntSubtract,
     "Basic data handling: IntMultiply": IntMultiply,
@@ -300,11 +357,13 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "Basic data handling: IntCreate": "create INT",
+    "Basic data handling: IntCreateWithBase": "create INT with base",
     "Basic data handling: IntAdd": "add",
     "Basic data handling: IntSubtract": "subtract",
     "Basic data handling: IntMultiply": "multiply",
     "Basic data handling: IntDivide": "divide",
-    "Basic data handling: IntDivideSafe": "divide (division by zero safe)",
+    "Basic data handling: IntDivideSafe": "divide (zero safe)",
     "Basic data handling: IntBitCount": "bit count",
     "Basic data handling: IntBitLength": "bit length",
     "Basic data handling: IntFromBytes": "from bytes",

@@ -740,7 +740,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictContainsKey": "contains key",
     "Basic data handling: DictExcludeKeys": "exclude keys",
     "Basic data handling: DictFilterByKeys": "filter by keys",
-    "Basic data handling: DictFromKeys": "fromkeys",
+    "Basic data handling: DictFromKeys": "from keys",
     "Basic data handling: DictGet": "get",
     "Basic data handling: DictGetKeysValues": "get keys values",
     "Basic data handling: DictGetMultiple": "get multiple",
