@@ -7,7 +7,7 @@ class StringCapitalize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -32,7 +32,7 @@ class StringCasefold(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -57,7 +57,7 @@ class StringCenter(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "width": (IO.INT, {"default": 20, "min": 0, "max": 1000}),
             },
             "optional": {
@@ -86,8 +86,8 @@ class StringConcat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string_a": (IO.STRING, {"default": "", "defaultInput": True}),
-                "string_b": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string_a": (IO.STRING, {"default": ""}),
+                "string_b": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -111,7 +111,7 @@ class StringCount(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
@@ -145,7 +145,7 @@ class StringDecode(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "bytes_string": (IO.STRING, {"default": "b''", "defaultInput": True}),
+                "bytes_string": (IO.STRING, {"default": "b''"}),
                 "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
                 "errors": (["strict", "ignore", "replace", "backslashreplace"],),
             }
@@ -194,7 +194,7 @@ class StringEncode(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
                 "errors": (["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"],),
             }
@@ -230,7 +230,7 @@ class StringEndswith(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "suffix": (IO.STRING, {"default": ""}),
             },
             "optional": {
@@ -264,7 +264,7 @@ class StringExpandtabs(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "tabsize": (IO.INT, {"default": 8, "min": 1, "max": 100}),
@@ -292,7 +292,7 @@ class StringFind(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
@@ -327,7 +327,7 @@ class StringFormatMap(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "template": (IO.STRING, {"default": "Hello, {key}", "defaultInput": True}),
+                "template": (IO.STRING, {"default": "Hello, {key}"}),
                 "mapping": ("DICT", {"default": {}}),
             }
         }
@@ -359,7 +359,7 @@ class StringIn(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "substring": (IO.STRING, {"default": ""}),
             }
         }
@@ -384,7 +384,7 @@ class StringIsAlnum(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -408,7 +408,7 @@ class StringIsAlpha(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -432,7 +432,7 @@ class StringIsAscii(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -458,7 +458,7 @@ class StringIsDecimal(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -482,7 +482,7 @@ class StringIsDigit(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -507,7 +507,7 @@ class StringIsIdentifier(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -531,7 +531,7 @@ class StringIsLower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -556,7 +556,7 @@ class StringIsNumeric(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -580,7 +580,7 @@ class StringIsPrintable(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -604,7 +604,7 @@ class StringIsSpace(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -629,7 +629,7 @@ class StringIsTitle(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -653,7 +653,7 @@ class StringIsUpper(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -677,7 +677,7 @@ class StringLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -756,7 +756,7 @@ class StringLjust(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "width": (IO.INT, {"default": 10, "min": 0}),
             },
             "optional": {
@@ -786,7 +786,7 @@ class StringLower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -811,7 +811,7 @@ class StringLstrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "chars": (IO.STRING, {"default": ""}),
@@ -840,7 +840,7 @@ class StringRemoveprefix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "prefix": (IO.STRING, {"default": ""}),
             }
         }
@@ -865,7 +865,7 @@ class StringRemovesuffix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "suffix": (IO.STRING, {"default": ""}),
             }
         }
@@ -891,7 +891,7 @@ class StringReplace(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "old": (IO.STRING, {"default": ""}),
                 "new": (IO.STRING, {"default": ""}),
             },
@@ -921,7 +921,7 @@ class StringRfind(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "substring": (IO.STRING, {"default": ""}),
             },
             "optional": {
@@ -954,7 +954,7 @@ class StringRjust(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "width": (IO.INT, {"default": 10, "min": 0}),
             },
             "optional": {
@@ -987,7 +987,7 @@ class StringRsplitDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "sep": (IO.STRING, {"default": ""}),
@@ -1020,7 +1020,7 @@ class StringRsplitList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "sep": (IO.STRING, {"default": ""}),
@@ -1051,7 +1051,7 @@ class StringRstrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "chars": (IO.STRING, {"default": ""}),
@@ -1084,7 +1084,7 @@ class StringSplitDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "sep": (IO.STRING, {"default": ""}),
@@ -1122,7 +1122,7 @@ class StringSplitList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "sep": (IO.STRING, {"default": ""}),
@@ -1156,7 +1156,7 @@ class StringSplitlinesDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "keepends": (IO.BOOLEAN, {"default": False}),
@@ -1186,7 +1186,7 @@ class StringSplitlinesList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "keepends": (IO.BOOLEAN, {"default": False}),
@@ -1215,7 +1215,7 @@ class StringStartswith(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "prefix": (IO.STRING, {"default": ""}),
             },
             "optional": {
@@ -1249,7 +1249,7 @@ class StringStrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             },
             "optional": {
                 "chars": (IO.STRING, {"default": ""}),
@@ -1278,7 +1278,7 @@ class StringSwapcase(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -1302,7 +1302,7 @@ class StringTitle(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -1325,7 +1325,7 @@ class StringUpper(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -1350,7 +1350,7 @@ class StringZfill(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": "", "defaultInput": True}),
+                "string": (IO.STRING, {"default": ""}),
                 "width": (IO.INT, {"default": 10, "min": 0}),
             }
         }
