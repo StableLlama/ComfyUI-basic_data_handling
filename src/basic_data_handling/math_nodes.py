@@ -13,7 +13,7 @@ class MathAbs(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -22,8 +22,8 @@ class MathAbs(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: Union[float, int]) -> tuple[Union[float, int]]:
-        return (abs(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[Union[float, int]]:
+        return (abs(float(value)),)
 
 
 class MathAcos(ComfyNodeABC):
@@ -37,7 +37,7 @@ class MathAcos(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -47,8 +47,8 @@ class MathAcos(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        result = math.acos(value)
+    def calculate(self, value: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
+        result = math.acos(float(value))
         if unit == "degrees":
             result = math.degrees(result)
         return (result,)
@@ -65,7 +65,7 @@ class MathAsin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -75,8 +75,8 @@ class MathAsin(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        result = math.asin(value)
+    def calculate(self, value: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
+        result = math.asin(float(value))
         if unit == "degrees":
             result = math.degrees(result)
         return (result,)
@@ -93,7 +93,7 @@ class MathAtan(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -103,8 +103,8 @@ class MathAtan(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        result = math.atan(value)
+    def calculate(self, value: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
+        result = math.atan(float(value))
         if unit == "degrees":
             result = math.degrees(result)
         return (result,)
@@ -122,8 +122,8 @@ class MathAtan2(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "y": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "x": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "y": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "x": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -133,8 +133,8 @@ class MathAtan2(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, y: float, x: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
-        result = math.atan2(y, x)
+    def calculate(self, y: Union[float, int, str], x: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
+        result = math.atan2(float(y), float(x))
         if unit == "degrees":
             result = math.degrees(result)
         return (result,)
@@ -150,7 +150,7 @@ class MathCeil(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -159,8 +159,8 @@ class MathCeil(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[int]:
-        return (math.ceil(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[int]:
+        return (math.ceil(float(value)),)
 
 
 class MathCos(ComfyNodeABC):
@@ -175,7 +175,7 @@ class MathCos(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -185,11 +185,11 @@ class MathCos(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+    def calculate(self, angle: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
         if unit == "degrees":
             # Convert degrees to radians
-            angle = math.radians(angle)
-        return (math.cos(angle),)
+            angle = math.radians(float(angle))
+        return (math.cos(float(angle)),)
 
 
 class MathDegrees(ComfyNodeABC):
@@ -202,7 +202,7 @@ class MathDegrees(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -211,8 +211,8 @@ class MathDegrees(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, radians: float) -> tuple[float]:
-        return (math.degrees(radians),)
+    def calculate(self, radians: Union[float, int, str]) -> tuple[float]:
+        return (math.degrees(float(radians)),)
 
 
 class MathE(ComfyNodeABC):
@@ -244,7 +244,7 @@ class MathExp(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -253,8 +253,8 @@ class MathExp(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[float]:
-        return (math.exp(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[float]:
+        return (math.exp(float(value)),)
 
 
 class MathFloor(ComfyNodeABC):
@@ -267,7 +267,7 @@ class MathFloor(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -276,8 +276,8 @@ class MathFloor(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[int]:
-        return (math.floor(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[int]:
+        return (math.floor(float(value)),)
 
 
 class MathLog(ComfyNodeABC):
@@ -291,10 +291,10 @@ class MathLog(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING"}),
             },
             "optional": {
-                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "FLOAT"}),
+                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "STRING"}),
             }
         }
 
@@ -303,11 +303,8 @@ class MathLog(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float, base: float = math.e) -> tuple[float]:
-        if base == math.e:
-            return (math.log(value),)
-        else:
-            return (math.log(value, base),)
+    def calculate(self, value: Union[float, int, str], base: Union[float, int, str] = math.e) -> tuple[float]:
+        return (math.log(float(value), float(base)),)
 
 
 class MathLog10(ComfyNodeABC):
@@ -320,7 +317,7 @@ class MathLog10(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING"}),
             }
         }
 
@@ -329,8 +326,8 @@ class MathLog10(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[float]:
-        return (math.log10(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[float]:
+        return (math.log10(float(value)),)
 
 
 class MathMax(ComfyNodeABC):
@@ -344,8 +341,8 @@ class MathMax(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -354,8 +351,8 @@ class MathMax(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
-        return (max(value1, value2),)
+    def calculate(self, value1: Union[float, int, str], value2: Union[float, int, str]) -> tuple[Union[float, int]]:
+        return (max(float(value1), float(value2)),)
 
 
 class MathMin(ComfyNodeABC):
@@ -369,8 +366,8 @@ class MathMin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -379,8 +376,8 @@ class MathMin(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value1: Union[float, int], value2: Union[float, int]) -> tuple[Union[float, int]]:
-        return (min(value1, value2),)
+    def calculate(self, value1: Union[float, int, str], value2: Union[float, int, str]) -> tuple[Union[float, int]]:
+        return (min(float(value1), float(value2)),)
 
 
 class MathPi(ComfyNodeABC):
@@ -412,7 +409,7 @@ class MathRadians(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -421,8 +418,8 @@ class MathRadians(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, degrees: float) -> tuple[float]:
-        return (math.radians(degrees),)
+    def calculate(self, degrees: Union[float, int, str]) -> tuple[float]:
+        return (math.radians(float(degrees)),)
 
 
 class MathSin(ComfyNodeABC):
@@ -437,7 +434,7 @@ class MathSin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -447,11 +444,11 @@ class MathSin(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+    def calculate(self, angle: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
         if unit == "degrees":
             # Convert degrees to radians
-            angle = math.radians(angle)
-        return (math.sin(angle),)
+            angle = math.radians(float(angle))
+        return (math.sin(float(angle)),)
 
 
 class MathSqrt(ComfyNodeABC):
@@ -464,7 +461,7 @@ class MathSqrt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "FLOAT"}),
+                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "STRING"}),
             }
         }
 
@@ -473,8 +470,8 @@ class MathSqrt(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, value: float) -> tuple[float]:
-        return (math.sqrt(value),)
+    def calculate(self, value: Union[float, int, str]) -> tuple[float]:
+        return (math.sqrt(float(value)),)
 
 
 class MathTan(ComfyNodeABC):
@@ -489,7 +486,7 @@ class MathTan(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "FLOAT"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
                 "unit": (["radians", "degrees"], {"default": "degrees"}),
             }
         }
@@ -499,16 +496,16 @@ class MathTan(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
 
-    def calculate(self, angle: float, unit: Literal["radians", "degrees"]) -> tuple[float]:
+    def calculate(self, angle: Union[float, int, str], unit: Literal["radians", "degrees"]) -> tuple[float]:
         if unit == "degrees":
             # Convert degrees to radians
-            angle = math.radians(angle)
+            angle = math.radians(float(angle))
 
         # Handle specific angles that would result in division by zero
-        if abs(math.cos(angle)) < 1e-10:
+        if abs(math.cos(float(angle))) < 1e-10:
             raise ValueError("Tangent is undefined at this angle (division by zero)")
 
-        return (math.tan(angle),)
+        return (math.tan(float(angle)),)
 
 
 NODE_CLASS_MAPPINGS = {

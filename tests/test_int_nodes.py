@@ -4,12 +4,15 @@ from src.basic_data_handling.int_nodes import (
     IntSubtract,
     IntMultiply,
     IntDivide,
+    IntDivideSafe,
     IntModulus,
     IntPower,
     IntBitLength,
     IntToBytes,
     IntFromBytes,
     IntBitCount,
+    IntCreate,
+    IntCreateWithBase,
 )
 
 
@@ -84,3 +87,31 @@ def test_int_bit_count():
     assert node.bit_count(0) == (0,)  # Zero has no 1 bits
     assert node.bit_count(255) == (8,)  # 255 is 11111111 (8 ones)
     assert node.bit_count(-255) == (8,)  # Negative integer has the same bit count
+
+
+def test_int_create():
+    node = IntCreate()
+    assert node.create("42") == (42,)
+    assert node.create("-100") == (-100,)
+    assert node.create("0") == (0,)
+    assert node.create("0xFF") == (255,)  # Hexadecimal
+    assert node.create("0b1010") == (10,)  # Binary
+    assert node.create("0o777") == (511,)  # Octal
+
+
+def test_int_create_with_base():
+    node = IntCreateWithBase()
+    assert node.create("42", 10) == (42,)
+    assert node.create("FF", 16) == (255,)
+    assert node.create("1010", 2) == (10,)
+    assert node.create("777", 8) == (511,)
+    with pytest.raises(ValueError):
+        node.create("FF", 10)  # Invalid characters for base 10
+
+
+def test_int_divide_safe():
+    node = IntDivideSafe()
+    assert node.divide(10, 2, 9223372036854775807) == (5,)
+    assert node.divide(9, 4, 9223372036854775807) == (2,)  # Integer division
+    assert node.divide(10, 0, 9223372036854775807) == (9223372036854775807,)  # Positive infinity
+    assert node.divide(-10, 0, 9223372036854775807) == (-9223372036854775807,)  # Negative infinity

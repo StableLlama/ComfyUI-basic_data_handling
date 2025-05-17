@@ -2,23 +2,165 @@ from typing import Any
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
+
 class DictCreate(ComfyNodeABC):
     """
     Creates a new empty dictionary.
 
     This node creates and returns a new empty dictionary object.
     """
+    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {}}
+        return {
+            "optional": {
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0}),
+            }
+        }
 
     RETURN_TYPES = ("DICT",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
 
-    def create(self) -> tuple[dict]:
-        return ({},)
+    def create(self, **kwargs: list[Any]) -> tuple[dict]:
+        result = {}
+        # Process all key_X/value_X pairs from dynamic inputs
+        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+            key_name = f"key_{i}"
+            value_name = f"value_{i}"
+            if key_name in kwargs and value_name in kwargs:
+                result[kwargs[key_name]] = kwargs[value_name]
+        return (result,)
+
+
+class DictCreateFromBoolean(ComfyNodeABC):
+    """
+    Creates a new empty dictionary.
+
+    This node creates and returns a new empty dictionary object.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, **kwargs: list[Any]) -> tuple[dict]:
+        result = {}
+        # Process all key_X/value_X pairs from dynamic inputs
+        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+            key_name = f"key_{i}"
+            value_name = f"value_{i}"
+            if key_name in kwargs and value_name in kwargs:
+                result[kwargs[key_name]] = bool(kwargs[value_name])
+        return (result,)
+
+
+class DictCreateFromFloat(ComfyNodeABC):
+    """
+    Creates a new empty dictionary.
+
+    This node creates and returns a new empty dictionary object.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, **kwargs: list[Any]) -> tuple[dict]:
+        result = {}
+        # Process all key_X/value_X pairs from dynamic inputs
+        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+            key_name = f"key_{i}"
+            value_name = f"value_{i}"
+            if key_name in kwargs and value_name in kwargs:
+                result[kwargs[key_name]] = float(kwargs[value_name])
+        return (result,)
+
+
+class DictCreateFromInt(ComfyNodeABC):
+    """
+    Creates a new empty dictionary.
+
+    This node creates and returns a new empty dictionary object.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, **kwargs: list[Any]) -> tuple[dict]:
+        result = {}
+        # Process all key_X/value_X pairs from dynamic inputs
+        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+            key_name = f"key_{i}"
+            value_name = f"value_{i}"
+            if key_name in kwargs and value_name in kwargs:
+                result[kwargs[key_name]] = int(kwargs[value_name])
+        return (result,)
+
+
+class DictCreateFromString(ComfyNodeABC):
+    """
+    Creates a new empty dictionary.
+
+    This node creates and returns a new empty dictionary object.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, **kwargs: list[Any]) -> tuple[dict]:
+        result = {}
+        # Process all key_X/value_X pairs from dynamic inputs
+        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+            key_name = f"key_{i}"
+            value_name = f"value_{i}"
+            if key_name in kwargs and value_name in kwargs:
+                result[kwargs[key_name]] = str(kwargs[value_name])
+        return (result,)
 
 
 class DictCreateFromItemsDataList(ComfyNodeABC):
@@ -706,6 +848,10 @@ class DictValues(ComfyNodeABC):
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DictCreate": DictCreate,
+    "Basic data handling: DictCreateFromBoolean": DictCreateFromBoolean,
+    "Basic data handling: DictCreateFromFloat": DictCreateFromFloat,
+    "Basic data handling: DictCreateFromInt": DictCreateFromInt,
+    "Basic data handling: DictCreateFromString": DictCreateFromString,
     "Basic data handling: DictCreateFromItemsDataList": DictCreateFromItemsDataList,
     "Basic data handling: DictCreateFromItemsList": DictCreateFromItemsList,
     "Basic data handling: DictCreateFromLists": DictCreateFromLists,
@@ -732,7 +878,11 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: DictCreate": "create empty",
+    "Basic data handling: DictCreate": "create DICT",
+    "Basic data handling: DictCreateFromBoolean": "create DICT from BOOLEANs",
+    "Basic data handling: DictCreateFromFloat": "create DICT from FLOATs",
+    "Basic data handling: DictCreateFromInt": "create DICT from INTs",
+    "Basic data handling: DictCreateFromString": "create DICT from STRINGs",
     "Basic data handling: DictCreateFromItemsDataList": "create from items (data list)",
     "Basic data handling: DictCreateFromItemsList": "create from items (LIST)",
     "Basic data handling: DictCreateFromLists": "create from LISTs",
@@ -740,7 +890,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictContainsKey": "contains key",
     "Basic data handling: DictExcludeKeys": "exclude keys",
     "Basic data handling: DictFilterByKeys": "filter by keys",
-    "Basic data handling: DictFromKeys": "fromkeys",
+    "Basic data handling: DictFromKeys": "from keys",
     "Basic data handling: DictGet": "get",
     "Basic data handling: DictGetKeysValues": "get keys values",
     "Basic data handling: DictGetMultiple": "get multiple",

@@ -4,6 +4,141 @@ from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
 INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
 
+
+class DataListCreate(ComfyNodeABC):
+    """
+    Creates a new Data List from items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.ANY, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list]:
+        return (list(kwargs.values()),)
+
+
+class DataListCreateFromBoolean(ComfyNodeABC):
+    """
+    Creates a new Data List from BOOLEAN items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list]:
+        return ([bool(value) for value in kwargs.values()],)
+
+
+class DataListCreateFromFloat(ComfyNodeABC):
+    """
+    Creates a new Data List from FLOAT items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list]:
+        return ([float(value) for value in kwargs.values()],)
+
+
+class DataListCreateFromInt(ComfyNodeABC):
+    """
+    Creates a new Data List from INT items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.INT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list]:
+        return ([int(value) for value in kwargs.values()],)
+
+
+class DataListCreateFromString(ComfyNodeABC):
+    """
+    Creates a new Data List from STRING items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.STRING, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return ([str(value) for value in kwargs.values()],)
+
+
 class DataListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a list.
@@ -22,7 +157,7 @@ class DataListAppend(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "append"
     INPUT_IS_LIST = True
@@ -54,7 +189,7 @@ class DataListContains(ComfyNodeABC):
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("contains",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
     INPUT_IS_LIST = True
@@ -84,7 +219,7 @@ class DataListCount(ComfyNodeABC):
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("count",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
     INPUT_IS_LIST = True
@@ -92,27 +227,6 @@ class DataListCount(ComfyNodeABC):
     def count(self, **kwargs: list[Any]) -> tuple[int]:
         value = kwargs.get('value', [None])[0]
         return (kwargs.get('list', []).count(value),)
-
-
-class DataListCreateEmpty(ComfyNodeABC):
-    """
-    Creates a new empty list.
-
-    This node creates and returns an empty list.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {"required": {}}
-
-    RETURN_TYPES = (IO.ANY,)
-    RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "create_empty"
-    OUTPUT_IS_LIST = (True,)
-
-    def create_empty(self) -> tuple[list]:
-        return ([],)
 
 
 class DataListExtend(ComfyNodeABC):
@@ -133,7 +247,7 @@ class DataListExtend(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extend"
     INPUT_IS_LIST = True
@@ -145,10 +259,10 @@ class DataListExtend(ComfyNodeABC):
 
 class DataListFilter(ComfyNodeABC):
     """
-    Filters a data list using boolean values.
+    Filters a Data List using boolean values.
 
-    This node takes a value data list and a filter data list (containing only boolean values).
-    It returns a new data list containing only the elements from the value list where the
+    This node takes a value Data List and a filter Data List (containing only boolean values).
+    It returns a new Data List containing only the elements from the value list where the
     corresponding element in the filter list is False.
 
     If the lists have different lengths, the last element of the shorter list is repeated
@@ -165,7 +279,7 @@ class DataListFilter(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("filtered_list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "filter_data"
     INPUT_IS_LIST = True
@@ -200,7 +314,7 @@ class DataListGetItem(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("item",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_item"
     INPUT_IS_LIST = True
@@ -236,7 +350,7 @@ class DataListIndex(ComfyNodeABC):
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("index",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_index"
     INPUT_IS_LIST = True
@@ -274,7 +388,7 @@ class DataListInsert(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "insert"
     INPUT_IS_LIST = True
@@ -302,7 +416,7 @@ class DataListLength(ComfyNodeABC):
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("length",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
     INPUT_IS_LIST = True
@@ -329,7 +443,7 @@ class DataListMax(ComfyNodeABC):
 
     RETURN_TYPES = (IO.NUMBER,)
     RETURN_NAMES = ("max",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_max"
     INPUT_IS_LIST = True
@@ -365,7 +479,7 @@ class DataListMin(ComfyNodeABC):
 
     RETURN_TYPES = (IO.NUMBER,)
     RETURN_NAMES = ("min",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_min"
     INPUT_IS_LIST = True
@@ -405,7 +519,7 @@ class DataListPop(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("list", "item")
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
     INPUT_IS_LIST = True
@@ -439,7 +553,7 @@ class DataListRemove(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY, IO.BOOLEAN,)
     RETURN_NAMES = ("list", "success",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
     INPUT_IS_LIST = True
@@ -471,7 +585,7 @@ class DataListReverse(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "reverse"
     INPUT_IS_LIST = True
@@ -502,7 +616,7 @@ class DataListSetItem(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_item"
     INPUT_IS_LIST = True
@@ -542,7 +656,7 @@ class DataListSlice(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice"
     INPUT_IS_LIST = True
@@ -578,7 +692,7 @@ class DataListSort(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sort"
     INPUT_IS_LIST = True
@@ -596,7 +710,7 @@ class DataListZip(ComfyNodeABC):
     """
     Combines multiple lists element-wise.
 
-    This node takes multiple data lists as input and returns a new data list
+    This node takes multiple Data Lists as input and returns a new Data List
     where each item is a list containing the corresponding elements from the input lists.
     The length of the output list will be equal to the length of the shortest input list.
     """
@@ -615,7 +729,7 @@ class DataListZip(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "zip_lists"
     INPUT_IS_LIST = True
@@ -637,9 +751,9 @@ class DataListZip(ComfyNodeABC):
 
 class DataListToList(ComfyNodeABC):
     """
-    Converts a ComfyUI data list into a LIST object.
+    Converts a ComfyUI Data List into a LIST object.
 
-    This node takes a data list input (which is typically a list of items with the same type)
+    This node takes a Data List input (which is typically a list of items with the same type)
     and converts it to a LIST object (a Python list as a single variable).
     """
     @classmethod
@@ -651,7 +765,7 @@ class DataListToList(ComfyNodeABC):
         }
 
     RETURN_TYPES = ("LIST",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
     INPUT_IS_LIST = True
@@ -662,9 +776,9 @@ class DataListToList(ComfyNodeABC):
 
 class DataListToSet(ComfyNodeABC):
     """
-    Converts a ComfyUI data list into a LIST object.
+    Converts a ComfyUI Data List into a LIST object.
 
-    This node takes a data list input (which is typically a list of items with the same type)
+    This node takes a Data List input (which is typically a list of items with the same type)
     and converts it to a LIST object (a Python list as a single variable).
     """
     @classmethod
@@ -676,7 +790,7 @@ class DataListToSet(ComfyNodeABC):
         }
 
     RETURN_TYPES = ("SET",)
-    CATEGORY = "Basic/data list"
+    CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
     INPUT_IS_LIST = True
@@ -686,10 +800,14 @@ class DataListToSet(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
+    "Basic data handling: DataListCreate": DataListCreate,
+    "Basic data handling: DataListCreateFromBoolean": DataListCreateFromBoolean,
+    "Basic data handling: DataListCreateFromFloat": DataListCreateFromFloat,
+    "Basic data handling: DataListCreateFromInt": DataListCreateFromInt,
+    "Basic data handling: DataListCreateFromString": DataListCreateFromString,
     "Basic data handling: DataListAppend": DataListAppend,
     "Basic data handling: DataListContains": DataListContains,
     "Basic data handling: DataListCount": DataListCount,
-    "Basic data handling: DataListCreateEmpty": DataListCreateEmpty,
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListFilter": DataListFilter,
     "Basic data handling: DataListGetItem": DataListGetItem,
@@ -710,10 +828,14 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "Basic data handling: DataListCreate": "create Data List",
+    "Basic data handling: DataListCreateFromBoolean": "create Data List from BOOLEANs",
+    "Basic data handling: DataListCreateFromFloat": "create Data List from FLOATs",
+    "Basic data handling: DataListCreateFromInt": "create Data List from INTs",
+    "Basic data handling: DataListCreateFromString": "create Data List from STRINGs",
     "Basic data handling: DataListAppend": "append",
     "Basic data handling: DataListContains": "contains",
     "Basic data handling: DataListCount": "count",
-    "Basic data handling: DataListCreateEmpty": "create empty",
     "Basic data handling: DataListExtend": "extend",
     "Basic data handling: DataListFilter": "filter",
     "Basic data handling: DataListGetItem": "get item",

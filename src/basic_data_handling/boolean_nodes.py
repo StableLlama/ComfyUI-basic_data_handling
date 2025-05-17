@@ -145,19 +145,19 @@ class BooleanXor(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: BooleanAnd": BooleanAnd,
-    "Basic data handling: BooleanNand": BooleanNand,
-    "Basic data handling: BooleanNor": BooleanNor,
-    "Basic data handling: BooleanNot": BooleanNot,
-    "Basic data handling: BooleanOr": BooleanOr,
-    "Basic data handling: BooleanXor": BooleanXor,
+    "Basic data handling: Boolean And": BooleanAnd,
+    "Basic data handling: Boolean Nand": BooleanNand,
+    "Basic data handling: Boolean Nor": BooleanNor,
+    "Basic data handling: Boolean Not": BooleanNot,
+    "Basic data handling: Boolean Or": BooleanOr,
+    "Basic data handling: Boolean Xor": BooleanXor,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: BooleanAnd": "and",
-    "Basic data handling: BooleanNand": "nand",
-    "Basic data handling: BooleanNor": "nor",
-    "Basic data handling: BooleanNot": "not",
-    "Basic data handling: BooleanOr": "or",
-    "Basic data handling: BooleanXor": "xor",
+    "Basic data handling: Boolean And": "and",
+    "Basic data handling: Boolean Nand": "nand",
+    "Basic data handling: Boolean Nor": "nor",
+    "Basic data handling: Boolean Not": "not",
+    "Basic data handling: Boolean Or": "or",
+    "Basic data handling: Boolean Xor": "xor",
 }

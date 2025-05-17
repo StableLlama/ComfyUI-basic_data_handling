@@ -5,11 +5,22 @@ from src.basic_data_handling.regex_nodes import (
     RegexFindallDataList,
     RegexSplitDataList,
     RegexSub,
-    RegexTest
+    RegexTest,
+    RegexFindallList,
+    RegexSearchGroupsList,
+    RegexSplitList
 )
 
 def test_regex_search_groups():
     node = RegexSearchGroupsDataList()
+    assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
+    assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
+    assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
+    assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
+
+
+def test_regex_search_groups_list():
+    node = RegexSearchGroupsList()
     assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
     assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
     assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
@@ -33,8 +44,25 @@ def test_regex_findall():
     assert node.findall(r"(a)(b)", "ab ab") == ([("a", "b"), ("a", "b")],)  # Multiple groups
 
 
+def test_regex_findall_list():
+    node = RegexFindallList()
+    assert node.findall(r"\d+", "abc 123 def 456") == (["123", "456"],)
+    assert node.findall(r"\b[a-zA-Z]+\b", "Multiple words here") == (["Multiple", "words", "here"],)
+    assert node.findall(r"nonexistent", "no match") == ([],)  # No match
+    assert node.findall(r"(a)(b)", "ab ab") == ([("a", "b"), ("a", "b")],)  # Multiple groups
+
+
 def test_regex_split():
     node = RegexSplitDataList()
+    pattern = r",\s*"
+    string = "one, two, three"
+    assert node.split(pattern, string) == (["one", "two", "three"],)
+    assert node.split(r"\s+", "split several words") == (["split", "several", "words"],)  # Whitespace split
+    assert node.split(r"z", "nozsplit") == (["no", "split"],)  # Split by 'z'
+
+
+def test_regex_split_list():
+    node = RegexSplitList()
     pattern = r",\s*"
     string = "one, two, three"
     assert node.split(pattern, string) == (["one", "two", "three"],)

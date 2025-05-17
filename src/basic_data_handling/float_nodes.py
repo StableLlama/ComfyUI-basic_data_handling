@@ -1,6 +1,31 @@
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
+
+class FloatCreate(ComfyNodeABC):
+    """
+    Create a FLOAT from a STRING widget.
+
+    The input string must be a valid floating-point number and will be
+    directly converted to a FLOAT without any further processing.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {"default": "0.0", "widgetType": "STRING"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    CATEGORY = "Basic/FLOAT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create"
+
+    def create(self, value: str) -> tuple[float]:
+        return (float(value),)
+
+
 class FloatAdd(ComfyNodeABC):
     """
     Adds two floating-point numbers.
@@ -124,6 +149,8 @@ class FloatDivideSafe(ComfyNodeABC):
 
     def divide(self, float1: float, float2: float) -> tuple[float]:
         if float2 == 0.0:
+            if float1 == 0.0:
+                return (float('nan'),)
             return (float('inf') if float1 > 0 else float('-inf'),)
         return (float1 / float2,)
 
@@ -276,6 +303,7 @@ class FloatRound(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
+    "Basic data handling: FloatCreate": FloatCreate,
     "Basic data handling: FloatAdd": FloatAdd,
     "Basic data handling: FloatSubtract": FloatSubtract,
     "Basic data handling: FloatMultiply": FloatMultiply,
@@ -290,11 +318,12 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "Basic data handling: FloatCreate": "create FLOAT",
     "Basic data handling: FloatAdd": "add",
     "Basic data handling: FloatSubtract": "subtract",
     "Basic data handling: FloatMultiply": "multiply",
     "Basic data handling: FloatDivide": "divide",
-    "Basic data handling: FloatDivideSafe": "divide (division by zero safe)",
+    "Basic data handling: FloatDivideSafe": "divide (zero safe)",
     "Basic data handling: FloatAsIntegerRatio": "integer ratio",
     "Basic data handling: FloatFromHex": "from hex",
     "Basic data handling: FloatHex": "to hex",

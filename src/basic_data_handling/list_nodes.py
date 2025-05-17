@@ -4,23 +4,129 @@ from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 
 INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
 
-class ListEmpty(ComfyNodeABC):
+
+class ListCreate(ComfyNodeABC):
     """
-    Create an empty LIST.
+    Creates a new LIST from items.
+
+    This node creates and returns a LIST. The list of items is dynamically
+    extended based on the number of inputs provided.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {}
+            "optional": {
+                "item_0": (IO.ANY, {"_dynamic": "number"}),
+            }
         }
 
     RETURN_TYPES = ("LIST",)
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "create"
+    FUNCTION = "create_list"
 
-    def create(self) -> tuple[list[Any]]:
-        return ([],)
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return (list(kwargs.values()),)
+
+
+class ListCreateFromBoolean(ComfyNodeABC):
+    """
+    Creates a new LIST from BOOLEAN items.
+
+    This node creates and returns a LIST. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return ([bool(value) for value in kwargs.values()],)
+
+
+class ListCreateFromFloat(ComfyNodeABC):
+    """
+    Creates a new LIST from FLOAT items.
+
+    This node creates and returns a LIST. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return ([float(value) for value in kwargs.values()],)
+
+
+class ListCreateFromInt(ComfyNodeABC):
+    """
+    Creates a new LIST from INT items.
+
+    This node creates and returns a LIST. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.INT, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return ([int(value) for value in kwargs.values()],)
+
+
+class ListCreateFromString(ComfyNodeABC):
+    """
+    Creates a new LIST from STRING items.
+
+    This node creates and returns a LIST. The list of items is dynamically
+    extended based on the number of inputs provided.
+    """
+    EXPERIMENTAL = True
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "item_0": (IO.STRING, {"_dynamic": "number"}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        return ([str(value) for value in kwargs.values()],)
 
 
 class ListAppend(ComfyNodeABC):
@@ -552,7 +658,11 @@ class ListToSet(ComfyNodeABC):
 
 
 NODE_CLASS_MAPPINGS = {
-    "Basic data handling: ListEmpty": ListEmpty,
+    "Basic data handling: ListCreate": ListCreate,
+    "Basic data handling: ListCreateFromBoolean": ListCreateFromBoolean,
+    "Basic data handling: ListCreateFromFloat": ListCreateFromFloat,
+    "Basic data handling: ListCreateFromInt": ListCreateFromInt,
+    "Basic data handling: ListCreateFromString": ListCreateFromString,
     "Basic data handling: ListAppend": ListAppend,
     "Basic data handling: ListContains": ListContains,
     "Basic data handling: ListCount": ListCount,
@@ -574,7 +684,11 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Basic data handling: ListEmpty": "create empty",
+    "Basic data handling: ListCreate": "create LIST",
+    "Basic data handling: ListCreateFromBoolean": "create LIST from BOOLEANs",
+    "Basic data handling: ListCreateFromFloat": "create LIST from FLOATs",
+    "Basic data handling: ListCreateFromInt": "create LIST from INTs",
+    "Basic data handling: ListCreateFromString": "create LIST from STRINGs",
     "Basic data handling: ListAppend": "append",
     "Basic data handling: ListContains": "contains",
     "Basic data handling: ListCount": "count",
@@ -591,6 +705,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListSetItem": "set item",
     "Basic data handling: ListSlice": "slice",
     "Basic data handling: ListSort": "sort",
-    "Basic data handling: ListToDataList": "convert to data list",
+    "Basic data handling: ListToDataList": "convert to Data List",
     "Basic data handling: ListToSet": "convert to SET",
 }

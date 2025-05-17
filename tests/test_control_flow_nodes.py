@@ -21,19 +21,19 @@ def test_switch_case():
     node = SwitchCase()
 
     # Selector within range, valid cases
-    assert node.execute(0, "Case 0", "Case 1", "Case 2", "Case 3") == ("Case 0",)
-    assert node.execute(1, "Case 0", "Case 1", "Case 2", "Case 3") == ("Case 1",)
-    assert node.execute(3, "Case 0", "Case 1", "Case 2", "Case 3") == ("Case 3",)
+    assert node.execute(0, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3") == ("Case 0",)
+    assert node.execute(1, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3") == ("Case 1",)
+    assert node.execute(3, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3") == ("Case 3",)
 
     # Selector out of range, fallback to default case
-    assert node.execute(4, "Case 0", "Case 1", "Case 2", "Case 3", default="Default") == ("Default",)
-    assert node.execute(99, "Case 0", "Case 1", "Case 2", "Case 3", default="Default") == ("Default",)
+    assert node.execute(4, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3", default="Default") == ("Default",)
+    assert node.execute(99, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3", default="Default") == ("Default",)
 
     # Selector out of range, no default provided
-    assert node.execute(4, "Case 0", "Case 1", "Case 2", "Case 3") == (None,)
+    assert node.execute(4, case_0="Case 0", case_1="Case 1", case_2="Case 2", case_3="Case 3") == (None,)
 
     # Edge cases
-    assert node.execute(0, None, "Case 1", "Case 2") == (None,)  # Case with None
-    assert node.execute(2, "Case 0", "Case 1", "Case 2") == ("Case 2",)
-    assert node.execute(0, 123, False, "Case 2") == (123,)  # Different data types
-    assert node.execute(10, "Case 0", "Case 1", "Case 2", default="Fallback") == ("Fallback",)
+    assert node.execute(0, case_0=None, case_1="Case 1", case_2="Case 2") == (None,)  # Case with None
+    assert node.execute(2, case_0="Case 0", case_1="Case 1", case_2="Case 2") == ("Case 2",)
+    assert node.execute(0, case_0=123, case_1=False, case_2="Case 2") == (123,)  # Different data types
+    assert node.execute(10, case_0="Case 0", case_1="Case 1", case_2="Case 2", default="Fallback") == ("Fallback",)

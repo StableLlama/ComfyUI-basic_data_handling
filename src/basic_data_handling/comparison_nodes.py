@@ -58,7 +58,7 @@ class NotEqual(ComfyNodeABC):
         return (value1 != value2,)
 
 
-class LessThan:
+class LessThan(ComfyNodeABC):
     """
     Checks if the first value is less than the second.
 
@@ -84,7 +84,7 @@ class LessThan:
         return (value1 < value2,)
 
 
-class LessThanOrEqual:
+class LessThanOrEqual(ComfyNodeABC):
     """
     Checks if the first value is less than or equal to the second.
 
@@ -110,7 +110,7 @@ class LessThanOrEqual:
         return (value1 <= value2,)
 
 
-class GreaterThan:
+class GreaterThan(ComfyNodeABC):
     """
     Checks if the first value is greater than the second.
 
@@ -136,7 +136,7 @@ class GreaterThan:
         return (value1 > value2,)
 
 
-class GreaterThanOrEqual:
+class GreaterThanOrEqual(ComfyNodeABC):
     """
     Checks if the first value is greater than or equal to the second.
 
@@ -162,7 +162,7 @@ class GreaterThanOrEqual:
         return (value1 >= value2,)
 
 
-class IsNull:
+class IsNull(ComfyNodeABC):
     """
     Checks if a value is None/null.
 
@@ -187,7 +187,7 @@ class IsNull:
         return (value is None,)
 
 
-class NumberInRange:
+class NumberInRange(ComfyNodeABC):
     """
     Checks if a number is within a specified range.
 
@@ -223,7 +223,7 @@ class NumberInRange:
         return (min_check and max_check,)
 
 
-class CompareLength:
+class CompareLength(ComfyNodeABC):
     """
     Compares the length of a container (string, list, etc) with a value.
 
@@ -269,7 +269,7 @@ class CompareLength:
             raise ValueError(f"Unknown operator: {operator}")
 
 
-class StringComparison:
+class StringComparison(ComfyNodeABC):
     """
     Compares two strings using a selected comparison operator.
 
