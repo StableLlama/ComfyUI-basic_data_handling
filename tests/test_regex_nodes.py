@@ -27,38 +27,6 @@ def test_regex_search_groups_list():
     assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
 
 
-def test_regex_search_groups_list():
-    node = RegexSearchGroupsList()
-    assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
-    assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
-    assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
-    assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
-
-
-def test_regex_search_groups_list():
-    node = RegexSearchGroupsList()
-    assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
-    assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
-    assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
-    assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
-
-
-def test_regex_search_groups_list():
-    node = RegexSearchGroupsList()
-    assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
-    assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
-    assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
-    assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
-
-
-def test_regex_search_groups_list():
-    node = RegexSearchGroupsList()
-    assert node.search_groups(r"(foo)(bar)", "foobar") == (["foo", "bar"],)
-    assert node.search_groups(r"(test)(\d+)", "test123") == (["test", "123"],)
-    assert node.search_groups(r"(nothing)", "no match here") == ([],)  # No match
-    assert node.search_groups(r"(\w+)", "word") == (["word"],)  # Single group
-
-
 def test_regex_group_dict():
     node = RegexGroupDict()
     pattern = r"(?P<word>\w+)-(?P<number>\d+)"

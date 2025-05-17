@@ -1,7 +1,6 @@
 import os
 import pytest
 import platform
-from pathlib import Path
 
 from src.basic_data_handling.path_nodes import (
     PathJoin, PathAbspath, PathExists, PathIsFile, PathIsDir, PathGetSize,
