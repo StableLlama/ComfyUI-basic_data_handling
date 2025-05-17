@@ -1,9 +1,12 @@
+import math
 import pytest
 from src.basic_data_handling.float_nodes import (
+    FloatCreate,
     FloatAdd,
     FloatSubtract,
     FloatMultiply,
     FloatDivide,
+    FloatDivideSafe,
     FloatPower,
     FloatRound,
     FloatIsInteger,
@@ -11,6 +14,15 @@ from src.basic_data_handling.float_nodes import (
     FloatHex,
     FloatFromHex,
 )
+
+def test_float_create():
+    node = FloatCreate()
+    assert node.create("3.14") == (3.14,)
+    assert node.create("-2.5") == (-2.5,)
+    assert node.create("0.0") == (0.0,)
+    with pytest.raises(ValueError):
+        node.create("not a number")
+
 
 def test_float_add():
     node = FloatAdd()
@@ -39,6 +51,20 @@ def test_float_divide():
     assert node.divide(-6.0, 3.0) == (-2.0,)
     with pytest.raises(ValueError, match="Cannot divide by zero."):
         node.divide(5.0, 0.0)
+
+
+def test_float_divide_safe():
+    node = FloatDivideSafe()
+
+    assert node.divide(7.0, 2.0) == (3.5,)
+    assert node.divide(-6.0, 3.0) == (-2.0,)
+    assert node.divide(5.0, 0.0) == (float('inf'),)
+    assert node.divide(-5.0, 0.0) == (float('-inf'),)
+
+    # Special handling for NaN because NaN != NaN
+    result = node.divide(0.0, 0.0)
+    assert len(result) == 1
+    assert math.isnan(result[0])
 
 
 def test_float_power():

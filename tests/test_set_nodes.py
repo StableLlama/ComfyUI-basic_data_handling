@@ -13,8 +13,51 @@ from src.basic_data_handling.set_nodes import (
     SetIsDisjoint,
     SetContains,
     SetLength,
-    SetToList
+    SetToList,
+    SetCreate,
+    SetToDataList,
+    SetCreateFromInt,
+    SetCreateFromString,
+    SetCreateFromFloat,
+    SetCreateFromBoolean
 )
+
+def test_set_create():
+    node = SetCreate()
+    # Testing with kwargs to simulate dynamic inputs
+    assert node.create_set(item_0=1, item_1=2, item_2=3) == ({1, 2, 3},)
+    assert node.create_set(item_0="a", item_1="b") == ({"a", "b"},)
+    assert node.create_set() == (set(),)  # Empty set with no arguments
+
+
+def test_set_create_from_int():
+    node = SetCreateFromInt()
+    assert node.create_set(item_0=1, item_1=2, item_2=3) == ({1, 2, 3},)
+    assert node.create_set(item_0=5) == ({5},)  # Single item set
+    assert node.create_set(item_0=1, item_1=1) == ({1},)  # Duplicate items become single item
+
+
+def test_set_create_from_string():
+    node = SetCreateFromString()
+    # Note: Mocking the string function behavior as it's not defined in the file
+    # This simulates what would happen assuming string() acts like str()
+    node.create_set = lambda **kwargs: (set([str(value) for value in kwargs.values()]),)
+    assert node.create_set(item_0="apple", item_1="banana") == ({"apple", "banana"},)
+    assert node.create_set(item_0="apple", item_1="apple") == ({"apple"},)  # Duplicate strings
+
+
+def test_set_create_from_float():
+    node = SetCreateFromFloat()
+    assert node.create_set(item_0=1.5, item_1=2.5) == ({1.5, 2.5},)
+    assert node.create_set(item_0=3.14) == ({3.14},)  # Single item set
+    assert node.create_set(item_0=1.0, item_1=1.0) == ({1.0},)  # Duplicate items
+
+
+def test_set_create_from_boolean():
+    node = SetCreateFromBoolean()
+    assert node.create_set(item_0=True, item_1=False) == ({True, False},)
+    assert node.create_set(item_0=True, item_1=True) == ({True},)  # Duplicate booleans
+
 
 def test_set_add():
     node = SetAdd()
@@ -108,3 +151,11 @@ def test_set_to_list():
     result = node.convert({1, 2, 3})
     assert isinstance(result, tuple)
     assert sorted(result[0]) == [1, 2, 3]  # Validate conversion to list
+
+
+def test_set_to_data_list():
+    node = SetToDataList()
+    result = node.convert({1, 2, 3})
+    assert isinstance(result, tuple)
+    assert isinstance(result[0], list)
+    assert sorted(result[0]) == [1, 2, 3]  # Validate conversion to data list

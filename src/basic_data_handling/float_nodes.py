@@ -149,6 +149,8 @@ class FloatDivideSafe(ComfyNodeABC):
 
     def divide(self, float1: float, float2: float) -> tuple[float]:
         if float2 == 0.0:
+            if float1 == 0.0:
+                return (float('nan'),)
             return (float('inf') if float1 > 0 else float('-inf'),)
         return (float1 / float2,)
 

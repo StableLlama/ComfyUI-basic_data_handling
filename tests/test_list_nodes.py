@@ -1,5 +1,10 @@
 import pytest
 from src.basic_data_handling.list_nodes import (
+    ListCreate,
+    ListCreateFromBoolean,
+    ListCreateFromFloat,
+    ListCreateFromInt,
+    ListCreateFromString,
     ListAppend,
     ListExtend,
     ListInsert,
@@ -15,7 +20,9 @@ from src.basic_data_handling.list_nodes import (
     ListSetItem,
     ListContains,
     ListMin,
-    ListMax
+    ListMax,
+    ListToDataList,
+    ListToSet
 )
 
 
@@ -130,3 +137,52 @@ def test_list_max():
     assert node.find_max([1, 2, 3]) == (3,)
     assert node.find_max(["b", "a", "c"]) == ("c",)
     assert node.find_max([]) == (None,)
+
+
+def test_list_create():
+    node = ListCreate()
+    assert node.create_list(item_0=1, item_1=2, item_2=3) == ([1, 2, 3],)
+    assert node.create_list() == ([],)  # Empty list
+    assert node.create_list(item_0="test") == (["test"],)
+
+
+def test_list_create_from_boolean():
+    node = ListCreateFromBoolean()
+    assert node.create_list(item_0=True, item_1=False, item_2=True) == ([True, False, True],)
+    assert node.create_list(item_0=True) == ([True],)
+    assert node.create_list() == ([],)
+
+
+def test_list_create_from_float():
+    node = ListCreateFromFloat()
+    assert node.create_list(item_0=1.1, item_1=2.2, item_2=3.3) == ([1.1, 2.2, 3.3],)
+    assert node.create_list(item_0=0.0) == ([0.0],)
+    assert node.create_list() == ([],)
+
+
+def test_list_create_from_int():
+    node = ListCreateFromInt()
+    assert node.create_list(item_0=1, item_1=2, item_2=3) == ([1, 2, 3],)
+    assert node.create_list(item_0=0) == ([0],)
+    assert node.create_list() == ([],)
+
+
+def test_list_create_from_string():
+    node = ListCreateFromString()
+    assert node.create_list(item_0="a", item_1="b", item_2="c") == (["a", "b", "c"],)
+    assert node.create_list(item_0="test") == (["test"],)
+    assert node.create_list() == ([],)
+
+
+def test_list_to_data_list():
+    node = ListToDataList()
+    input_list = [1, 2, 3]
+    # The output should be the same list but marked as a data list by the OUTPUT_IS_LIST = (True,) flag
+    assert node.convert(input_list) == (input_list,)
+
+
+def test_list_to_set():
+    node = ListToSet()
+    assert node.convert([1, 2, 3, 2, 1]) == ({1, 2, 3},)
+    assert node.convert([]) == (set(),)
+    assert node.convert(["a", "b", "a", "c"]) == ({"a", "b", "c"},)

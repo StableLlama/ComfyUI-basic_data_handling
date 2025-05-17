@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.2.2"
+version = "0.3.0"
 description = """NOTE: Still in development! Expect breaking changes!
 Basic Python functions for manipulating data that every programmer is used to.
 Currently supported ComfyUI data types: BOOLEAN, FLOAT, INT, STRING and data lists.
@@ -47,11 +47,12 @@ minversion = "8.0"
 pythonpath = [
     "src",
     "../..",  # Path to parent directory containing comfy module
+    "."
 ]
 testpaths = [
     "tests",
 ]
-# python_files = ["test_*.py"]
+#python_files = ["test_*.py"]
 python_files = ["test_boolean_nodes.py"]
 
 [tool.mypy]

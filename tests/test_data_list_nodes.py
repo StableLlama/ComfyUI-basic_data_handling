@@ -14,7 +14,6 @@ from src.basic_data_handling.data_list_nodes import (
     DataListGetItem,
     DataListSetItem,
     DataListContains,
-    DataListCreateEmpty,
     DataListZip,
     DataListFilter,
     DataListMin,
@@ -119,21 +118,18 @@ def test_contains():
     assert node.contains(list=[], value=["x"]) == (False,)
 
 
-def test_create_empty():
-    node = DataListCreateEmpty()
-    assert node.create_empty() == ([],)
-
-
 def test_zip():
     node = DataListZip()
     assert node.zip_lists(list1=[1, 2], list2=["a", "b"]) == ([[1, "a"], [2, "b"]],)
     assert node.zip_lists(list1=[1], list2=["a", "b"]) == ([[1, "a"]],)  # Shortest list length
+    assert node.zip_lists(list1=[1, 2, 3], list2=["a", "b"]) == ([[1, "a"], [2, "b"]],)  # Different lengths
 
 
 def test_filter():
     node = DataListFilter()
     assert node.filter_data(value=[1, 2, 3], filter=[False, True, False]) == ([1, 3],)
     assert node.filter_data(value=[1, 2], filter=[True, True]) == ([],)
+    assert node.filter_data(value=[1, 2, 3], filter=[False, False, False]) == ([1, 2, 3],)
 
 
 def test_min():
