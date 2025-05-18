@@ -1,6 +1,8 @@
 from typing import Any
 from inspect import cleandoc
 from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+from comfy_execution.graph import ExecutionBlocker
+
 
 class IfElse(ComfyNodeABC):
     """
@@ -192,14 +194,47 @@ class SwitchCase(ComfyNodeABC):
         return (kwargs.get("default"),)
 
 
+class FlowSelect(ComfyNodeABC):
+    """
+    Select the direction of the flow.
+
+    This node takes a value and directs it to either the "true" or "false" output.
+
+    Note: for dynamic switching in a Data Flow you might want to use
+    "filter select" instead.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {}),
+                "select": (IO.BOOLEAN, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY, IO.ANY)
+    RETURN_NAMES = ("true", "false")
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "select"
+
+    def select(self, value, select = True) -> tuple[Any, Any]:
+        if select:
+            return value, ExecutionBlocker(None)
+        else:
+            return ExecutionBlocker(None), value
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
+    "Basic data handling: FlowSelect": FlowSelect,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
     "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
+    "Basic data handling: FlowSelect": "flow select",
 }
