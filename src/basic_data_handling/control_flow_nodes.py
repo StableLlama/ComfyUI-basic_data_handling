@@ -194,33 +194,6 @@ class SwitchCase(ComfyNodeABC):
         return (kwargs.get("default"),)
 
 
-class ExecutionOrder(ComfyNodeABC):
-    """
-    Force execution order in the workflow.
-
-    This node is lightweight and does not affect the workflow. It is used to force
-    the execution order of nodes in the workflow. You only need to chain this node
-    with the other execution order nodes in the desired order and add any
-    output of the nodes you want to force execution order on.
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "optional": {
-                "E/O": ("E/O", {}),
-                "any node output": (IO.ANY, {}),
-            }
-        }
-
-    RETURN_TYPES = ("E/O",)
-    CATEGORY = "Basic/flow control"
-    DESCRIPTION = cleandoc(__doc__ or "")
-    FUNCTION = "execute"
-
-    def execute(self, **kwargs) -> tuple[Any]:
-        return (None,)
-
-
 class FlowSelect(ComfyNodeABC):
     """
     Select the direction of the flow.
@@ -250,6 +223,33 @@ class FlowSelect(ComfyNodeABC):
             return value, ExecutionBlocker(None)
         else:
             return ExecutionBlocker(None), value
+
+
+class ExecutionOrder(ComfyNodeABC):
+    """
+    Force execution order in the workflow.
+
+    This node is lightweight and does not affect the workflow. It is used to force
+    the execution order of nodes in the workflow. You only need to chain this node
+    with the other execution order nodes in the desired order and add any
+    output of the nodes you want to force execution order on.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "E/O": ("E/O", {}),
+                "any node output": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("E/O",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    def execute(self, **kwargs) -> tuple[Any]:
+        return (None,)
 
 
 NODE_CLASS_MAPPINGS = {
