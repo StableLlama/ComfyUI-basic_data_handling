@@ -26,3 +26,11 @@ mock_comfy.ComfyNodeABC = object
 sys.modules["comfy"] = mock_comfy
 sys.modules["comfy.comfy_types"] = mock_comfy
 sys.modules["comfy.comfy_types.node_typing"] = mock_comfy
+
+def mock_execution_blocker(_):
+    return None
+
+mock_comfy_execution = MagicMock()
+mock_comfy_execution.ExecutionBlocker = mock_execution_blocker
+sys.modules["comfy_execution"] = mock_comfy_execution
+sys.modules["comfy_execution.graph"] = mock_comfy_execution
