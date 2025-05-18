@@ -811,7 +811,6 @@ class DataListToList(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        print(f"input list: '{kwargs.get('list', [])}'")
         return (list(kwargs.get('list', [])).copy(),)
 
 
