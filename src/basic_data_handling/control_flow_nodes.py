@@ -191,15 +191,43 @@ class SwitchCase(ComfyNodeABC):
         # If selector is out of range or the selected case is None, return default
         return (kwargs.get("default"),)
 
+class ExecutionOrder(ComfyNodeABC):
+    """
+    Force execution order in the workflow.
+
+    This node is lightweight and does not affect the workflow. It is used to force
+    the execution order of nodes in the workflow. You only need to chain this node
+    with the other execution order nodes in the desired order and add any
+    output of the nodes you want to force execution order on.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "E/O": ("E/O", {}),
+                "any node output": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = ("E/O",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    def execute(self, **kwargs) -> tuple[Any]:
+        return (None,)
+
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
+    "Basic data handling: ExecutionOrder": ExecutionOrder,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
     "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
+    "Basic data handling: ExecutionOrder": "force execution order",
 }
