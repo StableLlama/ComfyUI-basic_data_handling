@@ -55,11 +55,11 @@ class IfElifElse(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "if": (IO.BOOLEAN, {}),
+                "if": (IO.BOOLEAN, {"forceInput": True}),
                 "then": (IO.ANY, {"lazy": True}),
             },
             "optional": {
-                "elif_0": (IO.BOOLEAN, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
+                "elif_0": (IO.BOOLEAN, {"forceInput": True, "lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
                 "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
                 "else": (IO.ANY, {"lazy": True}),
             }
