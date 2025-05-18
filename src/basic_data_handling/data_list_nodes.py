@@ -295,6 +295,46 @@ class DataListFilter(ComfyNodeABC):
         return (result,)
 
 
+class DataListFilterSelect(ComfyNodeABC):
+    """
+    Filters a Data List using boolean values.
+
+    This node takes a value Data List and a filter Data List (containing only boolean values).
+    It returns two new Data Lists containing only the elements from the value list where the
+    corresponding element in the filter list is true or false.
+
+    If the lists have different lengths, the last element of the shorter list is repeated
+    till the lengths are matching.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {}),
+                "select": (IO.BOOLEAN, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY, IO.ANY)
+    RETURN_NAMES = ("true", "false")
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "select"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True, True,)
+
+    def select(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        values = kwargs.get('value', [])
+        selects = kwargs.get('select', [])
+
+        # Create a new list with only items where the filter is False
+        result_true, result_false = [], []
+        for value, select in zip(values, selects):
+            (result_true if select else result_false).append(value)
+
+        return result_true, result_false
+
+
 class DataListGetItem(ComfyNodeABC):
     """
     Retrieves an item at a specified position in a list.
@@ -771,7 +811,7 @@ class DataListToList(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list', []).copy(),)
+        return (list(kwargs.get('list', [])).copy(),)
 
 
 class DataListToSet(ComfyNodeABC):
@@ -810,6 +850,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListCount": DataListCount,
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListFilter": DataListFilter,
+    "Basic data handling: DataListFilterSelect": DataListFilterSelect,
     "Basic data handling: DataListGetItem": DataListGetItem,
     "Basic data handling: DataListIndex": DataListIndex,
     "Basic data handling: DataListInsert": DataListInsert,
@@ -838,6 +879,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListCount": "count",
     "Basic data handling: DataListExtend": "extend",
     "Basic data handling: DataListFilter": "filter",
+    "Basic data handling: DataListFilterSelect": "filter select",
     "Basic data handling: DataListGetItem": "get item",
     "Basic data handling: DataListIndex": "index",
     "Basic data handling: DataListInsert": "insert",
