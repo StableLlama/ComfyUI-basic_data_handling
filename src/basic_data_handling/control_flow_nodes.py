@@ -193,6 +193,7 @@ class SwitchCase(ComfyNodeABC):
         # If selector is out of range or the selected case is None, return default
         return (kwargs.get("default"),)
 
+
 class ExecutionOrder(ComfyNodeABC):
     """
     Force execution order in the workflow.
