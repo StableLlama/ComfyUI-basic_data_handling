@@ -6,6 +6,10 @@ from unittest.mock import MagicMock
 # This allows the tests to import the project
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+print("=======================================================================")
+print("Mocking 'comfy.comfy_types.node_typing' via conftest.py")
+print("=======================================================================")
+
 # Create a dummy 'comfy.comfy_types.node_typing' module
 mock_comfy = MagicMock()
 mock_comfy.IO = MagicMock(
