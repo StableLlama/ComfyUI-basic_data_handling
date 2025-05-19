@@ -44,11 +44,19 @@ app.registerExtension({
         const combinedInputData = {
             ...nodeData?.input?.required ?? {},
             ...nodeData?.input?.optional ?? {}
-        };
+        }
+        const combinedInputDataOrder = [
+            ...nodeData?.input_order?.required ?? [],
+            ...nodeData?.input_order?.optional ?? []
+        ];
 
+        /** Array of (generic) dynamic inputs. */
         const dynamicInputs = [];
-        for (const name in combinedInputData) {
+        /** Array of groups of (generic) dynamic inputs. */
+        const dynamicInputGroups = [];
+        for (const name of combinedInputDataOrder) {
             const dynamic = combinedInputData[name][1]?._dynamic;
+            const dynamicGroup = combinedInputData[name][1]?._dynamicGroup ?? 0;
 
             if (dynamic) {
                 let matcher;
@@ -67,7 +75,13 @@ app.registerExtension({
                 }
                 const baseName = name.match(matcher)?.[1] ?? name;
                 const dynamicType = combinedInputData[name][0];
-                dynamicInputs.push({name, baseName, matcher, dynamic, dynamicType});
+                if (dynamicInputGroups[dynamicGroup] === undefined) {
+                    dynamicInputGroups[dynamicGroup] = [];
+                }
+                dynamicInputGroups[dynamicGroup].push(
+                    dynamicInputs.length
+                )
+                dynamicInputs.push({name, baseName, matcher, dynamic, dynamicType, dynamicGroup});
             }
         }
         if (dynamicInputs.length === 0) {
@@ -142,80 +156,134 @@ app.registerExtension({
         nodeType.prototype.onConnectionsChange = function (type, slotIndex, isConnected, link, ioSlot) {
             const result = onConnectionsChange?.apply(this, arguments);
 
-            if (type !== TypeSlot.Input || isProcessingConnection) {
+            if (type !== TypeSlot.Input || isProcessingConnection || !isDynamicInput(this.inputs[slotIndex].name)) {
                 return result;
             }
 
             isProcessingConnection = true;
 
             try {
-                const baseName = dynamicInputs[0].baseName;
-                //const dynamicType = nodeData.input.required[dynamicInputs[0].name][0];
-                const dynamicType = dynamicInputs[0].dynamicType;
-
                 // Get dynamic input slots
-                const dynamicSlots = this.inputs
-                    .map((input, idx) => ({
-                        index: idx,
-                        name: input.name,
-                        connected: input.link !== null,
-                        isDynamic: isDynamicInput(input.name),
-                    }))
-                    .filter((input) => input.isDynamic);
+                const dynamicSlots = [];
+                const dynamicGroupCount = [];
+                const dynamicGroupConnected = [];
+                for (const [index, input] of this.inputs.entries()) {
+                    const isDynamic = isDynamicInput(input.name);
+                    if (isDynamic) {
+                        const connected = input.link !== null;
+                        const dynamicGroup = (() => {
+                            // Find the dynamicGroup by matching the baseName with input name
+                            for (const di of dynamicInputs) {
+                                if (input.name.startsWith(di.baseName)) {
+                                    return di.dynamicGroup;
+                                }
+                            }
+                            return undefined;
+                        })();
+                        if (dynamicGroup in dynamicGroupCount) {
+                            if (input.name.startsWith(dynamicInputs[dynamicInputGroups[dynamicGroup][0]].baseName)) {
+                                dynamicGroupConnected[dynamicGroup][dynamicGroupCount[dynamicGroup]] ||= connected;
+                                dynamicGroupCount[dynamicGroup]++;
+                            }
+                        } else {
+                            dynamicGroupCount[dynamicGroup] = 1;
+                            dynamicGroupConnected[dynamicGroup] = [connected];
+                        }
+                        dynamicSlots.push({
+                            index,
+                            name: input.name,
+                            connected,
+                            isDynamic,
+                            dynamicGroup,
+                            dynamicGroupCount: dynamicGroupCount[dynamicGroup]
+                        });
+                     }
+                 }
 
                 // Handle connection event
                 if (isConnected === TypeSlotEvent.Connect) {
-                    const hasEmptyDynamic = dynamicSlots.some(di => !di.connected);
+                    const hasEmptyDynamic = dynamicGroupConnected[0].some(dgc => !dgc);
 
                     if (!hasEmptyDynamic) {
                         // No empty slot - add a new one after the last dynamic input
                         const lastDynamicIdx = Math.max(...dynamicSlots.map((slot) => slot.index), -1);
-                        const insertPosition = lastDynamicIdx + 1;
+                        let insertPosition = lastDynamicIdx + 1;
                         let inputInRange = true;
 
-                        let newName;
-                        if (dynamicInputs[0].dynamic === 'letter') {
-                            if (dynamicSlots.length > 26) {
-                                inputInRange = false;
+                        for (const groupMember of dynamicInputGroups[dynamicInputs[0].dynamicGroup]) {
+                            const baseName = dynamicInputs[groupMember].baseName;
+                            const dynamicType = dynamicInputs[groupMember].dynamicType;
+                            let newName;
+                            if (dynamicInputs[0].dynamic === 'letter') {
+                                if (dynamicSlots.length >= 26) {
+                                    inputInRange = false;
+                                }
+                                // For letter type, use the next letter in sequence
+                                newName = String.fromCharCode(97 + dynamicSlots.length); // 97 is ASCII for 'a'
+                            } else {
+                                // For number type, use baseName + index as before
+                                newName = `${baseName}${dynamicSlots.length}`;
                             }
-                            // For letter type, use the next letter in sequence
-                            newName = String.fromCharCode(97 + dynamicSlots.length); // 97 is ASCII for 'a'
-                        } else {
-                            // For number type, use baseName + index as before
-                            newName = `${baseName}${dynamicSlots.length}`;
-                        }
 
-                        if (inputInRange) {
-                            // Insert the new empty input at the correct position
-                            this.addInputAtPosition(newName, dynamicType, insertPosition);
-
-                            // Renumber inputs after addition
-                            this.renumberDynamicInputs(baseName, dynamicInputs, dynamicInputs[0].dynamic);
+                            if (inputInRange) {
+                                // Insert the new empty input at the correct position
+                                this.addInputAtPosition(newName, dynamicType, insertPosition++);
+                                // Renumber inputs after addition
+                                this.renumberDynamicInputs(baseName, dynamicInputs, dynamicInputs[0].dynamic);
+                            }
                         }
                     }
                 } else if (isConnected === TypeSlotEvent.Disconnect) {
-                    let hasEmptyDynamic = false;
+                    let foundEmtpyGroup = -1;
+                    let inGroup = -1;
+                    let countInGroup = 0;
                     for (let idx = 0; idx < this.inputs.length; idx++) {
                         const input = this.inputs[idx];
                         const isDynamic = isDynamicInput(input.name);
-                        if (hasEmptyDynamic && isDynamic) {
-                            if (input.link === null) {
-                                // last input is empty and this input is empty
-                                this.removeInput(idx);
-                                // continue with this ixd as it is now pointing to
-                                // a new input
-                                idx--;
+                        let hasEmptyDynamic = true;
+
+                        if (isDynamic) {
+                            for (const [i, dIG] of dynamicInputGroups.entries()) {
+                                if (input.name.startsWith(dynamicInputs[dIG[0]].baseName)) {
+                                    inGroup = i;
+                                    break;
+                                }
+                            }
+                            if (inGroup === -1) {
                                 continue;
                             }
-                            // this input is dynamic and connected
-                            this.swapInputs(idx, idx - 1);
-                            continue;
-                        }
-                        if (isDynamic && input.link === null) {
-                            hasEmptyDynamic = true;
+                            for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
+                                if (this.inputs[idx+i].name.startsWith(dynamicInputs[dynamicInputGroups[inGroup][i]].baseName)) {
+                                    hasEmptyDynamic &&= this.inputs[idx+i].link === null;
+                                } else {
+                                    console.error("Bad dynamic group input count!");
+                                    debugger;
+                                }
+                            }
+                            if (hasEmptyDynamic) {
+                                if (foundEmtpyGroup !== -1) {
+                                    // only remove when we have more than one empty group
+                                    for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
+                                        this.removeInput(idx);
+                                    }
+                                } else {
+                                    foundEmtpyGroup = idx;
+                                }
+                            } else {
+                                if (foundEmtpyGroup !== -1) {
+                                    for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
+                                        this.swapInputs(foundEmtpyGroup + i, idx + i);
+                                    }
+                                    foundEmtpyGroup = idx;
+                                }
+                            }
+                            inGroup = -1;
                         }
                     }
-                    this.renumberDynamicInputs(baseName, dynamicInputs, dynamicInputs[0].dynamic);
+                    for (const groupMember of dynamicInputGroups[dynamicInputs[0].dynamicGroup]) {
+                        const baseName = dynamicInputs[groupMember].baseName;
+                        this.renumberDynamicInputs(baseName, dynamicInputs, dynamicInputs[0].dynamic);
+                    }
                 }
 
                 this.setDirtyCanvas(true, true);
@@ -261,7 +329,7 @@ app.registerExtension({
                 const input = this.inputs[i];
                 const isDynamic = isDynamicInput(input.name);
 
-                if (isDynamic) {
+                if (isDynamic && input.name.startsWith(baseName)) {
                     dynamicInputInfo.push({
                         index: i,
                         name: input.name,
@@ -269,14 +337,6 @@ app.registerExtension({
                     });
                 }
             }
-
-            // Sort connected first, then by index
-            dynamicInputInfo.sort((a, b) => {
-                if (a.connected !== b.connected) {
-                    return b.connected ? 1 : -1; // Connected first
-                }
-                return a.index - b.index; // Keep order for same connection status
-            });
 
             // Just rename the inputs in place - don't remove/add to keep connections intact
             for (let i = 0; i < dynamicInputInfo.length; i++) {
