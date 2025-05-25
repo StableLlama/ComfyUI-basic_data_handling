@@ -1,10 +1,10 @@
-# import os
-# import sys
+ import os
+ import sys
 # from unittest.mock import MagicMock
 #
 # # Add the project root directory to Python path
 # # This allows the tests to import the project
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 #
 # print("=======================================================================")
 # print("Mocking 'comfy.comfy_types.node_typing' via conftest.py")
