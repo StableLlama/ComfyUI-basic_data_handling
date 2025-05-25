@@ -46,14 +46,15 @@ Icon = ""
 minversion = "8.0"
 pythonpath = [
     "src",
-    "../..",  # Path to parent directory containing comfy module
+    #"../..",  # Path to parent directory containing comfy module
     "."
 ]
 testpaths = [
     "tests",
 ]
 #python_files = ["test_*.py"]
-python_files = ["conftest.py", "test_boolean_nodes.py"]
+#python_files = ["conftest.py", "test_boolean_nodes.py"]
+python_files = ["test_boolean_nodes.py"]
 
 [tool.mypy]
 files = "."
