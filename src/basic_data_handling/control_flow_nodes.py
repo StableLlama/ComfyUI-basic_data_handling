@@ -1,7 +1,19 @@
 from typing import Any
 from inspect import cleandoc
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
-from comfy_execution.graph import ExecutionBlocker
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+    from comfy_execution.graph import ExecutionBlocker
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
+    ExecutionBlocker = lambda x: x
 
 
 class IfElse(ComfyNodeABC):

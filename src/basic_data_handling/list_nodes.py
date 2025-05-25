@@ -1,6 +1,19 @@
 from typing import Any
 from inspect import cleandoc
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
+
+from ._dynamic_input import ContainsDynamicDict
 
 INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
 
@@ -115,9 +128,9 @@ class ListCreateFromString(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.STRING, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = ("LIST",)

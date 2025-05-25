@@ -1,4 +1,5 @@
 from inspect import cleandoc
+
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:

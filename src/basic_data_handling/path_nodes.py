@@ -1,7 +1,18 @@
 from inspect import cleandoc
 import os
 import glob
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
 
 
 class PathAbspath(ComfyNodeABC):

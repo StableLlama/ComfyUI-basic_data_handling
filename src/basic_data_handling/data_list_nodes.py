@@ -1,6 +1,17 @@
 from typing import Any
 from inspect import cleandoc
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
 
 INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
 
