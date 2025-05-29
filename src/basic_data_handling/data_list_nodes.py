@@ -13,6 +13,8 @@ except:
         ANY = "*"
     ComfyNodeABC = object
 
+from ._dynamic_input import ContainsDynamicDict
+
 INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
 
 
@@ -26,9 +28,9 @@ class DataListCreate(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.ANY, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -53,9 +55,9 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -80,9 +82,9 @@ class DataListCreateFromFloat(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.FLOAT, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.FLOAT,)
@@ -107,9 +109,9 @@ class DataListCreateFromInt(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.INT, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -134,9 +136,9 @@ class DataListCreateFromString(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.STRING, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.STRING,)

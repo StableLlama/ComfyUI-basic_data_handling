@@ -12,6 +12,8 @@ except:
         ANY = "*"
     ComfyNodeABC = object
 
+from ._dynamic_input import ContainsDynamicDict
+
 class MathFormula(ComfyNodeABC):
     """
     A node that evaluates a mathematical formula provided as a string without using eval.
@@ -30,10 +32,10 @@ class MathFormula(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
+            "required": ContainsDynamicDict({
                 "formula": (IO.STRING, {"default": "a + b"}),
                 "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter"}),
-            },
+            }),
         }
 
     RETURN_TYPES = (IO.FLOAT,)

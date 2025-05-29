@@ -28,9 +28,9 @@ class ListCreate(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.ANY, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = ("LIST",)
@@ -53,9 +53,9 @@ class ListCreateFromBoolean(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = ("LIST",)
@@ -78,9 +78,9 @@ class ListCreateFromFloat(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.FLOAT, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = ("LIST",)
@@ -103,9 +103,9 @@ class ListCreateFromInt(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "item_0": (IO.INT, {"_dynamic": "number"}),
-            }
+            })
         }
 
     RETURN_TYPES = ("LIST",)

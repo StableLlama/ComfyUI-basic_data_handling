@@ -82,7 +82,7 @@ app.registerExtension({
                 dynamicInputGroups[dynamicGroup].push(
                     dynamicInputs.length
                 )
-                dynamicInputs.push({name, baseName, matcher, /*forceInput,*/ dynamic, dynamicType, dynamicGroup});
+                dynamicInputs.push({name, baseName, matcher, dynamic, dynamicType, dynamicGroup});
             }
         }
         if (dynamicInputs.length === 0) {
@@ -104,7 +104,6 @@ app.registerExtension({
             node.inputs.forEach((input, index) => {
                 input.slot_index = index;
                 if (input.isConnected) {
-                //if (input.link !== null) {
                     const link = node.graph._links.get(input.link);
                     if (link) {
                         link.target_slot = index;
@@ -116,45 +115,16 @@ app.registerExtension({
         };
 
 
-        // Override onConfigure: Ensure dynamic inputs are continuously ordered
-        /*
-        const onConfigure = nodeType.prototype.onConfigure;
-        nodeType.prototype.onConfigure = function() {
-            const result = onConfigure?.apply(this, arguments);
-            let lastDynamicIdx = -1
-            for (let idx = 0; idx < this.inputs.length; idx++) {
-                const input = this.inputs[idx];
-                const isDynamic = isDynamicInput(input.name);
-                if (isDynamic) {
-                    if (lastDynamicIdx < 0 || lastDynamicIdx === idx - 1) {
-                        lastDynamicIdx = idx;
-                    } else {
-                        // non-continuous dynamic inputs -> move up
-                        for (let i = idx-1; i > lastDynamicIdx; i--) {
-                            this.swapInputs(i, i + 1);
-                        }
-                        lastDynamicIdx++;
-                    }
-                }
-            }
-            return result;
-        }
-         */
-
         // Add helper method to insert input at a specific position
         nodeType.prototype.addInputAtPosition = function (name, type, position, isWidget, shape) {
-            console.warn("Adding input at position:", name, type, position, isWidget, shape, app);
             if (isWidget) {
                 this.addWidget(type, name, '', ()=>{}, {});
 
                 const GET_CONFIG = Symbol();
                 const input = this.addInput(name, type, {
                     shape,
-                    //widget: { name: inputName, [GET_CONFIG]: () => inputSpecV1 }
                     widget: {name, [GET_CONFIG]: () =>{}}
                   })
-
-                //widget.dynamicPrompts = true;
             } else {
                 this.addInput(name, type, {shape}); // Add new input
             }
@@ -177,6 +147,16 @@ app.registerExtension({
                 return result;
             }
 
+            function getDynamicGroup(inputName) {
+                // Find the dynamicGroup by matching the baseName with input name
+                for (const di of dynamicInputs) {
+                    if (inputName.startsWith(di.baseName)) {
+                        return di.dynamicGroup;
+                    }
+                }
+                return undefined;
+            }
+
             isProcessingConnection = true;
 
             try {
@@ -187,16 +167,8 @@ app.registerExtension({
                 for (const [index, input] of this.inputs.entries()) {
                     const isDynamic = isDynamicInput(input.name);
                     if (isDynamic) {
-                        const connected = input.isConnected; //.link !== null;
-                        const dynamicGroup = (() => {
-                            // Find the dynamicGroup by matching the baseName with input name
-                            for (const di of dynamicInputs) {
-                                if (input.name.startsWith(di.baseName)) {
-                                    return di.dynamicGroup;
-                                }
-                            }
-                            return undefined;
-                        })();
+                        const connected = input.isConnected;
+                        const dynamicGroup = getDynamicGroup(input.name);
                         if (dynamicGroup in dynamicGroupCount) {
                             if (input.name.startsWith(dynamicInputs[dynamicInputGroups[dynamicGroup][0]].baseName)) {
                                 dynamicGroupConnected[dynamicGroup][dynamicGroupCount[dynamicGroup]] ||= connected;
@@ -259,66 +231,48 @@ app.registerExtension({
                         }
                     }
                 } else if (isConnected === TypeSlotEvent.Disconnect) {
-                    let foundEmtpyGroup = -1;
-                    let inGroup = -1;
-                    let countInGroup = 0;
+                    let foundEmptyIndex = -1;
+
                     for (let idx = 0; idx < this.inputs.length; idx++) {
                         const input = this.inputs[idx];
-                        const isDynamic = isDynamicInput(input.name);
-                        let hasEmptyDynamic = true;
 
-                        if (isDynamic) {
-                            for (const [i, dIG] of dynamicInputGroups.entries()) {
-                                if (input.name.startsWith(dynamicInputs[dIG[0]].baseName)) {
-                                    inGroup = i;
-                                    break;
-                                }
+                        if (!isDynamicInput(input.name)) {
+                            continue;
+                        }
+
+                        if (!input.isConnected) { // Check if the input is empty
+                            // remove empty input - but only when it's not the last one
+                            const dynamicGroup = getDynamicGroup(input.name);
+                            let isLast = true;
+                            for (let i = idx + 1; i < this.inputs.length; i++) {
+                                isLast &&= !this.inputs[i].name.startsWith(dynamicInputs[dynamicInputGroups[dynamicGroup][0]].baseName);
                             }
-                            if (inGroup === -1) {
+                            if (isLast) {
                                 continue;
                             }
-                            for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
-                                if (this.inputs[idx+i].name.startsWith(dynamicInputs[dynamicInputGroups[inGroup][i]].baseName)) {
-                                    hasEmptyDynamic &&= this.inputs[idx+i].link === null;
-                                } else {
-                                    console.error("Bad dynamic group input count!");
-                                    debugger;
-                                }
+
+                            for (let i = idx + 1; i < this.inputs.length; i++) {
+                                this.swapInputs(i - 1, i);
                             }
-                            if (hasEmptyDynamic) {
-                                if (foundEmtpyGroup !== -1) {
-                                    // only remove when we have more than one empty group
-                                    for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
-                                        for (let j=0; j < this.widgets.length; j++) {
-                                            if (this.widgets[j].name === this.inputs[idx].name) {
-                                                this.widgets.splice(j, 1);
-                                                this.widgets_values?.splice(j, 1);
-                                            }
-                                        }
-                                        this.removeInput(idx);
-                                    }
-                                } else {
-                                    foundEmtpyGroup = idx;
-                                }
-                            } else {
-                                if (foundEmtpyGroup !== -1) {
-                                    for (let i = 0; i < dynamicInputGroups[inGroup].length; i++) {
-                                        this.swapInputs(foundEmtpyGroup + i, idx + i);
-                                    }
-                                    foundEmtpyGroup = idx;
-                                }
+                            const lastIdx = this.inputs.length - 1;
+                            if (this.inputs[lastIdx].widget !== undefined) {
+                                const widgetIdx = this.widgets.findIndex((w) => w.name === this.inputs[lastIdx].widget.name)
+                                this.widgets.splice(widgetIdx, 1);
+                                this.widgets_values?.splice(widgetIdx, 1);
                             }
-                            inGroup = -1;
+                            this.removeInput(lastIdx);
                         }
                     }
+
+                    // Renumber dynamic inputs to ensure proper ordering
                     for (const groupMember of dynamicInputGroups[dynamicInputs[0].dynamicGroup]) {
                         const baseName = dynamicInputs[groupMember].baseName;
                         this.renumberDynamicInputs(baseName, dynamicInputs, dynamicInputs[0].dynamic);
                     }
+
                 }
 
                 this.setDirtyCanvas(true, true);
-                //this.arrange();
             } catch (e) {
                 console.error(e);
                 debugger;
@@ -327,8 +281,38 @@ app.registerExtension({
                 isProcessingConnection = false;
             }
 
+            this.graph.links.forEach(l=>console.log(`post ${l.id}: ${l.origin_id}:${l.origin_slot} -> ${l.target_id}:${l.target_slot}`,l));Object.entries(this.graph._nodes_by_id).forEach(n=>console.log(n[0],n[1].title))
             return result;
         };
+
+        const onConnectInput = nodeType.prototype.onConnectInput;
+        nodeType.prototype.onConnectInput = function(inputIndex, outputType, outputSlot, outputNode, outputIndex) {
+            const result = onRemoved?.apply(this, arguments) ?? true;
+
+            if (this.inputs[inputIndex].isConnected) {
+                const pre_isProcessingConnection = isProcessingConnection;
+                isProcessingConnection = true;
+                this.disconnectInput(inputIndex, true);
+                isProcessingConnection = pre_isProcessingConnection;
+            }
+            return result;
+        }
+
+        const onRemoved = nodeType.prototype.onRemoved;
+        nodeType.prototype.onRemoved = function () {
+            const result = onRemoved?.apply(this, arguments);
+
+            // When this is called, the input links are already removed - but
+            // due to the implementation of the remove() method it might not
+            // have worked with the dynamic inputs. So we need to fix it here.
+            for (let i = this.inputs.length-1; i >= 0; i--) {
+                if ( this.inputs[i].isConnected) {
+                    this.disconnectInput(i, true);
+                }
+            }
+
+            return result;
+        }
 
         // Method to swap two inputs in the "this.inputs" array by their indices
         nodeType.prototype.swapInputs = function(indexA, indexB) {
@@ -383,7 +367,7 @@ app.registerExtension({
                         index: i,
                         widgetIdx: input.widget !== undefined ? this.widgets.findIndex((w) => w.name === input.widget.name) : undefined,
                         name: input.name,
-                        connected: input.isConnected // .link !== null
+                        connected: input.isConnected
                     });
                 }
             }
@@ -395,7 +379,7 @@ app.registerExtension({
                 const newName = dynamic === "number" ? `${baseName}${i}` : String.fromCharCode(97 + i); // 97 is ASCII for 'a'
 
                 if (input.widget !== undefined) {
-                    const widgetIdx = info.widgetIdx; // this.widgets.findIndex((w) => w.name === input.widget.name);
+                    const widgetIdx = info.widgetIdx;
                     input.widget.name = newName;
                     this.widgets[widgetIdx].name = newName;
                     this.widgets[widgetIdx].label = newName;

@@ -13,6 +13,8 @@ except:
         ANY = "*"
     ComfyNodeABC = object
 
+from ._dynamic_input import ContainsDynamicDict
+
 
 class DictCreate(ComfyNodeABC):
     """
@@ -24,10 +26,10 @@ class DictCreate(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
                 "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0}),
-            }
+            })
         }
 
     RETURN_TYPES = ("DICT",)
@@ -56,10 +58,10 @@ class DictCreateFromBoolean(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-                "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0}),
-            }
+               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0}),
+            })
         }
 
     RETURN_TYPES = ("DICT",)
@@ -88,10 +90,10 @@ class DictCreateFromFloat(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
                 "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0}),
-            }
+            })
         }
 
     RETURN_TYPES = ("DICT",)
@@ -120,10 +122,10 @@ class DictCreateFromInt(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
                 "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0}),
-            }
+            })
         }
 
     RETURN_TYPES = ("DICT",)
@@ -152,10 +154,10 @@ class DictCreateFromString(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
                 "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-            }
+            })
         }
 
     RETURN_TYPES = ("DICT",)
