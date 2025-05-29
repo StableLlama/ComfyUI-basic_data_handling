@@ -348,6 +348,33 @@ class DataListFilterSelect(ComfyNodeABC):
         return result_true, result_false
 
 
+class DataListFirst(ComfyNodeABC):
+    """
+    Returns the first element in a list.
+
+    This node takes a list as input and returns the first element of the list.
+    If the list is empty, it returns None.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("first_element",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_first_element"
+    INPUT_IS_LIST = True
+
+    def get_first_element(self, **kwargs: list[Any]) -> tuple[Any]:
+        input_list = kwargs.get('list', [])
+        return (input_list[0] if input_list else None,)
+
+
 class DataListGetItem(ComfyNodeABC):
     """
     Retrieves an item at a specified position in a list.
@@ -451,6 +478,33 @@ class DataListInsert(ComfyNodeABC):
         result = kwargs.get('list', []).copy()
         result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
         return (result,)
+
+
+class DataListLast(ComfyNodeABC):
+    """
+    Returns the last element in a list.
+
+    This node takes a list as input and returns the last element of the list.
+    If the list is empty, it returns None.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("last_element",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_last_element"
+    INPUT_IS_LIST = True
+
+    def get_last_element(self, **kwargs: list[Any]) -> tuple[Any]:
+        input_list = kwargs.get('list', [])
+        return (input_list[-1] if input_list else None,)
 
 
 class DataListLength(ComfyNodeABC):
@@ -586,6 +640,38 @@ class DataListPop(ComfyNodeABC):
             return result, item
         except IndexError:
             return result, None
+
+
+class DataListPopRandom(ComfyNodeABC):
+    """
+    Removes and returns a random element from a list.
+
+    This node takes a list as input and returns the list with the random element removed
+    and the removed element itself. If the list is empty, it returns None for the element.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY, IO.ANY)
+    RETURN_NAMES = ("list", "item")
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "pop_random_element"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True, False)
+
+    def pop_random_element(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
+        from random import randrange
+        input_list = kwargs.get('list', []).copy()
+        if input_list:
+            random_element = input_list.pop(randrange(len(input_list)))
+            return input_list, random_element
+        return input_list, None
 
 
 class DataListRemove(ComfyNodeABC):
@@ -864,13 +950,16 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListFilter": DataListFilter,
     "Basic data handling: DataListFilterSelect": DataListFilterSelect,
+    "Basic data handling: DataListFirst": DataListFirst,
     "Basic data handling: DataListGetItem": DataListGetItem,
     "Basic data handling: DataListIndex": DataListIndex,
     "Basic data handling: DataListInsert": DataListInsert,
+    "Basic data handling: DataListLast": DataListLast,
     "Basic data handling: DataListLength": DataListLength,
     "Basic data handling: DataListMax": DataListMax,
     "Basic data handling: DataListMin": DataListMin,
     "Basic data handling: DataListPop": DataListPop,
+    "Basic data handling: DataListPopRandom": DataListPopRandom,
     "Basic data handling: DataListRemove": DataListRemove,
     "Basic data handling: DataListReverse": DataListReverse,
     "Basic data handling: DataListSetItem": DataListSetItem,
@@ -893,13 +982,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListExtend": "extend",
     "Basic data handling: DataListFilter": "filter",
     "Basic data handling: DataListFilterSelect": "filter select",
+    "Basic data handling: DataListFirst": "first",
     "Basic data handling: DataListGetItem": "get item",
     "Basic data handling: DataListIndex": "index",
     "Basic data handling: DataListInsert": "insert",
+    "Basic data handling: DataListLast": "last",
     "Basic data handling: DataListLength": "length",
     "Basic data handling: DataListMax": "max",
     "Basic data handling: DataListMin": "min",
     "Basic data handling: DataListPop": "pop",
+    "Basic data handling: DataListPopRandom": "pop random",
     "Basic data handling: DataListRemove": "remove",
     "Basic data handling: DataListReverse": "reverse",
     "Basic data handling: DataListSetItem": "set item",

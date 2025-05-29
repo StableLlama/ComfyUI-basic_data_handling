@@ -417,6 +417,37 @@ class SetPop(ComfyNodeABC):
             return result, None
 
 
+class SetPopRandom(ComfyNodeABC):
+    """
+    Removes and returns a random element from a SET.
+
+    This node takes a SET as input and returns the SET with a random element removed
+    and the removed element itself. If the SET is empty, it returns None for the element.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = ("SET", IO.ANY)
+    RETURN_NAMES = ("set", "item")
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "pop_random_element"
+
+    def pop_random_element(self, set: set[Any]) -> tuple[set[Any], Any]:
+        import random
+        result = set.copy()
+        if result:
+            random_element = random.choice(list(result))
+            result.remove(random_element)
+            return result, random_element
+        return result, None
+
+
 class SetRemove(ComfyNodeABC):
     """
     Removes an item from a SET.
@@ -581,6 +612,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: SetIsSuperset": SetIsSuperset,
     "Basic data handling: SetLength": SetLength,
     "Basic data handling: SetPop": SetPop,
+    "Basic data handling: SetPopRandom": SetPopRandom,
     "Basic data handling: SetRemove": SetRemove,
     "Basic data handling: SetSymmetricDifference": SetSymmetricDifference,
     "Basic data handling: SetUnion": SetUnion,
@@ -604,6 +636,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetIsSuperset": "is superset",
     "Basic data handling: SetLength": "length",
     "Basic data handling: SetPop": "pop",
+    "Basic data handling: SetPopRandom": "pop random",
     "Basic data handling: SetRemove": "remove",
     "Basic data handling: SetSymmetricDifference": "symmetric difference",
     "Basic data handling: SetUnion": "union",
