@@ -1,10 +1,16 @@
 import pytest
 from src.basic_data_handling.data_list_nodes import (
     DataListAppend,
+    DataListCreate,
+    DataListCreateFromBoolean,
+    DataListCreateFromFloat,
+    DataListCreateFromInt,
+    DataListCreateFromString,
     DataListExtend,
     DataListInsert,
     DataListRemove,
     DataListPop,
+    DataListPopRandom,
     DataListIndex,
     DataListCount,
     DataListSort,
@@ -16,8 +22,13 @@ from src.basic_data_handling.data_list_nodes import (
     DataListContains,
     DataListZip,
     DataListFilter,
+    DataListFilterSelect,
+    DataListFirst,
+    DataListLast,
     DataListMin,
     DataListMax,
+    DataListToList,
+    DataListToSet,
 )
 
 
@@ -144,3 +155,49 @@ def test_max():
     assert node.find_max(list=[3, 1, 2]) == (3,)
     assert node.find_max(list=[-1, -5, 0]) == (0,)
     assert node.find_max(list=[]) == (None,)
+
+
+def test_filter_select():
+    node = DataListFilterSelect()
+    true_list, false_list = node.select(value=[1, 2, 3], select=[True, False, True])
+    assert true_list == [1, 3]
+    assert false_list == [2]
+
+    # All true case
+    true_list, false_list = node.select(value=["a", "b"], select=[True, True])
+    assert true_list == ["a", "b"]
+    assert false_list == []
+
+    # All false case
+    true_list, false_list = node.select(value=[1, 2, 3], select=[False, False, False])
+    assert true_list == []
+    assert false_list == [1, 2, 3]
+
+
+def test_pop_random():
+    node = DataListPopRandom()
+    result_list, item = node.pop_random_element(list=[1])
+    assert result_list == [] and item == 1  # Only one item, so it must be chosen
+
+    # With multiple items, we can't predict which one will be popped
+    # But we can check that an item was removed and returned
+    result_list, item = node.pop_random_element(list=[1, 2, 3])
+    assert len(result_list) == 2 and item in [1, 2, 3]
+
+    # Empty list case
+    assert node.pop_random_element(list=[]) == ([], None)
+
+
+def test_first():
+    node = DataListFirst()
+    assert node.get_first_element(list=[1, 2, 3]) == (1,)
+    assert node.get_first_element(list=["a", "b", "c"]) == ("a",)
+    assert node.get_first_element(list=[]) == (None,)  # Empty list
+
+
+def test_last():
+    node = DataListLast()
+    assert node.get_last_element(list=[1, 2, 3]) == (3,)
+    assert node.get_last_element(list=["a", "b", "c"]) == ("c",)
+    assert node.get_last_element(list=[]) == (None,)  # Empty list
+
