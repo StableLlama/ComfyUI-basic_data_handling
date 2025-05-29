@@ -1,7 +1,21 @@
 from typing import Any
 from inspect import cleandoc
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
-from comfy_execution.graph import ExecutionBlocker
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+    from comfy_execution.graph import ExecutionBlocker
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
+    ExecutionBlocker = lambda x: x
+
+from ._dynamic_input import ContainsDynamicDict
 
 
 class IfElse(ComfyNodeABC):
@@ -58,11 +72,11 @@ class IfElifElse(ComfyNodeABC):
                 "if": (IO.BOOLEAN, {"forceInput": True}),
                 "then": (IO.ANY, {"lazy": True}),
             },
-            "optional": {
+            "optional": ContainsDynamicDict({
                 "elif_0": (IO.BOOLEAN, {"forceInput": True, "lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
                 "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
                 "else": (IO.ANY, {"lazy": True}),
-            }
+            })
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -140,10 +154,10 @@ class SwitchCase(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
+            "required": ContainsDynamicDict({
                 "selector": (IO.INT, {"default": 0, "min": 0}),
                 "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number"}),
-            },
+            }),
             "optional": {
                 "default": (IO.ANY, {"lazy": True}),
             }

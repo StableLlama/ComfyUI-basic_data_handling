@@ -1,6 +1,17 @@
 from inspect import cleandoc
 import re
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
 
 class RegexFindallDataList(ComfyNodeABC):
     """

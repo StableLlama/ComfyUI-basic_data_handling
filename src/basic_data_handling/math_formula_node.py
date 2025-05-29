@@ -1,5 +1,18 @@
 from inspect import cleandoc
-from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+
+try:
+    from comfy.comfy_types.node_typing import IO, ComfyNodeABC
+except:
+    class IO:
+        BOOLEAN = "BOOLEAN"
+        INT = "INT"
+        FLOAT = "FLOAT"
+        STRING = "STRING"
+        NUMBER = "FLOAT,INT"
+        ANY = "*"
+    ComfyNodeABC = object
+
+from ._dynamic_input import ContainsDynamicDict
 
 class MathFormula(ComfyNodeABC):
     """
@@ -19,10 +32,10 @@ class MathFormula(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": {
+            "required": ContainsDynamicDict({
                 "formula": (IO.STRING, {"default": "a + b"}),
                 "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter"}),
-            },
+            }),
         }
 
     RETURN_TYPES = (IO.FLOAT,)
