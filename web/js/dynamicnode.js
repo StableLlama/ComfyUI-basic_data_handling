@@ -55,7 +55,6 @@ app.registerExtension({
         /** Array of groups of (generic) dynamic inputs. */
         const dynamicInputGroups = [];
         for (const name of combinedInputDataOrder) {
-            //const forceInput = combinedInputData[name][1]?.forceInput;
             const dynamic = combinedInputData[name][1]?._dynamic;
             const dynamicGroup = combinedInputData[name][1]?._dynamicGroup ?? 0;
 
@@ -281,7 +280,6 @@ app.registerExtension({
                 isProcessingConnection = false;
             }
 
-            this.graph.links.forEach(l=>console.log(`post ${l.id}: ${l.origin_id}:${l.origin_slot} -> ${l.target_id}:${l.target_slot}`,l));Object.entries(this.graph._nodes_by_id).forEach(n=>console.log(n[0],n[1].title))
             return result;
         };
 
