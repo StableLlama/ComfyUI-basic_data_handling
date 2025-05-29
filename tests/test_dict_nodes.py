@@ -1,27 +1,32 @@
 #import pytest
 from src.basic_data_handling.dict_nodes import (
-    DictCreate,
-    DictGet,
-    DictSet,
-    DictKeys,
-    DictValues,
-    DictItems,
+    DictCompare,
     DictContainsKey,
-    DictFromKeys,
-    DictPop,
-    DictPopItem,
-    DictSetDefault,
-    DictUpdate,
-    DictLength,
-    DictMerge,
-    DictGetKeysValues,
-    DictRemove,
-    DictFilterByKeys,
+    DictCreate,
+    DictCreateFromBoolean,
+    DictCreateFromFloat,
+    DictCreateFromInt,
+    DictCreateFromLists,
+    DictCreateFromString,
     DictExcludeKeys,
+    DictFilterByKeys,
+    DictFromKeys,
+    DictGet,
+    DictGetKeysValues,
     DictGetMultiple,
     DictInvert,
-    DictCreateFromLists,
-    DictCompare,
+    DictItems,
+    DictKeys,
+    DictLength,
+    DictMerge,
+    DictPop,
+    DictPopItem,
+    DictPopRandom,
+    DictRemove,
+    DictSet,
+    DictSetDefault,
+    DictUpdate,
+    DictValues,
 )
 
 def test_dict_create():
@@ -46,6 +51,65 @@ def test_dict_set():
     assert node.set(my_dict, "key1", "new_value") == ({"key1": "new_value"},)
     # Test with empty dict
     assert node.set({}, "key", "value") == ({"key": "value"},)
+
+def test_dict_create_from_boolean():
+    node = DictCreateFromBoolean()
+    # Test with dynamic inputs
+    result = node.create(key_0="key1", value_0=True, key_1="key2", value_1=False)
+    assert result == ({"key1": True, "key2": False},)
+    # Test with empty inputs
+    assert node.create() == ({},)
+
+
+def test_dict_create_from_float():
+    node = DictCreateFromFloat()
+    # Test with dynamic inputs
+    result = node.create(key_0="key1", value_0=1.5, key_1="key2", value_1=2.5)
+    assert result == ({"key1": 1.5, "key2": 2.5},)
+    # Test with empty inputs
+    assert node.create() == ({},)
+
+
+def test_dict_create_from_int():
+    node = DictCreateFromInt()
+    # Test with dynamic inputs
+    result = node.create(key_0="key1", value_0=1, key_1="key2", value_1=2)
+    assert result == ({"key1": 1, "key2": 2},)
+    # Test with empty inputs
+    assert node.create() == ({},)
+
+
+def test_dict_create_from_string():
+    node = DictCreateFromString()
+    # Test with dynamic inputs
+    result = node.create(key_0="key1", value_0="value1", key_1="key2", value_1="value2")
+    assert result == ({"key1": "value1", "key2": "value2"},)
+    # Test with empty inputs
+    assert node.create() == ({},)
+
+
+def test_dict_pop_random():
+    node = DictPopRandom()
+    # Test with non-empty dictionary
+    my_dict = {"key1": "value1", "key2": "value2"}
+    result_dict, key, value, success = node.pop_random(my_dict)
+
+    # Check that operation was successful
+    assert success is True
+    # Check that one item was removed
+    assert len(result_dict) == len(my_dict) - 1
+    # Check that removed key is not in result dict
+    assert key not in result_dict
+    # Check that the original key-value pair matches
+    assert my_dict[key] == value
+
+    # Test with empty dictionary
+    empty_result_dict, empty_key, empty_value, empty_success = node.pop_random({})
+    assert empty_result_dict == {}
+    assert empty_key == ""
+    assert empty_value is None
+    assert empty_success is False
+
 
 
 def test_dict_keys():
