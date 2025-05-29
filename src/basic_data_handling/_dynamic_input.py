@@ -24,7 +24,6 @@ class ContainsDynamicDict(dict):
 
     def __getitem__(self, key):
         # Dynamically return the value for keys matching a `prefix<number>` pattern
-        print(f'_ dynamic prefixes: {self._dynamic_prefixes}; get key: {key}')
         for prefix, value in self._dynamic_prefixes.items():
             if key.startswith(prefix) and key[len(prefix):].isdigit():
                 return value

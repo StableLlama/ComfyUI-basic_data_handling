@@ -248,6 +248,31 @@ class ListExtend(ComfyNodeABC):
         return (result,)
 
 
+class ListFirst(ComfyNodeABC):
+    """
+    Returns the first element in a LIST.
+
+    This node takes a LIST as input and returns the first element of the list.
+    If the LIST is empty, it returns None.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("first_element",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_first_element"
+
+    def get_first_element(self, list: list[Any]) -> tuple[Any]:
+        return (list[0] if list else None,)
+
+
 class ListGetItem(ComfyNodeABC):
     """
     Retrieves an item at a specified position in a LIST.
@@ -341,6 +366,31 @@ class ListInsert(ComfyNodeABC):
         result = list.copy()
         result.insert(index, item)
         return (result,)
+
+
+class ListLast(ComfyNodeABC):
+    """
+    Returns the last element in a LIST.
+
+    This node takes a LIST as input and returns the last element of the list.
+    If the LIST is empty, it returns None.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("last_element",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_last_element"
+
+    def get_last_element(self, list: list[Any]) -> tuple[Any]:
+        return (list[-1] if list else None,)
 
 
 class ListLength(ComfyNodeABC):
@@ -464,6 +514,37 @@ class ListPop(ComfyNodeABC):
             return result, item
         except IndexError:
             return result, None
+
+
+class ListPopRandom(ComfyNodeABC):
+    """
+    Removes and returns a random element from a LIST.
+
+    This node takes a LIST as input and returns the LIST with the random element removed
+    and the removed element itself. If the LIST is empty, it returns None for the element.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST", IO.ANY)
+    RETURN_NAMES = ("list", "item")
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "pop_random_element"
+
+    def pop_random_element(self, list: list[Any]) -> tuple[list[Any], Any]:
+        import random
+        result = list.copy()
+        if result:
+            random_index = random.randrange(len(result))
+            random_element = result.pop(random_index)
+            return result, random_element
+        return result, None
 
 
 class ListRemove(ComfyNodeABC):
@@ -680,13 +761,16 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListContains": ListContains,
     "Basic data handling: ListCount": ListCount,
     "Basic data handling: ListExtend": ListExtend,
+    "Basic data handling: ListFirst": ListFirst,
     "Basic data handling: ListGetItem": ListGetItem,
     "Basic data handling: ListIndex": ListIndex,
     "Basic data handling: ListInsert": ListInsert,
+    "Basic data handling: ListLast": ListLast,
     "Basic data handling: ListLength": ListLength,
     "Basic data handling: ListMax": ListMax,
     "Basic data handling: ListMin": ListMin,
     "Basic data handling: ListPop": ListPop,
+    "Basic data handling: ListPopRandom": ListPopRandom,
     "Basic data handling: ListRemove": ListRemove,
     "Basic data handling: ListReverse": ListReverse,
     "Basic data handling: ListSetItem": ListSetItem,
@@ -706,13 +790,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListContains": "contains",
     "Basic data handling: ListCount": "count",
     "Basic data handling: ListExtend": "extend",
+    "Basic data handling: ListFirst": "first",
     "Basic data handling: ListGetItem": "get item",
     "Basic data handling: ListIndex": "index",
     "Basic data handling: ListInsert": "insert",
+    "Basic data handling: ListLast": "last",
     "Basic data handling: ListLength": "length",
     "Basic data handling: ListMax": "max",
     "Basic data handling: ListMin": "min",
     "Basic data handling: ListPop": "pop",
+    "Basic data handling: ListPopRandom": "pop random",
     "Basic data handling: ListRemove": "remove",
     "Basic data handling: ListReverse": "reverse",
     "Basic data handling: ListSetItem": "set item",

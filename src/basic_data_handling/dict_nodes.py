@@ -719,6 +719,42 @@ class DictPopItem(ComfyNodeABC):
             return result, "", None, False
 
 
+class DictPopRandom(ComfyNodeABC):
+    """
+    Removes and returns a random key-value pair from a dictionary.
+
+    This node takes a dictionary as input, removes a random key-value pair,
+    and returns the modified dictionary along with the removed key and value.
+    If the dictionary is empty, it returns empty values.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "input_dict": ("DICT", {}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
+    RETURN_NAMES = ("dict", "key", "value", "success")
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "pop_random"
+
+    def pop_random(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
+        import random
+        result = input_dict.copy()
+        try:
+            if result:
+                random_key = random.choice(list(result.keys()))
+                random_value = result.pop(random_key)
+                return result, random_key, random_value, True
+            else:
+                return result, "", None, False
+        except:
+            return result, "", None, False
+
+
 class DictRemove(ComfyNodeABC):
     """
     Removes a key-value pair from a dictionary.
@@ -883,6 +919,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DictMerge": DictMerge,
     "Basic data handling: DictPop": DictPop,
     "Basic data handling: DictPopItem": DictPopItem,
+    "Basic data handling: DictPopRandom": DictPopRandom,
     "Basic data handling: DictRemove": DictRemove,
     "Basic data handling: DictSet": DictSet,
     "Basic data handling: DictSetDefault": DictSetDefault,
@@ -913,7 +950,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictLength": "length",
     "Basic data handling: DictMerge": "merge",
     "Basic data handling: DictPop": "pop",
-    "Basic data handling: DictPopItem": "popitem",
+    "Basic data handling: DictPopItem": "pop item",
+    "Basic data handling: DictPopRandom": "pop random",
     "Basic data handling: DictRemove": "remove",
     "Basic data handling: DictSet": "set",
     "Basic data handling: DictSetDefault": "setdefault",

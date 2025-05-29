@@ -1,28 +1,31 @@
 import pytest
 from src.basic_data_handling.list_nodes import (
+    ListAppend,
+    ListContains,
+    ListCount,
     ListCreate,
     ListCreateFromBoolean,
     ListCreateFromFloat,
     ListCreateFromInt,
     ListCreateFromString,
-    ListAppend,
     ListExtend,
-    ListInsert,
-    ListRemove,
-    ListPop,
-    ListIndex,
-    ListCount,
-    ListSort,
-    ListReverse,
-    ListLength,
-    ListSlice,
+    ListFirst,
     ListGetItem,
-    ListSetItem,
-    ListContains,
-    ListMin,
+    ListIndex,
+    ListInsert,
+    ListLast,
+    ListLength,
     ListMax,
+    ListMin,
+    ListPop,
+    ListPopRandom,
+    ListRemove,
+    ListReverse,
+    ListSetItem,
+    ListSlice,
+    ListSort,
     ListToDataList,
-    ListToSet
+    ListToSet,
 )
 
 
@@ -59,6 +62,38 @@ def test_list_pop():
     assert node.pop([1, 2, 3], 1) == ([1, 3], 2)
     assert node.pop([1, 2, 3]) == ([1, 2], 3)  # Default: last item
     assert node.pop([], 0) == ([], None)  # Empty list pop
+
+
+def test_list_pop_random():
+    node = ListPopRandom()
+    # Test with single item - must remove that item
+    result, item = node.pop_random_element([42])
+    assert result == [] and item == 42
+
+    # Test with multiple items - can't predict which one will be popped
+    # but we can check the result list length and that the popped item was from the original list
+    original_list = [1, 2, 3, 4]
+    result, item = node.pop_random_element(original_list)
+    assert len(result) == len(original_list) - 1
+    assert item in original_list
+    assert item not in result
+
+    # Test with empty list
+    assert node.pop_random_element([]) == ([], None)
+
+
+def test_list_first():
+    node = ListFirst()
+    assert node.get_first_element([1, 2, 3]) == (1,)
+    assert node.get_first_element(["a", "b", "c"]) == ("a",)
+    assert node.get_first_element([]) == (None,)  # Empty list
+
+
+def test_list_last():
+    node = ListLast()
+    assert node.get_last_element([1, 2, 3]) == (3,)
+    assert node.get_last_element(["a", "b", "c"]) == ("c",)
+    assert node.get_last_element([]) == (None,)  # Empty list
 
 
 def test_list_index():
