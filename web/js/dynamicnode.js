@@ -33,312 +33,489 @@ const TypeSlotEvent = {
     Disconnect: false
 };
 
+// Helper for escaping strings to be used in RegExp
+const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+};
+
+
 app.registerExtension({
     name: 'Basic data handling: dynamic input',
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        // Filter: Only process nodes with class names starting with "Basic data handling:"
+    async beforeRegisterNodeDef(nodeType, nodeData, appInstance) {
         if (!nodeType.comfyClass.startsWith('Basic data handling:')) {
             return;
         }
 
         const combinedInputData = {
-            ...nodeData?.input?.required ?? {},
-            ...nodeData?.input?.optional ?? {}
-        }
-        const combinedInputDataOrder = [
-            ...nodeData?.input_order?.required ?? [],
-            ...nodeData?.input_order?.optional ?? []
-        ];
+            ...(nodeData?.input?.required ?? {}),
+            ...(nodeData?.input?.optional ?? {})
+        };
 
-        /** Array of (generic) dynamic inputs. */
+        let combinedInputDataOrder = [];
+        if (nodeData.input_order) {
+            if (nodeData.input_order.required) combinedInputDataOrder.push(...nodeData.input_order.required);
+            if (nodeData.input_order.optional) combinedInputDataOrder.push(...nodeData.input_order.optional);
+        } else if (nodeData.input) {
+            if (nodeData.input.required) combinedInputDataOrder.push(...Object.keys(nodeData.input.required));
+            if (nodeData.input.optional) combinedInputDataOrder.push(...Object.keys(nodeData.input.optional));
+        }
+
         const dynamicInputs = [];
-        /** Array of groups of (generic) dynamic inputs. */
         const dynamicInputGroups = [];
+
         for (const name of combinedInputDataOrder) {
-            const widgetType = combinedInputData[name][1]?.widgetType;
-            const dynamic = combinedInputData[name][1]?._dynamic;
+            if (!combinedInputData[name]) continue;
+
+            const dynamicSetting = combinedInputData[name][1]?._dynamic;
             const dynamicGroup = combinedInputData[name][1]?._dynamicGroup ?? 0;
 
-            if (dynamic) {
-                let matcher;
+            if (dynamicSetting) { // Only process for inputs marked with _dynamic
+                const inputOptions = combinedInputData[name][1] || {};
+                const dynamicComfyType = combinedInputData[name][0];
 
-                switch (dynamic) {
-                    case 'number':
-                        matcher = new RegExp(`^(${name.replace(/\d*$/, '')})(\\d+)$`);
-                        break;
+                let isActuallyWidget = false;
+                let effectiveWidgetGuiType;
 
-                    case 'letter':
-                        matcher = new RegExp(`^()([a-zA-Z])$`);
-                        break;
-
-                    default:
-                        continue;
+                if (inputOptions.widget?.type) {
+                    isActuallyWidget = true;
+                    effectiveWidgetGuiType = inputOptions.widget.type;
+                } else if (inputOptions.widget && typeof inputOptions.widget === 'string') {
+                    isActuallyWidget = true;
+                    effectiveWidgetGuiType = inputOptions.widget;
                 }
-                const baseName = name.match(matcher)?.[1] ?? name;
-                const dynamicType = combinedInputData[name][0];
+                else if (inputOptions._widgetType) {
+                    isActuallyWidget = true;
+                    effectiveWidgetGuiType = inputOptions._widgetType;
+                } else if (inputOptions.widgetType) {
+                    isActuallyWidget = true;
+                    effectiveWidgetGuiType = inputOptions.widgetType;
+                }
+                else {
+                    const comfyTypeUpper = String(dynamicComfyType).toUpperCase();
+                    const implicitWidgetGuiTypesMap = {
+                        "STRING": "text", "INT": "number", "FLOAT": "number",
+                        "NUMBER": "number", "BOOLEAN": "toggle"
+                    };
+
+                    if (implicitWidgetGuiTypesMap[comfyTypeUpper] && inputOptions.forceInput !== true && dynamicComfyType !== '*') {
+                        isActuallyWidget = true;
+                        effectiveWidgetGuiType = implicitWidgetGuiTypesMap[comfyTypeUpper];
+                    } else if (comfyTypeUpper === "COMBO" && inputOptions.values) {
+                        isActuallyWidget = true;
+                        effectiveWidgetGuiType = "combo";
+                    } else {
+                        isActuallyWidget = false;
+                        effectiveWidgetGuiType = dynamicComfyType;
+                    }
+                }
+
+                let determinedBaseName;
+                let suffixExtractionMatcher;
+
+                if (dynamicSetting === 'number') {
+                    const r = /^(.*?)(\d+)$/;
+                    const m = name.match(r);
+                    determinedBaseName = (m && m[1] !== undefined) ? m[1] : name;
+                    suffixExtractionMatcher = new RegExp(`^(${escapeRegExp(determinedBaseName)})(\\d*)$`);
+                } else if (dynamicSetting === 'letter') {
+                    const r = /^(.*?)([a-zA-Z])$/;
+                    const m = name.match(r);
+                    determinedBaseName = (m && m[1] !== undefined) ? m[1] : name;
+                    suffixExtractionMatcher = new RegExp(`^(${escapeRegExp(determinedBaseName)})([a-zA-Z])$`);
+                } else {
+                    console.warn(`[Basic Data Handling] Unknown dynamic type: ${dynamicSetting} for input ${name} on node ${nodeType.comfyClass}`);
+                    continue;
+                }
+
                 if (dynamicInputGroups[dynamicGroup] === undefined) {
                     dynamicInputGroups[dynamicGroup] = [];
                 }
-                dynamicInputGroups[dynamicGroup].push(
-                    dynamicInputs.length
-                )
-                dynamicInputs.push({name, baseName, matcher, dynamic, dynamicType, dynamicGroup, widgetType});
+                dynamicInputGroups[dynamicGroup].push(dynamicInputs.length);
+
+                dynamicInputs.push({
+                    name,
+                    baseName: determinedBaseName,
+                    matcher: suffixExtractionMatcher,
+                    dynamic: dynamicSetting,
+                    dynamicComfyType,
+                    dynamicGroup,
+                    isWidget: isActuallyWidget,
+                    actualWidgetGuiType: effectiveWidgetGuiType,
+                    originalOptions: inputOptions
+                });
             }
         }
+
         if (dynamicInputs.length === 0) {
             return;
         }
 
-        /**
-         * Utility functions for dynamic input operations
-         */
-            // Check if an input is dynamic
-        const isDynamicInput = (inputName) =>
-                dynamicInputs.some((di) => di.matcher.test(inputName));
+        const getDynamicInputDefinition = (inputName) => {
+            for (const di of dynamicInputs) {
+                const m = inputName.match(di.matcher);
+                if (m && m[1] === di.baseName) {
+                    return { definition: di, suffix: m[2] || "" };
+                }
+            }
+            return null;
+        };
 
-        // Update inputs' slot indices after reordering
+        const isDynamicInput = (inputName) => !!getDynamicInputDefinition(inputName);
+
         const updateSlotIndices = (node) => {
             node.inputs.forEach((input, index) => {
                 input.slot_index = index;
-                if (input.isConnected) {
-                    const link = node.graph._links.get(input.link);
-                    if (link) {
-                        link.target_slot = index;
-                    } else {
-                        console.error(`Input ${index} has an invalid link.`);
+                if (input.link !== null && input.link !== undefined) {
+                    const linkInfo = node.graph.links[input.link];
+                    if (linkInfo) {
+                        linkInfo.target_slot = index;
                     }
                 }
             });
         };
 
-        // Get default value for widget based on its type
-        const getWidgetDefaultValue = (widget) => {
-            switch (widget.type) {
+        const getWidgetDefaultValue = (widgetDef) => { // widgetDef = { type: actualWidgetGuiType, options: originalOptions }
+            const type = widgetDef.type;
+            const opts = widgetDef.options || {};
+
+            switch (String(type).toLowerCase()) {
                 case 'number':
-                    return 0;
+                    return opts.default ?? 0;
                 case 'combo':
-                    return widget.options?.[0] || '';
+                    return opts.default ?? (opts.values && opts.values.length > 0 ? opts.values[0] : '');
                 case 'text':
                 case 'string':
+                    return opts.default ?? '';
+                case 'toggle':
+                case 'boolean':
+                    return opts.default ?? false;
                 default:
-                    return '';
+                    return opts.default ?? '';
             }
         };
 
-        // Check if a dynamic input is empty (not connected and widget has default value)
         const isDynamicInputEmpty = (node, inputIndex) => {
             const input = node.inputs[inputIndex];
-            if (input.isConnected) return false;
+            if (input.link !== null && input.link !== undefined) return false;
 
-            if (input.widget) {
-                const widget = node.widgets.find(w => w.name === input.widget.name);
-                return widget?.value === getWidgetDefaultValue(widget);
+            const diData = getDynamicInputDefinition(input.name);
+            if (diData && diData.definition.isWidget) {
+                if (input.widget && input.widget.name) {
+                    const widget = node.widgets.find(w => w.name === input.widget.name);
+                    if (widget) {
+                        return widget.value === getWidgetDefaultValue({
+                            type: diData.definition.actualWidgetGuiType,
+                            options: diData.definition.originalOptions
+                        });
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
             }
             return true;
         };
 
-        // Find if input is the last of its base name group
-        const isLastDynamicInput = (node, idx, baseName) => {
-            let isLast = true;
-            for (let i = idx + 1; i < node.inputs.length; i++) {
-                isLast &&= !node.inputs[i].name.startsWith(baseName);
-            }
-            return isLast;
-        };
-
-        // Remove widget associated with an input
         const removeWidgetForInput = (node, inputIdx) => {
-            if (node.inputs[inputIdx].widget !== undefined) {
-                const widgetIdx = node.widgets.findIndex((w) => w.name === node.inputs[inputIdx].widget.name);
-                node.widgets.splice(widgetIdx, 1);
-                node.widgets_values?.splice(widgetIdx, 1);
-            }
-        };
-
-        // Add helper method to get dynamic group for an input name
-        nodeType.prototype.getDynamicGroup = function(inputName) {
-            // Find the dynamicGroup by matching the baseName with input name
-            for (const di of dynamicInputs) {
-                if (inputName.startsWith(di.baseName)) {
-                    return di.dynamicGroup;
+            if (node.inputs[inputIdx].widget && node.inputs[inputIdx].widget.name) {
+                const widgetName = node.inputs[inputIdx].widget.name;
+                const widgetIdx = node.widgets.findIndex((w) => w.name === widgetName);
+                if (widgetIdx !== -1) {
+                    node.widgets.splice(widgetIdx, 1);
                 }
             }
-            return undefined;
         };
 
-        /**
-         * Add a widget with standard configuration.
-         * @param {string} name - The name of the widget.
-         * @param {string} widget_type - The type of widget.
-         * @returns {object} The created widget.
-         */
-        const addStandardWidget = function(name, widget_type) {
-            return this.addWidget(widget_type, name, '', () => {}, {});
+        nodeType.prototype.getDynamicGroup = function(inputName) {
+            const diData = getDynamicInputDefinition(inputName);
+            return diData ? diData.definition.dynamicGroup : undefined;
         };
 
-        // Add helper method to insert input at a specific position
-        nodeType.prototype.addInputAtPosition = function (name, input_type, widget_type, position, isWidget, shape) {
-            // Add widget if needed
-            if (isWidget) {
-                addStandardWidget.call(this, name, widget_type);
+        const addStandardWidget = function(name, widgetGuiType, defaultValue, fullConfigOptions = {}) {
+            let currentVal = defaultValue;
+            const widgetSpecificOpts = { ...fullConfigOptions };
 
-                const GET_CONFIG = Symbol();
-                this.addInput(name, input_type, {
-                    shape,
-                    widget: {name, [GET_CONFIG]: () =>{}}
-                });
+            if (String(widgetGuiType).toLowerCase() === "combo") {
+                if (!widgetSpecificOpts.values && Array.isArray(fullConfigOptions.default)) {
+                    widgetSpecificOpts.values = fullConfigOptions.default;
+                } else if (!widgetSpecificOpts.values && fullConfigOptions.options?.values) {
+                    widgetSpecificOpts.values = fullConfigOptions.options.values;
+                }
+
+                if (!widgetSpecificOpts.values) {
+                    widgetSpecificOpts.values = [currentVal];
+                }
+
+                if (widgetSpecificOpts.values && !widgetSpecificOpts.values.includes(currentVal) && widgetSpecificOpts.values.length > 0) {
+                    currentVal = widgetSpecificOpts.values[0];
+                }
+            }
+            return this.addWidget(widgetGuiType, name, currentVal, () => {}, widgetSpecificOpts);
+        };
+
+        nodeType.prototype.addInputAtPosition = function (name, comfyInputType, widgetGuiType, position, isWidgetFlag, shape, widgetDefaultVal, widgetConfOpts) {
+            if (isWidgetFlag) {
+                addStandardWidget.call(this, name, widgetGuiType, widgetDefaultVal, widgetConfOpts);
+                this.addInput(name, comfyInputType, { shape, widget: { name } });
             } else {
-                this.addInput(name, input_type, {shape}); // Add new input without widget
+                this.addInput(name, comfyInputType, { shape });
             }
 
-            // Position the input at the desired location
-            const newInput = this.inputs.pop(); // Get the newly added input (last item)
-            this.inputs.splice(position, 0, newInput); // Place it at the desired position
-            updateSlotIndices(this); // Update indices
-            return newInput;
+            const newInputIndex = this.inputs.length - 1;
+            if (position < newInputIndex && position < this.inputs.length -1 ) {
+                const newInput = this.inputs.pop();
+                this.inputs.splice(position, 0, newInput);
+            }
+            updateSlotIndices(this);
+            return this.inputs[position];
         };
 
-        // flag to prevent loops. It is ok to be "global" as the code is not
-        // running in parallel.
         let isProcessingConnection = false;
 
-        /**
-         * Utility: Handle when a dynamic input becomes empty (disconnected or empty widget value).
-         * @param {ComfyNode} node - The node with the empty input.
-         */
-        const handleEmptyDynamicInput = function() {
-            // Process each input to check for empty dynamic inputs
-            for (let idx = 0; idx < this.inputs.length; idx++) {
-                const input = this.inputs[idx];
-
-                // Skip if not a dynamic input
-                if (!isDynamicInput(input.name)) {
-                    continue;
-                }
-
-                // Check if this input is empty
-                if (!isDynamicInputEmpty(this, idx)) {
-                    continue;
-                }
-
-                // Get information about this dynamic input group
-                const dynamicGroup = this.getDynamicGroup(input.name);
-                const baseName = dynamicInputs[dynamicInputGroups[dynamicGroup][0]].baseName;
-
-                // Don't remove if it's the last dynamic input of its type
-                if (isLastDynamicInput(this, idx, baseName)) {
-                    continue;
-                }
-
-                // Move the empty input to the end
-                for (let i = idx + 1; i < this.inputs.length; i++) {
-                    this.swapInputs(i - 1, i);
-                }
-
-                // Remove the input that's now at the end
-                const lastIdx = this.inputs.length - 1;
-                removeWidgetForInput(this, lastIdx);
-                this.removeInput(lastIdx);
-
-                // Adjust idx to check the current position again (which now has a new input)
-                idx--;
-            }
-
-            // Renumber all dynamic inputs to ensure proper ordering
-            for (const groupIdx in dynamicInputGroups) {
-                for (const memberIdx of dynamicInputGroups[groupIdx]) {
-                    const baseName = dynamicInputs[memberIdx].baseName;
-                    const dynamic = dynamicInputs[memberIdx].dynamic;
-                    this.renumberDynamicInputs(baseName, dynamicInputs, dynamic);
-                }
+        const generateDynamicInputName = (dynamicBehavior, baseName, count) => {
+            if (dynamicBehavior === 'letter') {
+                return `${baseName}${String.fromCharCode(97 + count)}`;
+            } else { // 'number'
+                return `${baseName}${count}`;
             }
         };
 
-        /**
-         * Utility: Handle when a dynamic input becomes active (connected or non-empty widget value).
-         * @param {ComfyNode} node - The node with the activated input.
-         * @param {number} dynamicGroup - The dynamic group to handle.
-         */
-        const handleDynamicInputActivation = function(dynamicGroup) {
-            // Get information about dynamic inputs
-            const {
-                slots: dynamicSlots,
-                groupConnected: dynamicGroupConnected
-            } = this.getDynamicSlots();
-
-            // Ensure all widget-based inputs have actual widgets
-            // This is important when loading workflows
-            for (const slot of dynamicSlots) {
-                if (slot.isWidget && this.widgets &&
-                    !this.widgets.some((w) => w.name === slot.name)) {
-                    this.addWidget(
-                        this.inputs[slot.index].type,
-                        slot.name,
-                        '',
-                        ()=>{},
-                        {}
-                    );
+        nodeType.prototype.renumberDynamicInputs = function(baseNameToRenumber, dynamicBehavior) {
+            const inputsToRenumber = [];
+            for (let i = 0; i < this.inputs.length; i++) {
+                const input = this.inputs[i];
+                const diData = getDynamicInputDefinition(input.name);
+                if (diData && diData.definition.baseName === baseNameToRenumber && diData.definition.dynamic === dynamicBehavior) {
+                    inputsToRenumber.push({
+                        inputRef: input,
+                        widgetName: input.widget ? input.widget.name : null
+                    });
                 }
             }
 
-            // If all inputs in this group are active, we need to add a new empty one
-            const hasEmptyInput = dynamicGroupConnected[dynamicGroup]?.some(isActive => !isActive);
+            for (let i = 0; i < inputsToRenumber.length; i++) {
+                const { inputRef, widgetName } = inputsToRenumber[i];
+                const newName = generateDynamicInputName(dynamicBehavior, baseNameToRenumber, i);
 
-            if (!hasEmptyInput) {
-                // Find position for the new input (after the last one in this group)
-                const groupSlots = dynamicSlots.filter(slot => slot.dynamicGroup === dynamicGroup);
-                const lastDynamicIdx = groupSlots.length > 0
-                    ? Math.max(...groupSlots.map(slot => slot.index))
-                    : -1;
+                if (inputRef.name === newName) continue;
 
-                // Add a new empty input for this group
-                this.addNewDynamicInputForGroup(dynamicGroup, lastDynamicIdx);
+                if (widgetName) {
+                    const widget = this.widgets.find(w => w.name === widgetName);
+                    if (widget) {
+                        widget.name = newName;
+                    }
+                    if (inputRef.widget) inputRef.widget.name = newName;
+                }
+                inputRef.name = newName;
+            }
+            updateSlotIndices(this);
+        };
+
+        const handleEmptyDynamicInput = function() { // (Content largely unchanged from previous good version, ensure it uses new DI props if needed)
+            let overallChangesMade = false;
+            let scanAgainPass = true;
+
+            while (scanAgainPass) {
+                scanAgainPass = false;
+                const dynamicGroupInfo = new Map();
+
+                for (let i = 0; i < this.inputs.length; i++) {
+                    const currentInput = this.inputs[i];
+                    const diData = getDynamicInputDefinition(currentInput.name);
+
+                    if (!diData) continue;
+                    const { definition: di, suffix } = diData;
+                    const group = di.dynamicGroup;
+
+                    if (!dynamicGroupInfo.has(group)) {
+                        dynamicGroupInfo.set(group, { items: new Map() });
+                    }
+                    const groupData = dynamicGroupInfo.get(group);
+                    if (!groupData.items.has(suffix)) {
+                        groupData.items.set(suffix, { inputsInfo: [], allEmpty: true });
+                    }
+                    const itemData = groupData.items.get(suffix);
+                    itemData.inputsInfo.push({ diDefinition: di, originalInput: currentInput, originalIndex: i });
+                    if (!isDynamicInputEmpty(this, i)) { // isDynamicInputEmpty uses new DI props
+                        itemData.allEmpty = false;
+                    }
+                }
+
+                for (const [groupId, groupData] of dynamicGroupInfo) {
+                    const { items } = groupData;
+                    if (items.size === 0) continue;
+
+                    const sortedItemSuffixes = Array.from(items.keys()).sort((a, b) => {
+                        const numA = parseInt(a, 10);
+                        const numB = parseInt(b, 10);
+                        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                        if (a.length !== b.length) return a.length - b.length;
+                        return String(a).localeCompare(String(b));
+                    });
+
+                    let activeItemCount = 0;
+                    const emptyItemSuffixes = [];
+                    for (const suffix of sortedItemSuffixes) {
+                        if (items.get(suffix).allEmpty) {
+                            emptyItemSuffixes.push(suffix);
+                        } else {
+                            activeItemCount++;
+                        }
+                    }
+
+                    if (emptyItemSuffixes.length === 0) continue;
+
+                    let placeholderSuffix = null;
+                    if (activeItemCount === 0 && sortedItemSuffixes.length > 0) {
+                        placeholderSuffix = sortedItemSuffixes[0];
+                    } else if (activeItemCount > 0 && emptyItemSuffixes.length > 0) {
+                        placeholderSuffix = emptyItemSuffixes[emptyItemSuffixes.length - 1];
+                    }
+
+                    const inputsToRemoveDetails = [];
+                    for (const suffix of emptyItemSuffixes) {
+                        if (suffix !== placeholderSuffix) {
+                            const itemData = items.get(suffix);
+                            for (const inputDetail of itemData.inputsInfo) {
+                                inputsToRemoveDetails.push(inputDetail);
+                            }
+                        }
+                    }
+
+                    if (inputsToRemoveDetails.length > 0) {
+                        inputsToRemoveDetails.sort((a, b) => b.originalIndex - a.originalIndex);
+
+                        for (const { originalInput, originalIndex } of inputsToRemoveDetails) {
+                            if (this.inputs[originalIndex] === originalInput) {
+                                removeWidgetForInput(this, originalIndex);
+                                this.removeInput(originalIndex);
+                                scanAgainPass = true;
+                                overallChangesMade = true;
+                            } else {
+                                scanAgainPass = true;
+                                overallChangesMade = true;
+                            }
+                        }
+                        if (scanAgainPass) break;
+                    }
+                }
+                if (scanAgainPass) continue;
             }
 
-            // Ensure the canvas is updated
+            if (overallChangesMade) {
+                const renumberedBaseNames = new Set();
+                for (const groupIdx_str in dynamicInputGroups) {
+                    const groupIdx = parseInt(groupIdx_str, 10);
+                    if (dynamicInputGroups[groupIdx]) {
+                        for (const memberIdx of dynamicInputGroups[groupIdx]) {
+                            const { baseName, dynamic } = dynamicInputs[memberIdx]; // 'dynamic' here is behavior ('number'/'letter')
+                            if (!renumberedBaseNames.has(baseName + dynamic)) { // Ensure unique combination
+                                this.renumberDynamicInputs(baseName, dynamic);
+                                renumberedBaseNames.add(baseName + dynamic);
+                            }
+                        }
+                    }
+                }
+                this.setDirtyCanvas(true, true);
+            }
+        };
+
+        const handleDynamicInputActivation = function(dynamicGroup) {
+            const { slots: dynamicSlotsFromGetter } = this.getDynamicSlots();
+
+            for (const slot of dynamicSlotsFromGetter) {
+                if (slot.dynamicGroup === dynamicGroup && this.widgets &&
+                    !this.widgets.some((w) => w.name === slot.name)) {
+
+                    const diData = getDynamicInputDefinition(slot.name);
+                    if (diData && diData.definition.isWidget) { // Use our enhanced definition
+                        const originalInputDef = diData.definition;
+
+                        addStandardWidget.call(this, slot.name,
+                            originalInputDef.actualWidgetGuiType,
+                            getWidgetDefaultValue({ type: originalInputDef.actualWidgetGuiType, options: originalInputDef.originalOptions }),
+                            originalInputDef.originalOptions
+                        );
+                    }
+                }
+            }
+
+            let allExistingItemsActive = true;
+            const itemSuffixesInGroup = new Set();
+            const groupSlots = dynamicSlotsFromGetter.filter(s => s.dynamicGroup === dynamicGroup);
+
+            groupSlots.forEach(s => {
+                const diData = getDynamicInputDefinition(s.name);
+                if (diData) itemSuffixesInGroup.add(diData.suffix);
+            });
+
+            if (itemSuffixesInGroup.size === 0 && dynamicInputGroups[dynamicGroup]?.length > 0) {
+                allExistingItemsActive = true;
+            } else {
+                let hasCompletelyEmptyItem = false;
+                for (const suffix of itemSuffixesInGroup) {
+                    const inputsOfThisItem = groupSlots.filter(s => {
+                        const diData = getDynamicInputDefinition(s.name);
+                        return diData && diData.suffix === suffix;
+                    });
+                    if (inputsOfThisItem.length > 0 && inputsOfThisItem.every(s => !s.connected)) { // s.connected from getDynamicSlots
+                        hasCompletelyEmptyItem = true;
+                        break;
+                    }
+                }
+                allExistingItemsActive = !hasCompletelyEmptyItem;
+            }
+
+
+            if (allExistingItemsActive) {
+                let lastDynamicIdx = -1;
+                if (groupSlots.length > 0) {
+                    lastDynamicIdx = Math.max(...groupSlots.map(slot => slot.index));
+                } else {
+                    let maxIdx = -1;
+                    for(const di of dynamicInputs){ // di is a full definition object
+                        if(di.dynamicGroup < dynamicGroup) {
+                            for(let i=this.inputs.length-1; i>=0; --i){
+                                if(this.inputs[i].name.startsWith(di.baseName)){
+                                    maxIdx = Math.max(maxIdx, i);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    lastDynamicIdx = (maxIdx === -1) ? (this.inputs.length -1) : maxIdx;
+                }
+                this.addNewDynamicInputForGroup(dynamicGroup, lastDynamicIdx);
+            }
 
             this.setDirtyCanvas(true, true);
         };
 
-        // Override onConnectionsChange: Handle connections for dynamic inputs
+        // --- Event Handlers (onConnectionsChange, onConnectInput, onRemoved, onWidgetChanged) ---
         const onConnectionsChange = nodeType.prototype.onConnectionsChange;
         nodeType.prototype.onConnectionsChange = function (type, slotIndex, isConnected, link, ioSlot) {
-            // Call the original method first
-            const result = onConnectionsChange?.apply(this, arguments);
-
-            // Only process input connections for dynamic inputs
-            const isInput = type === TypeSlot.Input;
-            const isDynamic = isInput && isDynamicInput(this.inputs[slotIndex].name);
-
-            // Skip if not an input, already processing, or not a dynamic input
-            if (!isInput || isProcessingConnection || !isDynamic) {
-                return result;
+            const originalReturn = onConnectionsChange?.apply(this, arguments);
+            if (type === TypeSlot.Input && slotIndex < this.inputs.length && this.inputs[slotIndex] && isDynamicInput(this.inputs[slotIndex].name)) {
+                if (isProcessingConnection) return originalReturn;
+                isProcessingConnection = true;
+                const dynamicGroup = this.getDynamicGroup(this.inputs[slotIndex].name);
+                if (dynamicGroup !== undefined) {
+                    if (isConnected === TypeSlotEvent.Connect) {
+                        handleDynamicInputActivation.call(this, dynamicGroup);
+                    } else if (isConnected === TypeSlotEvent.Disconnect) {
+                        handleEmptyDynamicInput.call(this);
+                    }
+                }
+                isProcessingConnection = false;
             }
-
-            // Prevent recursive processing
-            isProcessingConnection = true;
-
-            // Get the dynamic group for this input
-            const dynamicGroup = this.getDynamicGroup(this.inputs[slotIndex].name);
-
-            // Handle connection or disconnection event
-            if (isConnected === TypeSlotEvent.Connect) {
-                // Input was connected
-                handleDynamicInputActivation.call(this, dynamicGroup);
-            } else if (isConnected === TypeSlotEvent.Disconnect) {
-                // Input was disconnected
-                handleEmptyDynamicInput.call(this);
-            }
-
-            isProcessingConnection = false;
-            return result;
+            return originalReturn;
         };
 
         const onConnectInput = nodeType.prototype.onConnectInput;
         nodeType.prototype.onConnectInput = function(inputIndex, outputType, outputSlot, outputNode, outputIndex) {
             const result = onConnectInput?.apply(this, arguments) ?? true;
-
-            if (this.inputs[inputIndex].isConnected) {
+            if (this.inputs[inputIndex].link !== null && this.inputs[inputIndex].link !== undefined ) {
                 const pre_isProcessingConnection = isProcessingConnection;
                 isProcessingConnection = true;
                 this.disconnectInput(inputIndex, true);
@@ -349,311 +526,175 @@ app.registerExtension({
 
         const onRemoved = nodeType.prototype.onRemoved;
         nodeType.prototype.onRemoved = function () {
-            const result = onRemoved?.apply(this, arguments);
-
-            // When this is called, the input links are already removed - but
-            // due to the implementation of the remove() method it might not
-            // have worked with the dynamic inputs. So we need to fix it here.
-            for (let i = this.inputs.length-1; i >= 0; i--) {
-                if ( this.inputs[i].isConnected) {
-                    this.disconnectInput(i, true);
+            if(!isProcessingConnection){
+                isProcessingConnection = true;
+                for (let i = this.inputs.length - 1; i >= 0; i--) {
+                    if (this.inputs[i].link !== null && this.inputs[i].link !== undefined) {
+                        this.disconnectInput(i, true);
+                    }
                 }
+                isProcessingConnection = false;
             }
-
-            return result;
+            return onRemoved?.apply(this, arguments);
         }
-
-        /**
-         * Utility: Find input index for a widget by name.
-         * @param {ComfyNode} node - The node containing the widget.
-         * @param {string} widgetName - Name of the widget to find.
-         * @returns {number} Index of the input associated with the widget, or -1 if not found.
-         */
-        const findInputIndexForWidget = (node, widgetName) => {
-            for (let i = 0; i < node.inputs.length; i++) {
-                if (node.inputs[i].widget && node.inputs[i].widget.name === widgetName) {
-                    return i;
-                }
-            }
-            return -1;
-        };
 
         const onWidgetChanged = nodeType.prototype.onWidgetChanged;
-        nodeType.prototype.onWidgetChanged = function () {
-            const result = onWidgetChanged?.apply(this, arguments);
-
-            // Extract arguments
-            const widget_name = arguments[0];
-            const new_val = arguments[1];
-            const old_val = arguments[2];
-            const widget = arguments[3];
-
-            // Skip if not a dynamic input widget or already processing connections
-            if (!isDynamicInput(widget_name) || isProcessingConnection) {
-                return result;
+        nodeType.prototype.onWidgetChanged = function (widgetName, newValue, oldValue, widgetObject) {
+            const originalReturn = onWidgetChanged?.apply(this, arguments);
+            if (isProcessingConnection || !isDynamicInput(widgetName)) {
+                return originalReturn;
             }
+            const dynamicGroup = this.getDynamicGroup(widgetName);
+            if (dynamicGroup === undefined) return originalReturn;
 
-            // Find the dynamic group for this widget
-            const dynamicGroup = this.getDynamicGroup(widget_name);
-            if (dynamicGroup === undefined) {
-                return result;
-            }
+            const diData = getDynamicInputDefinition(widgetName);
+            const defaultValue = diData ? getWidgetDefaultValue({type: diData.definition.actualWidgetGuiType, options: diData.definition.originalOptions}) : getWidgetDefaultValue(widgetObject) /*fallback*/;
 
-            // Check if widget value changed between default and non-default
-            const default_val = getWidgetDefaultValue(widget);
-            const wasEmpty = old_val === default_val;
-            const isNowEmpty = new_val === default_val;
+            const wasEffectivelyEmpty = oldValue === defaultValue;
+            const isNowEffectivelyEmpty = newValue === defaultValue;
 
-            // Only process if the empty state changed
-            if (wasEmpty === isNowEmpty) {
-                return result;
-            }
+            if (wasEffectivelyEmpty === isNowEffectivelyEmpty) return originalReturn;
 
-            // Prevent recursive processing
             isProcessingConnection = true;
-
-            if (wasEmpty && !isNowEmpty) {
-                // Widget changed from empty to non-empty (like connecting an input)
+            if (wasEffectivelyEmpty && !isNowEffectivelyEmpty) {
                 handleDynamicInputActivation.call(this, dynamicGroup);
-            } else if (!wasEmpty && isNowEmpty) {
-                // Widget changed to empty (like disconnecting an input)
+            } else if (!wasEffectivelyEmpty && isNowEffectivelyEmpty) {
                 handleEmptyDynamicInput.call(this);
             }
-
             isProcessingConnection = false;
-            return result;
-        }
-
-        // Method to swap two inputs in the "this.inputs" array by their indices
-        nodeType.prototype.swapInputs = function(indexA, indexB) {
-            // Validate indices
-            if (
-                indexA < 0 || indexB < 0 ||
-                indexA >= this.inputs.length ||
-                indexB >= this.inputs.length ||
-                indexA === indexB
-            ) {
-                console.error("Invalid input indices for swapping:", indexA, indexB);
-                return;
-            }
-
-            // Handle widgets if both inputs have them
-            const hasWidgetA = this.inputs[indexA].widget !== undefined;
-            const hasWidgetB = this.inputs[indexB].widget !== undefined;
-
-            if (hasWidgetA && hasWidgetB) {
-                // Find widget indices
-                const widgetIdxA = this.widgets.findIndex(
-                    (w) => w.name === this.inputs[indexA].widget.name
-                );
-                const widgetIdxB = this.widgets.findIndex(
-                    (w) => w.name === this.inputs[indexB].widget.name
-                );
-
-                // Swap widget positions
-                [this.widgets[widgetIdxA].y, this.widgets[widgetIdxB].y] =
-                    [this.widgets[widgetIdxB].y, this.widgets[widgetIdxA].y];
-                [this.widgets[widgetIdxA].last_y, this.widgets[widgetIdxB].last_y] =
-                    [this.widgets[widgetIdxB].last_y, this.widgets[widgetIdxA].last_y];
-
-                // Swap the widgets themselves
-                [this.widgets[widgetIdxA], this.widgets[widgetIdxB]] =
-                    [this.widgets[widgetIdxB], this.widgets[widgetIdxA]];
-
-                // Swap widget values if they exist
-                if (this.widgets_values) {
-                    [this.widgets_values[widgetIdxA], this.widgets_values[widgetIdxB]] =
-                        [this.widgets_values[widgetIdxB], this.widgets_values[widgetIdxA]];
-                }
-            } else if (hasWidgetA || hasWidgetB) {
-                console.error("Bad swap: one input has a widget but the other doesn't", indexA, indexB);
-            }
-
-            // Swap input properties
-            [this.inputs[indexA].boundingRect, this.inputs[indexB].boundingRect] =
-                [this.inputs[indexB].boundingRect, this.inputs[indexA].boundingRect];
-            [this.inputs[indexA].pos, this.inputs[indexB].pos] =
-                [this.inputs[indexB].pos, this.inputs[indexA].pos];
-
-            // Swap the inputs themselves
-            [this.inputs[indexA], this.inputs[indexB]] =
-                [this.inputs[indexB], this.inputs[indexA]];
-
-            // Update indices to maintain connections
-            updateSlotIndices(this);
-
-            // The calling method is responsible for redrawing the canvas if needed
+            return originalReturn;
         };
 
-        // Add helper method to get dynamic slots info
-        nodeType.prototype.getDynamicSlots = function(dynamicGroup = null) {
-            const dynamicSlots = [];
+        // --- Core Dynamic Methods (swapInputs, getDynamicSlots, addNewDynamicInputForGroup) ---
+        nodeType.prototype.swapInputs = function(indexA, indexB) { // (Content unchanged)
+            if (indexA < 0 || indexB < 0 || indexA >= this.inputs.length || indexB >= this.inputs.length || indexA === indexB) {
+                console.error("[Basic Data Handling] Invalid input indices for swapping:", indexA, indexB); return;
+            }
+            const hasWidgetA = this.inputs[indexA].widget !== undefined;
+            const hasWidgetB = this.inputs[indexB].widget !== undefined;
+            if (hasWidgetA && hasWidgetB) {
+                const widgetIdxA = this.widgets.findIndex((w) => w.name === this.inputs[indexA].widget.name);
+                const widgetIdxB = this.widgets.findIndex((w) => w.name === this.inputs[indexB].widget.name);
+                if(widgetIdxA !== -1 && widgetIdxB !== -1) {
+                    [this.widgets[widgetIdxA].y, this.widgets[widgetIdxB].y] = [this.widgets[widgetIdxB].y, this.widgets[widgetIdxA].y];
+                    [this.widgets[widgetIdxA].last_y, this.widgets[widgetIdxB].last_y] = [this.widgets[widgetIdxB].last_y, this.widgets[widgetIdxA].last_y];
+                    [this.widgets[widgetIdxA], this.widgets[widgetIdxB]] = [this.widgets[widgetIdxB], this.widgets[widgetIdxA]];
+                    if (this.widgets_values) {
+                        [this.widgets_values[widgetIdxA], this.widgets_values[widgetIdxB]] = [this.widgets_values[widgetIdxB], this.widgets_values[widgetIdxA]];
+                    }
+                }
+            } else if (hasWidgetA || hasWidgetB) {
+                console.error("[Basic Data Handling] Bad swap: one input has a widget but the other doesn't", indexA, indexB);
+            }
+            [this.inputs[indexA].boundingRect, this.inputs[indexB].boundingRect] = [this.inputs[indexB].boundingRect, this.inputs[indexA].boundingRect];
+            [this.inputs[indexA].pos, this.inputs[indexB].pos] = [this.inputs[indexB].pos, this.inputs[indexA].pos];
+            [this.inputs[indexA], this.inputs[indexB]] = [this.inputs[indexB], this.inputs[indexA]];
+            updateSlotIndices(this);
+        };
+
+        nodeType.prototype.getDynamicSlots = function(filterDynamicGroup = null) { // (Content largely unchanged, relies on isDynamicInputEmpty which is updated)
+            const dynamicSlotsResult = [];
             const dynamicGroupCount = {};
             const dynamicGroupConnected = {};
 
-            // Process each input to gather information about dynamic inputs
+            const itemsState = new Map();
+
             for (const [index, input] of this.inputs.entries()) {
-                // Skip non-dynamic inputs
-                if (!isDynamicInput(input.name)) {
-                    continue;
-                }
+                const diData = getDynamicInputDefinition(input.name);
+                if (!diData) continue;
 
-                // Get the dynamic group for this input
-                const currentDynamicGroup = this.getDynamicGroup(input.name);
+                const { definition: di, suffix } = diData;
+                const currentDynamicGroup = di.dynamicGroup;
 
-                // Skip if filtering by group and this doesn't match
-                if (dynamicGroup !== null && currentDynamicGroup !== dynamicGroup) {
-                    continue;
-                }
+                if (filterDynamicGroup !== null && currentDynamicGroup !== filterDynamicGroup) continue;
 
-                // Determine if this input is active (connected or has non-default widget value)
-                const isActive = !isDynamicInputEmpty(this, index);
+                if (!itemsState.has(currentDynamicGroup)) itemsState.set(currentDynamicGroup, new Map());
+                const groupItems = itemsState.get(currentDynamicGroup);
+                if (!groupItems.has(suffix)) groupItems.set(suffix, { isActive: false, inputCount: 0, activeInputCount: 0 });
 
-                // Initialize group tracking if this is the first input for this group
-                if (!(currentDynamicGroup in dynamicGroupCount)) {
-                    dynamicGroupCount[currentDynamicGroup] = 0;
-                    dynamicGroupConnected[currentDynamicGroup] = [];
-                }
+                const itemState = groupItems.get(suffix);
+                itemState.inputCount++;
+                const isInputActive = !isDynamicInputEmpty(this, index); // Uses updated isDynamicInputEmpty
+                if (isInputActive) itemState.activeInputCount++;
 
-                // Get the base name for this dynamic input
-                const baseNameInfo = dynamicInputs[dynamicInputGroups[currentDynamicGroup][0]];
-
-                // Track connection status for this input in its group
-                if (input.name.startsWith(baseNameInfo.baseName)) {
-                    const groupIndex = dynamicGroupCount[currentDynamicGroup];
-                    // Use OR assignment to preserve 'true' values
-                    dynamicGroupConnected[currentDynamicGroup][groupIndex] =
-                        dynamicGroupConnected[currentDynamicGroup][groupIndex] || isActive;
-                    dynamicGroupCount[currentDynamicGroup]++;
-                }
-
-                // Store detailed information about this dynamic input
-                dynamicSlots.push({
-                    index,
-                    name: input.name,
-                    isWidget: input.widget !== undefined,
-                    shape: input.shape,
-                    connected: isActive,
-                    isDynamic: true,
-                    dynamicGroup: currentDynamicGroup,
-                    dynamicGroupCount: dynamicGroupCount[currentDynamicGroup]
+                dynamicSlotsResult.push({
+                    index, name: input.name, isWidget: input.widget !== undefined, shape: input.shape,
+                    connected: isInputActive,
+                    isDynamic: true, dynamicGroup: currentDynamicGroup,
                 });
             }
 
-            return {
-                slots: dynamicSlots,
-                groupCount: dynamicGroupCount,
-                groupConnected: dynamicGroupConnected
-            };
-        };
+            for(const [groupId, groupItems] of itemsState) {
+                dynamicGroupCount[groupId] = groupItems.size;
+                dynamicGroupConnected[groupId] = [];
+                const sortedSuffixes = Array.from(groupItems.keys()).sort((a,b) => {
+                    const numA = parseInt(a,10); const numB = parseInt(b,10);
+                    if(!isNaN(numA) && !isNaN(numB)) return numA-numB;
+                    if(a.length !== b.length) return a.length - b.length;
+                    return String(a).localeCompare(String(b));
+                });
 
-        /**
-         * Generate a new dynamic input name based on type and count.
-         * @param {string} dynamic - The dynamic type ('number' or 'letter').
-         * @param {string} baseName - The base name for the input.
-         * @param {number} count - The count/position for the new input.
-         * @returns {string} The generated input name.
-         */
-        const generateDynamicInputName = (dynamic, baseName, count) => {
-            if (dynamic === 'letter') {
-                // For letter type, use the next letter in sequence
-                return String.fromCharCode(97 + count); // 97 is ASCII for 'a'
-            } else {
-                // For number type, use baseName + index
-                return `${baseName}${count}`;
+                for(const suffix of sortedSuffixes){
+                    const item = groupItems.get(suffix);
+                    dynamicGroupConnected[groupId].push(item.activeInputCount > 0);
+                }
             }
+            return { slots: dynamicSlotsResult, groupCount: dynamicGroupCount, groupConnected: dynamicGroupConnected };
         };
 
-        // Add helper method to add new dynamic input for a group
-        nodeType.prototype.addNewDynamicInputForGroup = function(dynamicGroup, lastDynamicIdx) {
-            let insertPosition = lastDynamicIdx + 1;
+        nodeType.prototype.addNewDynamicInputForGroup = function(dynamicGroup, lastKnownInputIndexInGroup) {
+            let insertPosition = lastKnownInputIndexInGroup + 1;
             let inputInRange = true;
 
-            // Add new inputs for each member of the dynamic group
-            for (const groupMember of dynamicInputGroups[dynamicGroup]) {
-                const dynamicInput = dynamicInputs[groupMember];
-                const baseName = dynamicInput.baseName;
-                const dynamicType = dynamicInput.dynamicType;
-                const widgetType = dynamicInput.widgetType ?? dynamicType;
-                const dynamic = dynamicInput.dynamic;
+            const groupMemberDefinitions = dynamicInputGroups[dynamicGroup].map(idx => dynamicInputs[idx]);
 
-                // Get current slots for this group
-                const { slots } = this.getDynamicSlots(dynamicGroup);
-                const groupSlots = slots.filter(s => s.name.startsWith(baseName));
+            const { slots: currentGroupSlots } = this.getDynamicSlots(dynamicGroup);
+            const existingSuffixes = new Set();
+            currentGroupSlots.forEach(s => {
+                const diData = getDynamicInputDefinition(s.name);
+                if(diData) existingSuffixes.add(diData.suffix);
+            });
 
-                // Check if we've reached the limit for letter inputs (a-z)
-                if (dynamic === 'letter' && groupSlots.length >= 26) {
-                    inputInRange = false;
-                    continue;
+            let newItemNumericSuffix = 0;
+            // Find the smallest non-negative integer not in existingSuffixes (if they are numbers)
+            // or just use existingSuffixes.size if complex/letter based for simplicity (renumbering will fix)
+            // For simplicity here, using size, assuming renumbering will handle actual ordering.
+            // A more robust suffix generation might be needed if strict ordering before renumbering is critical.
+            const isNumericSuffix = groupMemberDefinitions.length > 0 && groupMemberDefinitions[0].dynamic === 'number';
+            if (isNumericSuffix) {
+                while (existingSuffixes.has(String(newItemNumericSuffix))) {
+                    newItemNumericSuffix++;
                 }
+            } else { // letter or complex
+                newItemNumericSuffix = existingSuffixes.size; // This is the 'count' for letter generation
+            }
 
-                // Generate the new input name based on current count
-                const newName = generateDynamicInputName(dynamic, baseName, groupSlots.length);
 
-                // Find a reference slot to copy properties from
-                const referenceSlot = groupSlots[0] || slots.find(s =>
-                    s.name.startsWith(dynamicInput.baseName)
-                );
+            for (const diDefinition of groupMemberDefinitions) {
+                // Use the new properties from diDefinition
+                const { baseName, dynamic, dynamicComfyType, isWidget, actualWidgetGuiType, originalOptions } = diDefinition;
 
-                // Create the new input at the correct position
+                if (dynamic === 'letter' && newItemNumericSuffix >= 26) {
+                    inputInRange = false; continue;
+                }
+                const newName = generateDynamicInputName(dynamic, baseName, newItemNumericSuffix);
+
+                const refSlot = currentGroupSlots.find(s => s.name.startsWith(baseName)) || currentGroupSlots[0];
+
+                const widgetDefault = getWidgetDefaultValue({ type: actualWidgetGuiType, options: originalOptions });
+
                 this.addInputAtPosition(
                     newName,
-                    dynamicType,
-                    widgetType,
+                    dynamicComfyType,    // ComfyUI input type (e.g., "STRING", "*")
+                    actualWidgetGuiType, // GUI widget type (e.g., "text", "number", "combo")
                     insertPosition++,
-                    referenceSlot?.isWidget ?? false,
-                    referenceSlot?.shape
+                    isWidget,            // The crucial boolean
+                    refSlot?.shape,
+                    widgetDefault,
+                    originalOptions      // Full original options for widget config
                 );
-
-                // Ensure inputs are numbered correctly
-                this.renumberDynamicInputs(baseName, dynamicInputs, dynamic);
             }
-
             return inputInRange;
-        };
-
-        // Add method to safely renumber dynamic inputs without breaking connections
-        nodeType.prototype.renumberDynamicInputs = function(baseName, dynamicInputs, dynamic) {
-            // Collect information about dynamic inputs with this base name
-            const dynamicInputInfo = [];
-
-            // Find all inputs that match this base name
-            for (let i = 0; i < this.inputs.length; i++) {
-                const input = this.inputs[i];
-
-                if (isDynamicInput(input.name) && input.name.startsWith(baseName)) {
-                    // Store info about this input
-                    dynamicInputInfo.push({
-                        index: i,
-                        widgetIdx: input.widget !== undefined
-                            ? this.widgets.findIndex((w) => w.name === input.widget.name)
-                            : undefined,
-                        name: input.name,
-                        connected: input.isConnected
-                    });
-                }
-            }
-
-            // Rename inputs in place to maintain connections
-            for (let i = 0; i < dynamicInputInfo.length; i++) {
-                const info = dynamicInputInfo[i];
-                const input = this.inputs[info.index];
-                const newName = generateDynamicInputName(dynamic, baseName, i);
-
-                // Update widget name if this input has a widget
-                if (input.widget !== undefined && info.widgetIdx !== undefined) {
-                    const widget = this.widgets[info.widgetIdx];
-                    widget.name = newName;
-                    widget.label = newName;
-                    input.widget.name = newName;
-                }
-
-                // Update the input name if it's different
-                if (input.name !== newName) {
-                    input.name = newName;
-                    input.localized_name = newName;
-                }
-            }
         };
     }
 });

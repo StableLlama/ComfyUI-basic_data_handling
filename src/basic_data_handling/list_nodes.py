@@ -29,7 +29,7 @@ class ListCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -39,7 +39,8 @@ class ListCreate(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (list(kwargs.values()),)
+        values = list(kwargs.values())
+        return (values[:-1],)
 
 
 class ListCreateFromBoolean(ComfyNodeABC):
@@ -54,7 +55,7 @@ class ListCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -64,7 +65,8 @@ class ListCreateFromBoolean(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return ([bool(value) for value in kwargs.values()],)
+        values = [bool(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class ListCreateFromFloat(ComfyNodeABC):
@@ -79,7 +81,7 @@ class ListCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -89,7 +91,8 @@ class ListCreateFromFloat(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return ([float(value) for value in kwargs.values()],)
+        values = [float(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class ListCreateFromInt(ComfyNodeABC):
@@ -104,7 +107,7 @@ class ListCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number"}),
+                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -114,7 +117,8 @@ class ListCreateFromInt(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return ([int(value) for value in kwargs.values()],)
+        values = [int(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class ListCreateFromString(ComfyNodeABC):
@@ -139,7 +143,8 @@ class ListCreateFromString(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return ([str(value) for value in kwargs.values()],)
+        values = [str(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class ListAppend(ComfyNodeABC):

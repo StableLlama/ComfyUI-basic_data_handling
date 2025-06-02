@@ -29,7 +29,7 @@ class DataListCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -41,7 +41,8 @@ class DataListCreate(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list]:
-        return (list(kwargs.values()),)
+        values = list(kwargs.values())
+        return (values[:-1],)
 
 
 class DataListCreateFromBoolean(ComfyNodeABC):
@@ -56,7 +57,7 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -68,7 +69,8 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list]:
-        return ([bool(value) for value in kwargs.values()],)
+        values = [bool(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class DataListCreateFromFloat(ComfyNodeABC):
@@ -83,7 +85,7 @@ class DataListCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -95,7 +97,8 @@ class DataListCreateFromFloat(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list]:
-        return ([float(value) for value in kwargs.values()],)
+        values = [float(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class DataListCreateFromInt(ComfyNodeABC):
@@ -110,7 +113,7 @@ class DataListCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number"}),
+                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -122,7 +125,8 @@ class DataListCreateFromInt(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list]:
-        return ([int(value) for value in kwargs.values()],)
+        values = [int(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class DataListCreateFromString(ComfyNodeABC):
@@ -137,7 +141,7 @@ class DataListCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number"}),
+                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -149,7 +153,8 @@ class DataListCreateFromString(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return ([str(value) for value in kwargs.values()],)
+        values = [str(value) for value in kwargs.values()]
+        return (values[:-1],)
 
 
 class DataListAppend(ComfyNodeABC):
