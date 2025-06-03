@@ -565,33 +565,6 @@ app.registerExtension({
             return originalReturn;
         };
 
-        // --- Core Dynamic Methods (swapInputs, getDynamicSlots, addNewDynamicInputForGroup) ---
-        nodeType.prototype.swapInputs = function(indexA, indexB) { // (Content unchanged)
-            if (indexA < 0 || indexB < 0 || indexA >= this.inputs.length || indexB >= this.inputs.length || indexA === indexB) {
-                console.error("[Basic Data Handling] Invalid input indices for swapping:", indexA, indexB); return;
-            }
-            const hasWidgetA = this.inputs[indexA].widget !== undefined;
-            const hasWidgetB = this.inputs[indexB].widget !== undefined;
-            if (hasWidgetA && hasWidgetB) {
-                const widgetIdxA = this.widgets.findIndex((w) => w.name === this.inputs[indexA].widget.name);
-                const widgetIdxB = this.widgets.findIndex((w) => w.name === this.inputs[indexB].widget.name);
-                if(widgetIdxA !== -1 && widgetIdxB !== -1) {
-                    [this.widgets[widgetIdxA].y, this.widgets[widgetIdxB].y] = [this.widgets[widgetIdxB].y, this.widgets[widgetIdxA].y];
-                    [this.widgets[widgetIdxA].last_y, this.widgets[widgetIdxB].last_y] = [this.widgets[widgetIdxB].last_y, this.widgets[widgetIdxA].last_y];
-                    [this.widgets[widgetIdxA], this.widgets[widgetIdxB]] = [this.widgets[widgetIdxB], this.widgets[widgetIdxA]];
-                    if (this.widgets_values) {
-                        [this.widgets_values[widgetIdxA], this.widgets_values[widgetIdxB]] = [this.widgets_values[widgetIdxB], this.widgets_values[widgetIdxA]];
-                    }
-                }
-            } else if (hasWidgetA || hasWidgetB) {
-                console.error("[Basic Data Handling] Bad swap: one input has a widget but the other doesn't", indexA, indexB);
-            }
-            [this.inputs[indexA].boundingRect, this.inputs[indexB].boundingRect] = [this.inputs[indexB].boundingRect, this.inputs[indexA].boundingRect];
-            [this.inputs[indexA].pos, this.inputs[indexB].pos] = [this.inputs[indexB].pos, this.inputs[indexA].pos];
-            [this.inputs[indexA], this.inputs[indexB]] = [this.inputs[indexB], this.inputs[indexA]];
-            updateSlotIndices(this);
-        };
-
         nodeType.prototype.getDynamicSlots = function(filterDynamicGroup = null) { // (Content largely unchanged, relies on isDynamicInputEmpty which is updated)
             const dynamicSlotsResult = [];
             const dynamicGroupCount = {};

@@ -6,11 +6,26 @@ build-backend = "setuptools.build_meta"
 name = "basic_data_handling"
 version = "0.3.5"
 description = """NOTE: Still in development! Expect breaking changes!
+
 Basic Python functions for manipulating data that every programmer is used to.
-Currently supported ComfyUI data types: BOOLEAN, FLOAT, INT, STRING and data lists.
-Additionally supported Python data types as custom data types: DICT, LIST.
-Data handling is supported with comparisons and control flow operations.
-Also contains math, regex, and file system path manipulation functions."""
+Comprehensive node collection for data manipulation in ComfyUI workflows.
+
+Supported data types:
+- ComfyUI native: BOOLEAN, FLOAT, INT, STRING, and data lists
+- Python types as custom data types: DICT, LIST, SET
+
+Feature categories:
+- Boolean logic operations (and, or, not, xor, nand, nor)
+- Type casting/conversion between all supported data types
+- Comparison operations (equality, numerical comparison, range checking)
+- Data structures manipulation (data lists, LIST, DICT, SET)
+- Flow control (conditionals, branching, execution order)
+- Mathematical operations (arithmetic, trigonometry, logarithmic functions)
+- String manipulation (case conversion, formatting, splitting, validation)
+- File system path handling (path operations, information, searching)
+- SET operations (creation, modification, comparison, mathematical set theory)
+
+All nodes are lightweight with no additional dependencies required."""
 authors = [
   {name = "StableLlama"}
 ]
