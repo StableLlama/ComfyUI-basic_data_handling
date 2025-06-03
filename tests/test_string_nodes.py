@@ -10,6 +10,7 @@ from src.basic_data_handling.string_nodes import (
     StringDecode,
     StringEncode,
     StringEndswith,
+    StringEscape,
     StringExpandtabs,
     StringFind,
     StringFormatMap,
@@ -47,6 +48,7 @@ from src.basic_data_handling.string_nodes import (
     StringStrip,
     StringSwapcase,
     StringTitle,
+    StringUnescape,
     StringUpper,
     StringZfill,
 )
@@ -363,6 +365,38 @@ def test_zfill():
     assert node.zfill("-123", 5) == ("-0123",)  # Preserves sign
     assert node.zfill("123", 2) == ("123",)  # Width smaller than string length
     assert node.zfill("", 3) == ("000",)  # Empty string
+
+def test_unescape():
+    node = StringUnescape()
+    # Test control characters
+    assert node.unescape(r"Hello\nWorld") == ("Hello\nWorld",)  # Newline
+    assert node.unescape(r"Hello\tWorld") == ("Hello\tWorld",)  # Tab
+    assert node.unescape(r"C:\\Program Files\\App") == (r"C:\Program Files\App",)  # Backslash
+    assert node.unescape(r"Quote: \"Text\"") == ("Quote: \"Text\"",)  # Double quote
+    assert node.unescape(r"Quote: \'Text\'") == ("Quote: 'Text'",)  # Single quote
+
+    # Test that normal Unicode characters remain unchanged
+    assert node.unescape("German: äöüß") == ("German: äöüß",)  # Umlauts should be preserved
+    assert node.unescape("Hello äöü\nWorld") == ("Hello äöü\nWorld",)  # Umlauts with control char
+
+    # Test complex string with multiple escape sequences
+    assert node.unescape(r"Path: C:\\folder\\file.txt\nLine1\tLine2") == ("Path: C:\\folder\\file.txt\nLine1\tLine2",)
+
+def test_escape():
+    node = StringEscape()
+    # Test control characters
+    assert node.escape("Hello\nWorld") == (r"Hello\nWorld",)  # Newline
+    assert node.escape("Hello\tWorld") == (r"Hello\tWorld",)  # Tab
+    assert node.escape(r"C:\Program Files\App") == (r"C:\\Program Files\\App",)  # Backslash
+    assert node.escape('Quote: "Text"') == (r'Quote: \"Text\"',)  # Double quote
+    assert node.escape("Quote: 'Text'") == (r"Quote: \'Text\'",)  # Single quote
+
+    # Test that normal Unicode characters remain unchanged
+    assert node.escape("German: äöüß") == (r"German: äöüß",)  # Umlauts should be preserved
+    assert node.escape("Hello äöü\nWorld") == (r"Hello äöü\nWorld",)  # Umlauts with control char
+
+    # Test complex string with multiple special characters
+    assert node.escape("Path: C:\\folder\\file.txt\nLine1\tLine2") == (r"Path: C:\\folder\\file.txt\nLine1\tLine2",)
 
 def test_length():
     node = StringLength()

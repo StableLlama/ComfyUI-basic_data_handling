@@ -55,7 +55,7 @@ def test_dict_set():
 def test_dict_create_from_boolean():
     node = DictCreateFromBoolean()
     # Test with dynamic inputs
-    result = node.create(key_0="key1", value_0=True, key_1="key2", value_1=False)
+    result = node.create(key_0="key1", value_0=True, key_1="key2", value_1=False, key_2="", value_2="")
     assert result == ({"key1": True, "key2": False},)
     # Test with empty inputs
     assert node.create() == ({},)
@@ -64,7 +64,7 @@ def test_dict_create_from_boolean():
 def test_dict_create_from_float():
     node = DictCreateFromFloat()
     # Test with dynamic inputs
-    result = node.create(key_0="key1", value_0=1.5, key_1="key2", value_1=2.5)
+    result = node.create(key_0="key1", value_0=1.5, key_1="key2", value_1=2.5, key_2="", value_2="")
     assert result == ({"key1": 1.5, "key2": 2.5},)
     # Test with empty inputs
     assert node.create() == ({},)
@@ -73,7 +73,7 @@ def test_dict_create_from_float():
 def test_dict_create_from_int():
     node = DictCreateFromInt()
     # Test with dynamic inputs
-    result = node.create(key_0="key1", value_0=1, key_1="key2", value_1=2)
+    result = node.create(key_0="key1", value_0=1, key_1="key2", value_1=2, key_2="", value_2="")
     assert result == ({"key1": 1, "key2": 2},)
     # Test with empty inputs
     assert node.create() == ({},)
@@ -82,7 +82,7 @@ def test_dict_create_from_int():
 def test_dict_create_from_string():
     node = DictCreateFromString()
     # Test with dynamic inputs
-    result = node.create(key_0="key1", value_0="value1", key_1="key2", value_1="value2")
+    result = node.create(key_0="key1", value_0="value1", key_1="key2", value_1="value2", key_2="", value_2="")
     assert result == ({"key1": "value1", "key2": "value2"},)
     # Test with empty inputs
     assert node.create() == ({},)

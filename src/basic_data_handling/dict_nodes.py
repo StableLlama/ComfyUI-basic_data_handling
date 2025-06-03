@@ -27,8 +27,8 @@ class DictCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
             })
         }
 
@@ -40,7 +40,7 @@ class DictCreate(ComfyNodeABC):
     def create(self, **kwargs: list[Any]) -> tuple[dict]:
         result = {}
         # Process all key_X/value_X pairs from dynamic inputs
-        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+        for i in range(len(kwargs) // 2 - 1):  # Divide by 2 since we have key/value pairs
             key_name = f"key_{i}"
             value_name = f"value_{i}"
             if key_name in kwargs and value_name in kwargs:
@@ -59,8 +59,8 @@ class DictCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
             })
         }
 
@@ -72,7 +72,7 @@ class DictCreateFromBoolean(ComfyNodeABC):
     def create(self, **kwargs: list[Any]) -> tuple[dict]:
         result = {}
         # Process all key_X/value_X pairs from dynamic inputs
-        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+        for i in range(len(kwargs) // 2 - 1):  # Divide by 2 since we have key/value pairs
             key_name = f"key_{i}"
             value_name = f"value_{i}"
             if key_name in kwargs and value_name in kwargs:
@@ -91,8 +91,8 @@ class DictCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
             })
         }
 
@@ -104,7 +104,7 @@ class DictCreateFromFloat(ComfyNodeABC):
     def create(self, **kwargs: list[Any]) -> tuple[dict]:
         result = {}
         # Process all key_X/value_X pairs from dynamic inputs
-        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+        for i in range(len(kwargs) // 2 - 1):  # Divide by 2 since we have key/value pairs
             key_name = f"key_{i}"
             value_name = f"value_{i}"
             if key_name in kwargs and value_name in kwargs:
@@ -123,8 +123,8 @@ class DictCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
             })
         }
 
@@ -136,7 +136,7 @@ class DictCreateFromInt(ComfyNodeABC):
     def create(self, **kwargs: list[Any]) -> tuple[dict]:
         result = {}
         # Process all key_X/value_X pairs from dynamic inputs
-        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+        for i in range(len(kwargs) // 2 - 1):  # Divide by 2 since we have key/value pairs
             key_name = f"key_{i}"
             value_name = f"value_{i}"
             if key_name in kwargs and value_name in kwargs:
@@ -155,8 +155,8 @@ class DictCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
-                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
             })
         }
 
@@ -168,7 +168,7 @@ class DictCreateFromString(ComfyNodeABC):
     def create(self, **kwargs: list[Any]) -> tuple[dict]:
         result = {}
         # Process all key_X/value_X pairs from dynamic inputs
-        for i in range(len(kwargs) // 2):  # Divide by 2 since we have key/value pairs
+        for i in range(len(kwargs) // 2 - 1):  # Divide by 2 since we have key/value pairs
             key_name = f"key_{i}"
             value_name = f"value_{i}"
             if key_name in kwargs and value_name in kwargs:

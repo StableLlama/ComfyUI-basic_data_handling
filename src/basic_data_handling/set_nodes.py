@@ -27,7 +27,7 @@ class SetCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -37,7 +37,8 @@ class SetCreate(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set(kwargs.values()),)
+        values = list(kwargs.values())[:-1]
+        return (set(values),)
 
 
 class SetCreateFromBoolean(ComfyNodeABC):
@@ -52,7 +53,7 @@ class SetCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number"}),
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -62,7 +63,8 @@ class SetCreateFromBoolean(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set([bool(value) for value in kwargs.values()]),)
+        values = [bool(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromFloat(ComfyNodeABC):
@@ -77,7 +79,7 @@ class SetCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number"}),
+                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -87,7 +89,8 @@ class SetCreateFromFloat(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set([float(value) for value in kwargs.values()]),)
+        values = [float(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromInt(ComfyNodeABC):
@@ -102,7 +105,7 @@ class SetCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number"}),
+                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -112,7 +115,8 @@ class SetCreateFromInt(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set([int(value) for value in kwargs.values()]),)
+        values = [int(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromString(ComfyNodeABC):
@@ -127,7 +131,7 @@ class SetCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number"}),
+                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING"}),
             })
         }
 
@@ -137,7 +141,8 @@ class SetCreateFromString(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set([str(value) for value in kwargs.values()]),)
+        values = [str(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetAdd(ComfyNodeABC):
