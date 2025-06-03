@@ -265,6 +265,21 @@ Available nodes grouped by functionality:
 - unescape - Converts escape sequences to actual characters
 - format_map - Formats string using values from dictionary
 
+### regex: Regular expression nodes
+- Pattern matching:
+  - test - Tests whether a regex pattern matches any part of the input string (returns BOOLEAN)
+- Finding matches:
+  - find all (data list) - Returns all non-overlapping matches of a pattern as a data list
+  - find all (LIST) - Returns all non-overlapping matches of a pattern as a LIST
+- Capturing groups:
+  - search groups (data list) - Returns match groups from the first pattern match as a data list
+  - search groups (LIST) - Returns match groups from the first pattern match as a LIST
+  - search named groups - Returns a DICT of named capture groups from the first pattern match
+- String operations:
+  - split (data list) - Splits the string at each pattern match into a data list
+  - split (LIST) - Splits the string at each pattern match into a LIST
+  - substitute - Replaces pattern matches in the string with a replacement string
+
 ## Understanding data list vs. LIST vs. SET
 
 ComfyUI has different data types that serve different purposes:
