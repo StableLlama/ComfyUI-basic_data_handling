@@ -265,7 +265,7 @@ Available nodes grouped by functionality:
 - unescape - Converts escape sequences to actual characters
 - format_map - Formats string using values from dictionary
 
-## Understanding LIST vs. data list vs. SET
+## Understanding data list vs. LIST vs. SET
 
 ComfyUI has different data types that serve different purposes:
 
@@ -301,6 +301,12 @@ ComfyUI has different data types that serve different purposes:
   - When element order doesn't matter
 
 ### When to use which type
+- Use **data list** when you need to:
+    - Process each item individually through ComfyUI nodes
+    - Allow nodes to iterate through your items automatically
+    - Connect to nodes that expect individual inputs
+    - Perform batch processing operations
+    -
 - Use **LIST** when you need:
   - Ordered collection with potential duplicates
   - To preserve insertion order
@@ -312,9 +318,3 @@ ComfyUI has different data types that serve different purposes:
   - Fast membership testing (x in set)
   - Set theory operations (union, intersection)
   - To eliminate duplicates from data
-
-- Use **data list** when you need to:
-  - Process each item individually through ComfyUI nodes
-  - Allow nodes to iterate through your items automatically
-  - Connect to nodes that expect individual inputs
-  - Perform batch processing operations
