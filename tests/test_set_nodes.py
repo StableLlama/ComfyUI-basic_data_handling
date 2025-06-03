@@ -26,29 +26,29 @@ from src.basic_data_handling.set_nodes import (
 def test_set_create():
     node = SetCreate()
     # Testing with kwargs to simulate dynamic inputs
-    assert node.create_set(item_0=1, item_1=2, item_2=3) == ({1, 2, 3},)
-    assert node.create_set(item_0="a", item_1="b") == ({"a", "b"},)
+    assert node.create_set(item_0=1, item_1=2, item_2=3, item_3="") == ({1, 2, 3},)
+    assert node.create_set(item_0="a", item_1="b", item_2="") == ({"a", "b"},)
     assert node.create_set() == (set(),)  # Empty set with no arguments
     # Mixed types
-    assert node.create_set(item_0=1, item_1="b", item_2=True) == ({1, "b", True},)
+    assert node.create_set(item_0=1, item_1="b", item_2=True, item_3="") == ({1, "b", True},)
 
 
 def test_set_create_from_int():
     node = SetCreateFromInt()
-    assert node.create_set(item_0=1, item_1=2, item_2=3) == ({1, 2, 3},)
-    assert node.create_set(item_0=5) == ({5},)  # Single item set
-    assert node.create_set(item_0=1, item_1=1) == ({1},)  # Duplicate items become single item
+    assert node.create_set(item_0=1, item_1=2, item_2=3, item_3="") == ({1, 2, 3},)
+    assert node.create_set(item_0=5, item_1="") == ({5},)  # Single item set
+    assert node.create_set(item_0=1, item_1=1, item_2="") == ({1},)  # Duplicate items become single item
     assert node.create_set() == (set(),)  # Empty set with no arguments
 
 
 def test_set_create_from_string():
     node = SetCreateFromString()
-    result = node.create_set(item_0="apple", item_1="banana")
+    result = node.create_set(item_0="apple", item_1="banana", item_2="")
     assert isinstance(result[0], set)
     assert result[0] == {"apple", "banana"}
 
     # Duplicate strings
-    result = node.create_set(item_0="apple", item_1="apple")
+    result = node.create_set(item_0="apple", item_1="apple", item_2="")
     assert result[0] == {"apple"}
 
     # Empty set
@@ -57,19 +57,19 @@ def test_set_create_from_string():
 
 def test_set_create_from_float():
     node = SetCreateFromFloat()
-    assert node.create_set(item_0=1.5, item_1=2.5) == ({1.5, 2.5},)
-    assert node.create_set(item_0=3.14) == ({3.14},)  # Single item set
-    assert node.create_set(item_0=1.0, item_1=1.0) == ({1.0},)  # Duplicate items
+    assert node.create_set(item_0=1.5, item_1=2.5, item_2="") == ({1.5, 2.5},)
+    assert node.create_set(item_0=3.14, item_1="") == ({3.14},)  # Single item set
+    assert node.create_set(item_0=1.0, item_1=1.0, item_2="") == ({1.0},)  # Duplicate items
     assert node.create_set() == (set(),)  # Empty set with no arguments
 
 
 def test_set_create_from_boolean():
     node = SetCreateFromBoolean()
-    assert node.create_set(item_0=True, item_1=False) == ({True, False},)
-    assert node.create_set(item_0=True, item_1=True) == ({True},)  # Duplicate booleans
+    assert node.create_set(item_0=True, item_1=False, item_2="") == ({True, False},)
+    assert node.create_set(item_0=True, item_1=True, item_2="") == ({True},)  # Duplicate booleans
     assert node.create_set() == (set(),)  # Empty set with no arguments
     # Test conversion from non-boolean values
-    assert node.create_set(item_0=1, item_1=0) == ({True, False},)
+    assert node.create_set(item_0=1, item_1=0, item_2="") == ({True, False},)
 
 
 def test_set_add():

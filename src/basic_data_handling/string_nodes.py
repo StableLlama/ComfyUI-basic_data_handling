@@ -890,6 +890,74 @@ class StringRemovesuffix(ComfyNodeABC):
         return (string.removesuffix(suffix),)
 
 
+class StringUnescape(ComfyNodeABC):
+    """
+    Unescapes a string by converting escape sequences to their actual characters.
+
+    This node converts escape sequences like '\n' (two characters) to actual newlines (one character),
+    '\t' to tabs, '\\' to backslashes, etc. Useful for processing strings where escape sequences
+    are represented literally rather than interpreted.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "unescape"
+
+    def unescape(self, string):
+        # Decode escaped sequences only for control characters
+        result = (
+            string
+            .replace(r'\\', '\u0000')
+            .replace(r'\n', '\n')
+            .replace(r'\t', '\t')
+            .replace(r'\"', '"')
+            .replace(r'\'', "'")
+            .replace('\u0000', '\\')
+        )
+        return (result,)
+
+
+class StringEscape(ComfyNodeABC):
+    """
+    Escapes a string by converting special characters to escape sequences.
+
+    This node converts characters like newlines, tabs, quotes, and backslashes to their escaped
+    representation (like '\n', '\t', '\"', '\\'). Useful when you need to prepare strings
+    for formats that require escaped sequences instead of literal special characters.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "string": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    CATEGORY = "Basic/STRING"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "escape"
+
+    def escape(self, string):
+        result = (
+            string
+            .replace('\\', r'\\')
+            .replace('\n', r'\n')
+            .replace('\t', r'\t')
+            .replace('"', r'\"')
+            .replace("'", r"\'")
+        )
+        return (result,)
+
+
 class StringReplace(ComfyNodeABC):
     """
     Replaces occurrences of a substring with another substring.
@@ -1384,6 +1452,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: StringDecode": StringDecode,
     "Basic data handling: StringEncode": StringEncode,
     "Basic data handling: StringEndswith": StringEndswith,
+    "Basic data handling: StringEscape": StringEscape,
     "Basic data handling: StringExpandtabs": StringExpandtabs,
     "Basic data handling: StringFind": StringFind,
     "Basic data handling: StringFormatMap": StringFormatMap,
@@ -1422,6 +1491,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: StringStrip": StringStrip,
     "Basic data handling: StringSwapcase": StringSwapcase,
     "Basic data handling: StringTitle": StringTitle,
+    "Basic data handling: StringUnescape": StringUnescape,
     "Basic data handling: StringUpper": StringUpper,
     "Basic data handling: StringZfill": StringZfill,
 }
@@ -1435,6 +1505,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: StringDecode": "decode",
     "Basic data handling: StringEncode": "encode",
     "Basic data handling: StringEndswith": "endswith",
+    "Basic data handling: StringEscape": "escape",
     "Basic data handling: StringExpandtabs": "expandtabs",
     "Basic data handling: StringFind": "find",
     "Basic data handling: StringFormatMap": "format_map",
@@ -1473,6 +1544,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: StringStrip": "strip",
     "Basic data handling: StringSwapcase": "swapcase",
     "Basic data handling: StringTitle": "title",
+    "Basic data handling: StringUnescape": "unescape",
     "Basic data handling: StringUpper": "upper",
     "Basic data handling: StringZfill": "zfill",
 }

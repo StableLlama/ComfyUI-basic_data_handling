@@ -37,8 +37,8 @@ class SetCreate(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        values = kwargs.values()
-        return (set(values[:-1]),)
+        values = list(kwargs.values())[:-1]
+        return (set(values),)
 
 
 class SetCreateFromBoolean(ComfyNodeABC):
@@ -63,8 +63,8 @@ class SetCreateFromBoolean(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        values = [bool(value) for value in kwargs.values()]
-        return (set(values[:-1]),)
+        values = [bool(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromFloat(ComfyNodeABC):
@@ -89,8 +89,8 @@ class SetCreateFromFloat(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        values = [float(value) for value in kwargs.values()]
-        return (set(values[:-1]),)
+        values = [float(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromInt(ComfyNodeABC):
@@ -115,8 +115,8 @@ class SetCreateFromInt(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        values = [int(value) for value in kwargs.values()]
-        return (set(values[:-1]),)
+        values = [int(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetCreateFromString(ComfyNodeABC):
@@ -141,8 +141,8 @@ class SetCreateFromString(ComfyNodeABC):
     FUNCTION = "create_set"
 
     def create_set(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        values = [str(value) for value in kwargs.values()]
-        return (set(values[:-1]),)
+        values = [str(value) for value in list(kwargs.values())[:-1]]
+        return (set(values),)
 
 
 class SetAdd(ComfyNodeABC):

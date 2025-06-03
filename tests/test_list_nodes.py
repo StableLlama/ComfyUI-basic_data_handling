@@ -176,36 +176,36 @@ def test_list_max():
 
 def test_list_create():
     node = ListCreate()
-    assert node.create_list(item_0=1, item_1=2, item_2=3) == ([1, 2, 3],)
+    assert node.create_list(item_0=1, item_1=2, item_2=3, item_3="") == ([1, 2, 3],)
     assert node.create_list() == ([],)  # Empty list
-    assert node.create_list(item_0="test") == (["test"],)
+    assert node.create_list(item_0="test", item_1="") == (["test"],)
 
 
 def test_list_create_from_boolean():
     node = ListCreateFromBoolean()
-    assert node.create_list(item_0=True, item_1=False, item_2=True) == ([True, False, True],)
-    assert node.create_list(item_0=True) == ([True],)
+    assert node.create_list(item_0=True, item_1=False, item_2=True, item_3="") == ([True, False, True],)
+    assert node.create_list(item_0=True, item_1="") == ([True],)
     assert node.create_list() == ([],)
 
 
 def test_list_create_from_float():
     node = ListCreateFromFloat()
-    assert node.create_list(item_0=1.1, item_1=2.2, item_2=3.3) == ([1.1, 2.2, 3.3],)
-    assert node.create_list(item_0=0.0) == ([0.0],)
+    assert node.create_list(item_0=1.1, item_1=2.2, item_2=3.3, item_3="") == ([1.1, 2.2, 3.3],)
+    assert node.create_list(item_0=0.0, item_1="") == ([0.0],)
     assert node.create_list() == ([],)
 
 
 def test_list_create_from_int():
     node = ListCreateFromInt()
-    assert node.create_list(item_0=1, item_1=2, item_2=3) == ([1, 2, 3],)
-    assert node.create_list(item_0=0) == ([0],)
+    assert node.create_list(item_0=1, item_1=2, item_2=3, item_3="") == ([1, 2, 3],)
+    assert node.create_list(item_0=0, item_1="") == ([0],)
     assert node.create_list() == ([],)
 
 
 def test_list_create_from_string():
     node = ListCreateFromString()
-    assert node.create_list(item_0="a", item_1="b", item_2="c") == (["a", "b", "c"],)
-    assert node.create_list(item_0="test") == (["test"],)
+    assert node.create_list(item_0="a", item_1="b", item_2="c", item_3="") == (["a", "b", "c"],)
+    assert node.create_list(item_0="test", item_1="") == (["test"],)
     assert node.create_list() == ([],)
 
 

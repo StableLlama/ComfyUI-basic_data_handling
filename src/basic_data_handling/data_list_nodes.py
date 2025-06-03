@@ -811,7 +811,6 @@ class DataListSlice(ComfyNodeABC):
         start = kwargs.get('start', [0])[0]
         stop = kwargs.get('stop', [INT_MAX])[0]
         step = kwargs.get('step', [1])[0]
-        print(f"start: {start}, stop: {stop}, step: {step}; input_list: {input_list}")
 
         return (input_list[start:stop:step],)
 

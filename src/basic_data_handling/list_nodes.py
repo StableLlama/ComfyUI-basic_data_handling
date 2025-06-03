@@ -91,8 +91,8 @@ class ListCreateFromFloat(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = [float(value) for value in kwargs.values()]
-        return (values[:-1],)
+        values = [float(value) for value in list(kwargs.values())[:-1]]
+        return (values,)
 
 
 class ListCreateFromInt(ComfyNodeABC):
@@ -117,8 +117,8 @@ class ListCreateFromInt(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = [int(value) for value in kwargs.values()]
-        return (values[:-1],)
+        values = [int(value) for value in list(kwargs.values())[:-1]]
+        return (values,)
 
 
 class ListCreateFromString(ComfyNodeABC):
@@ -143,8 +143,8 @@ class ListCreateFromString(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = [str(value) for value in kwargs.values()]
-        return (values[:-1],)
+        values = [str(value) for value in list(kwargs.values())[:-1]]
+        return (values,)
 
 
 class ListAppend(ComfyNodeABC):
