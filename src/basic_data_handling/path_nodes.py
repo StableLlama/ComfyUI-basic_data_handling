@@ -453,6 +453,37 @@ class PathNormalize(ComfyNodeABC):
         return (os.path.normpath(path),)
 
 
+class PathSetExtension(ComfyNodeABC):
+    """
+    Sets the file extension for a path.
+
+    This node replaces the current extension in a path with a new one.
+    The extension should include the dot (e.g., '.jpg').
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {}),
+                "extension": (IO.STRING, {"default": ".txt"}),
+            }
+        }
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("path",)
+    CATEGORY = "Basic/Path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "set_extension"
+
+    def set_extension(self, path: str, extension: str) -> tuple[str]:
+        # Make sure extension starts with a dot
+        if not extension.startswith('.') and extension:
+            extension = '.' + extension
+
+        root, _ = os.path.splitext(path)
+        return (root + extension,)
+
+
 class PathRelative(ComfyNodeABC):
     """
     Returns a relative path.
@@ -542,6 +573,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: PathExpandVars": PathExpandVars,
     "Basic data handling: PathGetCwd": PathGetCwd,
     "Basic data handling: PathGetExtension": PathGetExtension,
+    "Basic data handling: PathSetExtension": PathSetExtension,
     "Basic data handling: PathGetSize": PathGetSize,
     "Basic data handling: PathGlob": PathGlob,
     "Basic data handling: PathIsAbsolute": PathIsAbsolute,
@@ -564,6 +596,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: PathExpandVars": "expand vars",
     "Basic data handling: PathGetCwd": "get current working directory",
     "Basic data handling: PathGetExtension": "get extension",
+    "Basic data handling: PathSetExtension": "set extension",
     "Basic data handling: PathGetSize": "get size",
     "Basic data handling: PathGlob": "glob",
     "Basic data handling: PathIsAbsolute": "is absolute",
