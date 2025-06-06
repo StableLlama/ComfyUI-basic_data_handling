@@ -22,7 +22,6 @@ class DictCreate(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -54,7 +53,6 @@ class DictCreateFromBoolean(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -86,7 +84,6 @@ class DictCreateFromFloat(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -118,7 +115,6 @@ class DictCreateFromInt(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -150,7 +146,6 @@ class DictCreateFromString(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {

@@ -50,7 +50,6 @@ class ListCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -76,7 +75,6 @@ class ListCreateFromFloat(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -102,7 +100,6 @@ class ListCreateFromInt(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -128,7 +125,6 @@ class ListCreateFromString(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
