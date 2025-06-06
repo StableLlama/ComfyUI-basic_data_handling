@@ -4,9 +4,6 @@ Basic Python functions for manipulating data that every programmer is used to.
 
 These nodes are very lightweight and require no additional dependencies.
 
-> [!NOTE]
-> This projected is in early development—do not use it in production, yet!
-
 ## Quickstart
 
 1. Install [ComfyUI](https://docs.comfy.org/get_started).

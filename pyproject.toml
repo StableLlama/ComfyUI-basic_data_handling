@@ -5,9 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "basic_data_handling"
 version = "0.4.0"
-description = """NOTE: Still in development! Expect breaking changes!
-
-Basic Python functions for manipulating data that every programmer is used to.
+description = """Basic Python functions for manipulating data that every programmer is used to.
 Comprehensive node collection for data manipulation in ComfyUI workflows.
 
 Supported data types:
