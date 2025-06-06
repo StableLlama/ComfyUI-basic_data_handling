@@ -39,7 +39,6 @@ class MathFormula(ComfyNodeABC):
     - Exponential & Logarithmic: exp, log, log10, log2, sqrt, pow(base,exp)
     - Constants (must be called with empty parentheses): pi(), e()
     """
-    EXPERIMENTAL = True
 
     @classmethod
     def INPUT_TYPES(cls):

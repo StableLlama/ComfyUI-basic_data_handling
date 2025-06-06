@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.3.5"
+version = "0.4.0"
 description = """NOTE: Still in development! Expect breaking changes!
 
 Basic Python functions for manipulating data that every programmer is used to.
@@ -21,6 +21,7 @@ Feature categories:
 - Data structures manipulation (data lists, LIST, DICT, SET)
 - Flow control (conditionals, branching, execution order)
 - Mathematical operations (arithmetic, trigonometry, logarithmic functions)
+- Mathematical formula node in a safe implementation
 - String manipulation (case conversion, formatting, splitting, validation)
 - File system path handling (path operations, information, searching)
 - SET operations (creation, modification, comparison, mathematical set theory)
