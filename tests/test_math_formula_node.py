@@ -1,6 +1,6 @@
 import pytest
 import math
-import re
+from math import sin, cos
 from src.basic_data_handling.math_formula_node import MathFormula
 
 def test_basic_formula_evaluation():
@@ -31,6 +31,15 @@ def test_function_calls():
     # Single-argument functions
     assert node.evaluate("sin(a)", a=math.pi/6)[0] == pytest.approx(0.5)
     assert node.evaluate("cos(a)", a=0)[0] == pytest.approx(1.0)
+
+    # Unary minus with function calls
+    assert node.evaluate("sin(-a)", a=math.pi/6)[0] == pytest.approx(-0.5)
+    assert node.evaluate("-sin(a)", a=math.pi/6)[0] == pytest.approx(-0.5)
+    assert node.evaluate("-sin(-a)", a=math.pi/6)[0] == pytest.approx(0.5)
+
+    # Unary minus with nested function calls
+    assert node.evaluate("sin(cos(-a))", a=math.pi)[0] == pytest.approx(sin(cos(-math.pi)))
+    assert node.evaluate("-sin(cos(-a))", a=math.pi)[0] == pytest.approx(-sin(cos(-math.pi)))
     assert node.evaluate("tan(a)", a=math.pi/4)[0] == pytest.approx(1.0)
     assert node.evaluate("sqrt(a)", a=16)[0] == pytest.approx(4.0)
     assert node.evaluate("log(a)", a=math.e)[0] == pytest.approx(1.0)
@@ -75,6 +84,51 @@ def test_variable_constant_distinction():
     assert node.evaluate("e * log(e())", e=2)[0] == pytest.approx(2.0)
     assert node.evaluate("a * e() + b * e", a=2, b=3, e=4)[0] == pytest.approx(2 * math.e + 3 * 4)
 
+def test_unary_minus():
+    """Test that unary minus (negation) is handled correctly in all contexts."""
+    node = MathFormula()
+
+    # Simple variable negation
+    assert node.evaluate("-a", a=5)[0] == pytest.approx(-5.0)
+    assert node.evaluate("-a", a=-3)[0] == pytest.approx(3.0)
+
+    # Constant negation
+    assert node.evaluate("-pi()")[0] == pytest.approx(-math.pi)
+    assert node.evaluate("-e()")[0] == pytest.approx(-math.e)
+
+    # Function result negation
+    assert node.evaluate("-sin(a)", a=math.pi/2)[0] == pytest.approx(-1.0)
+    assert node.evaluate("-sqrt(a)", a=4)[0] == pytest.approx(-2.0)
+
+    # Nested unary minus
+    assert node.evaluate("--a", a=5)[0] == pytest.approx(5.0)
+    assert node.evaluate("---a", a=5)[0] == pytest.approx(-5.0)
+
+    # Unary minus with binary operators
+    assert node.evaluate("a + -b", a=5, b=3)[0] == pytest.approx(2.0)
+    assert node.evaluate("a * -b", a=4, b=3)[0] == pytest.approx(-12.0)
+    assert node.evaluate("a / -b", a=6, b=2)[0] == pytest.approx(-3.0)
+    assert node.evaluate("a - -b", a=5, b=3)[0] == pytest.approx(8.0)
+
+    # Unary minus with higher precedence operators
+    assert node.evaluate("-a * b", a=2, b=3)[0] == pytest.approx(-6.0)
+    assert node.evaluate("-(a * b)", a=2, b=3)[0] == pytest.approx(-6.0)
+    assert node.evaluate("-a ** 2", a=3)[0] == pytest.approx(9.0)  # see documentation about this special case
+    assert node.evaluate("(-a) ** 2", a=3)[0] == pytest.approx(9.0)  # (-a)^2
+
+    # Unary minus with parentheses
+    assert node.evaluate("-(a + b)", a=2, b=3)[0] == pytest.approx(-5.0)
+    assert node.evaluate("-(a + b) * c", a=2, b=3, c=4)[0] == pytest.approx(-20.0)
+    assert node.evaluate("a * -(b + c)", a=2, b=3, c=4)[0] == pytest.approx(-14.0)
+
+    # Unary minus at start of parenthesized expressions
+    assert node.evaluate("(-a + b)", a=5, b=3)[0] == pytest.approx(-2.0)
+    assert node.evaluate("(-a - b)", a=5, b=3)[0] == pytest.approx(-8.0)
+
+    # Unary minus with constants and functions in complex expressions
+    assert node.evaluate("-pi() * sin(-a)", a=math.pi/2)[0] == pytest.approx(math.pi)
+    assert node.evaluate("-e() ** -2")[0] == pytest.approx(1/(math.e**2)) # see documentation about this special case
+
 def test_error_conditions():
     """Test error conditions in formula evaluation."""
     node = MathFormula()
@@ -85,6 +139,20 @@ def test_error_conditions():
 
     with pytest.raises(ValueError, match=r"Variable 'e' was not provided."):
         node.evaluate("2 * e")
+
+    # Test unary minus with errors
+    with pytest.raises(ValueError):
+        node.evaluate("-unknown_var")
+
+    with pytest.raises(ValueError):
+        node.evaluate("-unknown_func(x)", x=5)
+
+    # Unary minus with domain errors
+    with pytest.raises(ValueError):
+        node.evaluate("sqrt(-a)", a=4)  # Negative under square root
+
+    with pytest.raises(ValueError):
+        node.evaluate("log(-a)", a=2)  # Negative in logarithm
 
     # Missing variables
     with pytest.raises(ValueError, match=r"Variable 'x' was not provided"):
@@ -128,6 +196,18 @@ def test_complex_expressions():
     expected = 1 + 2 * 3 - 8 / 4 + 2 ** 3
     assert result == pytest.approx(expected)
 
+    # Complex expressions with unary minus
+    formula = "a + -b * c - -(d / e) + -f ** g"
+    result = node.evaluate(formula, a=1, b=2, c=3, d=8, e=4, f=2, g=3)[0]
+    expected = 1 + (-2) * 3 - (-(8 / 4)) + (-(2 ** 3))
+    assert result == pytest.approx(expected)
+
+    # Expression with multiple unary minuses and parentheses
+    formula = "-a * (b + -c) / (-d)"
+    result = node.evaluate(formula, a=2, b=5, c=3, d=4)[0]
+    expected = -2 * (5 + (-3)) / (-4)
+    assert result == pytest.approx(expected)
+
 def test_formula_with_e_variable():
     """Test formulas with 'e' as a variable to ensure it doesn't clash with the constant."""
     node = MathFormula()
@@ -159,6 +239,14 @@ def test_whitespace_handling():
 
     # Lots of spaces
     assert node.evaluate("a  +  b  *  c", a=1, b=2, c=3)[0] == pytest.approx(7.0)
+
+    # Whitespace around unary minus
+    assert node.evaluate("- a", a=5)[0] == pytest.approx(-5.0)
+    assert node.evaluate("-    a", a=5)[0] == pytest.approx(-5.0)
+    assert node.evaluate("a * - b", a=3, b=4)[0] == pytest.approx(-12.0)
+    assert node.evaluate("a * -    b", a=3, b=4)[0] == pytest.approx(-12.0)
+    assert node.evaluate("- (a + b)", a=2, b=3)[0] == pytest.approx(-5.0)
+    assert node.evaluate("-    (a + b)", a=2, b=3)[0] == pytest.approx(-5.0)
 
     # Mixed spacing around functions
     assert node.evaluate("sin( a )+cos(b)", a=math.pi/2, b=0)[0] == pytest.approx(2.0)

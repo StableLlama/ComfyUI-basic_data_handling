@@ -23,11 +23,14 @@ class MathFormula(ComfyNodeABC):
 
     This node takes an arbitrary number of numerical inputs (single letters like `a`, `b`, `c`, etc.) and safely
     evaluates the formula with supported operations: +, -, *, /, //, %, **, parentheses, and mathematical
-    functions. It treats one-letter variables as inputs and multi-letter words as functions.
+    functions.
+
+    NOTE on Operator Precedence: This parser uses standard precedence rules. Unary minus binds tightly,
+    so expressions like `-a ** 2` are interpreted as `(-a) ** 2`. To calculate `-(a ** 2)`,
+    use parentheses: `-(a ** 2)`.
 
     The identifiers `e` and `pi` are special. When used as a function call (`e()`, `pi()`), they return their
-    respective mathematical constants. When used as a variable (`e`), they are treated like any other
-    variable and expect a corresponding input.
+    respective mathematical constants. When used as a variable (`e`), they expect a corresponding input.
 
     Supported functions:
     - Basic: abs, floor, ceil, round, min(a,b), max(a,b)
@@ -42,9 +45,8 @@ class MathFormula(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": ContainsDynamicDict({
-                "formula": (IO.STRING, {"default": "a + b"}),
-                "a": (IO.NUMBER, {"default": 1.0, "_dynamic": "letter"}),
-                "b": (IO.NUMBER, {"default": 2.0, "_dynamic": "letter"}),
+                "formula": (IO.STRING, {"default": "-e() ** -2"}),
+                "a": (IO.NUMBER, {"default": 3.0, "_dynamic": "letter"}),
             }),
         }
 
@@ -62,9 +64,15 @@ class MathFormula(ComfyNodeABC):
     SUPPORTED_FUNCTIONS = set(FUNC_ARITIES.keys())
 
     OPERATOR_PROPS = {
-        "+": (2, "LEFT", 2), "-": (2, "LEFT", 2), "*": (3, "LEFT", 2), "/": (3, "LEFT", 2),
-        "//": (3, "LEFT", 2), "%": (3, "LEFT", 2), "**": (4, "RIGHT", 2),
-        "_NEG": (5, "RIGHT", 1),
+        # token: (precedence, associativity, arity)
+        "+": (2, "LEFT", 2),
+        "-": (2, "LEFT", 2),
+        "*": (3, "LEFT", 2),
+        "/": (3, "LEFT", 2),
+        "//": (3, "LEFT", 2),
+        "%": (3, "LEFT", 2),
+        "**": (4, "RIGHT", 2),
+        "_NEG": (5, "RIGHT", 1), # Unary has higher precedence than exponentiation
     }
     OPERATORS = set(OPERATOR_PROPS.keys())
 
@@ -98,14 +106,13 @@ class MathFormula(ComfyNodeABC):
                 output_queue.append(float(token))
             elif token.isalnum() and not token.isdigit():
                 is_function_call = (i + 1 < len(tokens) and tokens[i+1] == '(')
-
                 if is_function_call:
                     if token not in self.SUPPORTED_FUNCTIONS:
                         raise ValueError(f"Unknown function: '{token}'")
-                    op_stack.append(token) # Push function name as string
-                else: # It's a variable
+                    op_stack.append(token)
+                else:
                     if len(token) == 1 and token.isalpha():
-                        output_queue.append(('VAR', token)) # Push variable as a tagged tuple
+                        output_queue.append(('VAR', token))
                     else:
                         if token in self.SUPPORTED_FUNCTIONS:
                             raise ValueError(f"Function '{token}' must be called with parentheses, e.g., {token}()")
@@ -130,14 +137,17 @@ class MathFormula(ComfyNodeABC):
             elif token in self.OPERATORS:
                 is_unary = token == '-' and (prev_token is None or prev_token in binary_operators or prev_token in ['(', ','])
                 op_to_push = "_NEG" if is_unary else token
-
                 props = self.OPERATOR_PROPS[op_to_push]
-                prec, assoc = props[0], props[1]
+                prec = props[0]
 
-                while (op_stack and op_stack[-1] != '(' and op_stack[-1] in self.OPERATORS and
-                       (self.OPERATOR_PROPS.get(op_stack[-1], (0,))[0] > prec or
-                        (self.OPERATOR_PROPS.get(op_stack[-1], (0,))[0] == prec and assoc == "LEFT"))):
-                    output_queue.append(op_stack.pop())
+                while (op_stack and op_stack[-1] != '(' and op_stack[-1] in self.OPERATORS):
+                    stack_op_props = self.OPERATOR_PROPS[op_stack[-1]]
+                    stack_op_prec = stack_op_props[0]
+                    stack_op_assoc = stack_op_props[1]
+                    if (stack_op_prec > prec) or (stack_op_prec == prec and stack_op_assoc == "LEFT"):
+                        output_queue.append(op_stack.pop())
+                    else:
+                        break
                 op_stack.append(op_to_push)
             else:
                 raise ValueError(f"Unknown identifier or invalid expression: '{token}'")
