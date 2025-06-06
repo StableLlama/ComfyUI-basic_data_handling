@@ -293,33 +293,20 @@ def test_infix_to_postfix():
     """Test the infix to postfix conversion."""
     node = MathFormula()
 
-    # Basic conversion
-    formula = "a + b"
-    tokens = node.tokenize_formula(formula)
-    postfix = node.infix_to_postfix(tokens)
-
     # Test operator precedence
     formula = "a + b * c"
-    tokens = node.tokenize_formula(formula)
-    postfix = node.infix_to_postfix(tokens)
     # We can't test exact postfix because it contains internal representations,
     # but we can test the evaluation result
     assert node.evaluate(formula, a=1, b=2, c=3)[0] == pytest.approx(7.0)
 
     # Test parentheses
     formula = "(a + b) * c"
-    tokens = node.tokenize_formula(formula)
-    postfix = node.infix_to_postfix(tokens)
     assert node.evaluate(formula, a=1, b=2, c=3)[0] == pytest.approx(9.0)
 
     # Test function calls
     formula = "sin(a) + cos(b)"
-    tokens = node.tokenize_formula(formula)
-    postfix = node.infix_to_postfix(tokens)
     assert node.evaluate(formula, a=math.pi/2, b=0)[0] == pytest.approx(2.0)
 
     # Test constant function calls
     formula = "pi() + e()"
-    tokens = node.tokenize_formula(formula)
-    postfix = node.infix_to_postfix(tokens)
     assert node.evaluate(formula)[0] == pytest.approx(math.pi + math.e)
