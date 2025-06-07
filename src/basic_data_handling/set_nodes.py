@@ -48,7 +48,6 @@ class SetCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -74,7 +73,6 @@ class SetCreateFromFloat(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -100,7 +98,6 @@ class SetCreateFromInt(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -126,7 +123,6 @@ class SetCreateFromString(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {

@@ -5,7 +5,7 @@ import platform
 from src.basic_data_handling.path_nodes import (
     PathJoin, PathAbspath, PathExists, PathIsFile, PathIsDir, PathGetSize,
     PathSplit, PathSplitExt, PathBasename, PathDirname, PathGetExtension,
-    PathNormalize, PathRelative, PathGlob, PathExpandVars, PathGetCwd,
+    PathSetExtension, PathNormalize, PathRelative, PathGlob, PathExpandVars, PathGetCwd,
     PathListDir, PathIsAbsolute, PathCommonPrefix,
 )
 
@@ -198,6 +198,24 @@ def test_path_get_extension():
     assert node.get_extension("folder/file.txt") == (".txt",)
     # Test with empty string
     assert node.get_extension("") == ("",)
+
+def test_path_set_extension():
+    node = PathSetExtension()
+    # Test basic extension replacement
+    assert node.set_extension("file.txt", ".jpg") == ("file.jpg",)
+    # Test adding extension to file without extension
+    assert node.set_extension("file", ".png") == ("file.png",)
+    # Test with extension without dot prefix
+    assert node.set_extension("document.docx", "pdf") == ("document.pdf",)
+    # Test with path containing directory
+    assert node.set_extension("folder/image.jpg", ".png") == ("folder/image.png",)
+    # Test with multiple dots in filename
+    assert node.set_extension("archive.tar.gz", ".zip") == ("archive.tar.zip",)
+    # Test with empty extension (removes extension)
+    assert node.set_extension("config.ini", "") == ("config",)
+    # Test with empty string as path
+    assert node.set_extension("", ".txt") == (".txt",)
+
 
 
 def test_path_normalize():

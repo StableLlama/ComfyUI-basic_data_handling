@@ -52,7 +52,6 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -80,7 +79,6 @@ class DataListCreateFromFloat(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -108,7 +106,6 @@ class DataListCreateFromInt(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -136,7 +133,6 @@ class DataListCreateFromString(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {

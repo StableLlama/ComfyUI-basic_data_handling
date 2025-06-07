@@ -64,7 +64,6 @@ class IfElifElse(ComfyNodeABC):
     When none is true, the value of the else is returned.
     This allows conditional data flow in ComfyUI workflows.
     """
-    EXPERIMENTAL = True
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -149,7 +148,6 @@ class SwitchCase(ComfyNodeABC):
 
     NOTE: This version of the node will most likely be deprecated in the future.
     """
-    EXPERIMENTAL = True
 
     @classmethod
     def INPUT_TYPES(cls):

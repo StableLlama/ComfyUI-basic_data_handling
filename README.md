@@ -4,9 +4,6 @@ Basic Python functions for manipulating data that every programmer is used to.
 
 These nodes are very lightweight and require no additional dependencies.
 
-> [!NOTE]
-> This projected is in early development—do not use it in production, yet!
-
 ## Quickstart
 
 1. Install [ComfyUI](https://docs.comfy.org/get_started).
@@ -158,6 +155,7 @@ These nodes are very lightweight and require no additional dependencies.
     - is_absolute - Checks if a path is absolute (begins at root directory)
     - get_size - Returns the size of a file in bytes
     - get_extension - Extracts the file extension from a path (including the dot)
+    - set_extension - Replaces or adds a file extension to a path
 - Directory operations:
     - list_dir - Lists files and directories in a specified path with filtering options
     - get_cwd - Returns the current working directory
