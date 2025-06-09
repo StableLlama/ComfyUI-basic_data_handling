@@ -1,5 +1,6 @@
 """Top-level package for basic_data_handling."""
-import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import os, sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 __all__ = [
     "NODE_CLASS_MAPPINGS",
