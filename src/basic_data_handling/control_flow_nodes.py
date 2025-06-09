@@ -188,7 +188,7 @@ class SwitchCase(ComfyNodeABC):
 
         return needed
 
-    def execute(self, selector: int, **kwargs) -> tuple[Any]:
+    def execute(self, select: int, **kwargs) -> tuple[Any]:
         # Build a case array from all case_X inputs
         cases = []
         for i in range(len(kwargs)):
@@ -199,8 +199,8 @@ class SwitchCase(ComfyNodeABC):
                 break
 
         # Return the selected case if valid
-        if 0 <= selector < len(cases) and cases[selector] is not None:
-            return (cases[selector],)
+        if 0 <= select < len(cases) and cases[select] is not None:
+            return (cases[select],)
 
         # If select is out of range or the selected case is None, return default
         return (kwargs.get("default"),)
@@ -228,10 +228,6 @@ class DisableFlow(ComfyNodeABC):
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
-
-    @classmethod
-    def IS_CHANGED(s, value: Any):
-        return float("NaN") # not equal to anything -> trigger recalculation
 
     def execute(self, value: Any, select: bool = True) -> tuple[Any]:
         if select:
@@ -295,6 +291,10 @@ class ForceCalculation(ComfyNodeABC):
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
+
+    @classmethod
+    def IS_CHANGED(s, value: Any):
+        return float("NaN") # not equal to anything -> trigger recalculation
 
     def execute(self, value: Any) -> tuple[Any, int]:
         return (value,)
