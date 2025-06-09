@@ -168,6 +168,56 @@ class SetAdd(ComfyNodeABC):
         return (result,)
 
 
+class SetAll(ComfyNodeABC):
+    """
+    Checks if all elements in the SET are true.
+
+    This node takes a SET as input and returns True if all elements in the SET
+    evaluate to True (or if the SET is empty), and False otherwise.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("all_true",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_all"
+
+    def check_all(self, set: set[Any]) -> tuple[bool]:
+        return (all(set),)
+
+
+class SetAny(ComfyNodeABC):
+    """
+    Checks if any element in the SET is true.
+
+    This node takes a SET as input and returns True if at least one element
+    in the SET evaluates to True, and False otherwise (including if the SET is empty).
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("any_true",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_any"
+
+    def check_any(self, set: set[Any]) -> tuple[bool]:
+        return (any(set),)
+
+
 class SetContains(ComfyNodeABC):
     """
     Checks if a SET contains a specified value.
@@ -246,6 +296,37 @@ class SetDiscard(ComfyNodeABC):
         result = set.copy()
         result.discard(item)
         return (result,)
+
+
+class SetEnumerate(ComfyNodeABC):
+    """
+    Enumerates elements in a SET.
+
+    This node takes a SET as input and returns a LIST of tuples where each tuple
+    contains an index and a value from the SET. The start parameter specifies the
+    initial index value (default is 0).
+
+    Note: Since SETs are unordered, the enumeration order is arbitrary but consistent
+    within a single operation.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+            },
+            "optional": {
+                "start": ("INT", {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "enumerate_set"
+
+    def enumerate_set(self, set: set[Any], start: int = 0) -> tuple[list]:
+        return (list(enumerate(set, start=start)),)
 
 
 class SetIntersection(ComfyNodeABC):
@@ -481,6 +562,39 @@ class SetRemove(ComfyNodeABC):
             return result, False
 
 
+class SetSum(ComfyNodeABC):
+    """
+    Calculates the sum of all elements in a SET.
+
+    This node takes a SET as input and returns the sum of all its elements.
+    The optional start parameter specifies the initial value (default is 0).
+
+    Note: This operation requires all elements to be numeric or otherwise
+    compatible with addition. If the SET contains mixed or incompatible types,
+    it may raise an error.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "set": ("SET", {}),
+            },
+            "optional": {
+                "start": ("INT", {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("INT", "FLOAT",)
+    RETURN_NAMES = ("sum_int", "sum_float",)
+    CATEGORY = "Basic/SET"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "sum_set"
+
+    def sum_set(self, set: set[Any], start: int = 0) -> tuple[int, float]:
+        result = sum(set, start)
+        return result, float(result)
+
+
 class SetSymmetricDifference(ComfyNodeABC):
     """
     Returns the symmetric difference between two SETs.
@@ -604,9 +718,12 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: SetCreateFromInt": SetCreateFromInt,
     "Basic data handling: SetCreateFromString": SetCreateFromString,
     "Basic data handling: SetAdd": SetAdd,
+    "Basic data handling: SetAll": SetAll,
+    "Basic data handling: SetAny": SetAny,
     "Basic data handling: SetContains": SetContains,
     "Basic data handling: SetDifference": SetDifference,
     "Basic data handling: SetDiscard": SetDiscard,
+    "Basic data handling: SetEnumerate": SetEnumerate,
     "Basic data handling: SetIntersection": SetIntersection,
     "Basic data handling: SetIsDisjoint": SetIsDisjoint,
     "Basic data handling: SetIsSubset": SetIsSubset,
@@ -615,6 +732,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: SetPop": SetPop,
     "Basic data handling: SetPopRandom": SetPopRandom,
     "Basic data handling: SetRemove": SetRemove,
+    "Basic data handling: SetSum": SetSum,
     "Basic data handling: SetSymmetricDifference": SetSymmetricDifference,
     "Basic data handling: SetUnion": SetUnion,
     "Basic data handling: SetToDataList": SetToDataList,
@@ -628,9 +746,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetCreateFromInt": "create SET from INTs",
     "Basic data handling: SetCreateFromString": "create SET from STRINGs",
     "Basic data handling: SetAdd": "add",
+    "Basic data handling: SetAll": "all",
+    "Basic data handling: SetAny": "any",
     "Basic data handling: SetContains": "contains",
     "Basic data handling: SetDifference": "difference",
     "Basic data handling: SetDiscard": "discard",
+    "Basic data handling: SetEnumerate": "enumerate",
     "Basic data handling: SetIntersection": "intersection",
     "Basic data handling: SetIsDisjoint": "is disjoint",
     "Basic data handling: SetIsSubset": "is subset",
@@ -639,6 +760,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: SetPop": "pop",
     "Basic data handling: SetPopRandom": "pop random",
     "Basic data handling: SetRemove": "remove",
+    "Basic data handling: SetSum": "sum",
     "Basic data handling: SetSymmetricDifference": "symmetric difference",
     "Basic data handling: SetUnion": "union",
     "Basic data handling: SetToDataList": "convert to Data List",

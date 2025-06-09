@@ -153,6 +153,56 @@ class DataListCreateFromString(ComfyNodeABC):
         return (values[:-1],)
 
 
+class DataListAll(ComfyNodeABC):
+    """
+    Check if all elements in the data list are true.
+    Returns true if all elements are true (or if the list is empty).
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_all"
+    INPUT_IS_LIST = True
+
+    def check_all(self, **kwargs: list[Any]) -> tuple[bool]:
+        return (all(kwargs.get('list', [])),)
+
+
+class DataListAny(ComfyNodeABC):
+    """
+    Check if any element in the data list is true.
+    Returns true if at least one element is true. Returns false if the list is empty.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_any"
+    INPUT_IS_LIST = True
+
+    def check_any(self, **kwargs: list[Any]) -> tuple[bool]:
+        return (any(kwargs.get('list', [])),)
+
+
 class DataListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a list.
@@ -241,6 +291,37 @@ class DataListCount(ComfyNodeABC):
     def count(self, **kwargs: list[Any]) -> tuple[int]:
         value = kwargs.get('value', [None])[0]
         return (kwargs.get('list', []).count(value),)
+
+
+class DataListEnumerate(ComfyNodeABC):
+    """
+    Enumerate a data list, returning a list of [index, value] pairs.
+    Optionally, specify a starting value for the index.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+            },
+            "optional": {
+                "start": (IO.INT, {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "enumerate_list"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
+
+    def enumerate_list(self, **kwargs: list[Any]) -> tuple[list]:
+        input_list = kwargs.get('list', [])
+        start = kwargs.get('start', [0])[0]
+        return ([list(item) for item in enumerate(input_list, start=start)],)
 
 
 class DataListExtend(ComfyNodeABC):
@@ -876,6 +957,37 @@ class DataListSort(ComfyNodeABC):
         return (result,)
 
 
+class DataListSum(ComfyNodeABC):
+    """
+    Sum all elements of the data list.
+    Returns 0 for an empty list.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.NUMBER, {}),
+            },
+            "optional": {
+                "start": (IO.INT, {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT, IO.FLOAT,)
+    RETURN_NAMES = ("int_sum", "float_sum",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "sum_list"
+    INPUT_IS_LIST = True
+
+    def sum_list(self, **kwargs: list[Any]) -> tuple[int, float]:
+        input_list = kwargs.get('list', [])
+        start = kwargs.get('start', [0])[0]
+        result = sum(input_list, start)
+        return int(result), float(result)
+
+
 class DataListZip(ComfyNodeABC):
     """
     Combines multiple lists element-wise.
@@ -975,9 +1087,12 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListCreateFromFloat": DataListCreateFromFloat,
     "Basic data handling: DataListCreateFromInt": DataListCreateFromInt,
     "Basic data handling: DataListCreateFromString": DataListCreateFromString,
+    "Basic data handling: DataListAll": DataListAll,
+    "Basic data handling: DataListAny": DataListAny,
     "Basic data handling: DataListAppend": DataListAppend,
     "Basic data handling: DataListContains": DataListContains,
     "Basic data handling: DataListCount": DataListCount,
+    "Basic data handling: DataListEnumerate": DataListEnumerate,
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListFilter": DataListFilter,
     "Basic data handling: DataListFilterSelect": DataListFilterSelect,
@@ -997,6 +1112,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListSetItem": DataListSetItem,
     "Basic data handling: DataListSlice": DataListSlice,
     "Basic data handling: DataListSort": DataListSort,
+    "Basic data handling: DataListSum": DataListSum,
     "Basic data handling: DataListZip": DataListZip,
     "Basic data handling: DataListToList": DataListToList,
     "Basic data handling: DataListToSet": DataListToSet,
@@ -1008,9 +1124,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListCreateFromFloat": "create Data List from FLOATs",
     "Basic data handling: DataListCreateFromInt": "create Data List from INTs",
     "Basic data handling: DataListCreateFromString": "create Data List from STRINGs",
+    "Basic data handling: DataListAll": "all",
+    "Basic data handling: DataListAny": "any",
     "Basic data handling: DataListAppend": "append",
     "Basic data handling: DataListContains": "contains",
     "Basic data handling: DataListCount": "count",
+    "Basic data handling: DataListEnumerate": "enumerate",
     "Basic data handling: DataListExtend": "extend",
     "Basic data handling: DataListFilter": "filter",
     "Basic data handling: DataListFilterSelect": "filter select",
@@ -1030,6 +1149,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListSetItem": "set item",
     "Basic data handling: DataListSlice": "slice",
     "Basic data handling: DataListSort": "sort",
+    "Basic data handling: DataListSum": "sum",
     "Basic data handling: DataListZip": "zip",
     "Basic data handling: DataListToList": "convert to LIST",
     "Basic data handling: DataListToSet": "convert to SET",

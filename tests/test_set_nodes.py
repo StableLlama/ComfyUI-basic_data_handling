@@ -1,6 +1,8 @@
 #import pytest
 from src.basic_data_handling.set_nodes import (
     SetAdd,
+    SetAll,
+    SetAny,
     SetContains,
     SetCreate,
     SetCreateFromBoolean,
@@ -9,6 +11,7 @@ from src.basic_data_handling.set_nodes import (
     SetCreateFromString,
     SetDifference,
     SetDiscard,
+    SetEnumerate,
     SetIntersection,
     SetIsDisjoint,
     SetIsSubset,
@@ -17,6 +20,7 @@ from src.basic_data_handling.set_nodes import (
     SetPop,
     SetPopRandom,
     SetRemove,
+    SetSum,
     SetSymmetricDifference,
     SetToDataList,
     SetToList,
@@ -246,3 +250,95 @@ def test_set_to_data_list():
     # Mixed types
     result = node.convert({1, "string", True})
     assert set(result[0]) == {1, "string", True}  # Can't check order, just content
+
+
+def test_set_all():
+    node = SetAll()
+
+    # Test with all truthy values
+    assert node.check_all({1, True, "string", 3.14}) == (True,)
+
+    # Test with one falsy value
+    assert node.check_all({1, False, "string"}) == (False,)
+
+    # Test with all falsy values
+    assert node.check_all({False, 0, "", None}) == (False,)
+
+    # Test with empty set (should return True per Python's all() behavior)
+    assert node.check_all(set()) == (True,)
+
+
+def test_set_any():
+    node = SetAny()
+
+    # Test with all truthy values
+    assert node.check_any({1, True, "string", 3.14}) == (True,)
+
+    # Test with one truthy value
+    assert node.check_any({0, False, "", 1}) == (True,)
+
+    # Test with all falsy values
+    assert node.check_any({False, 0, "", None}) == (False,)
+
+    # Test with empty set (should return False per Python's any() behavior)
+    assert node.check_any(set()) == (False,)
+
+
+def test_set_enumerate():
+    node = SetEnumerate()
+
+    # Basic test with default start=0
+    result = node.enumerate_set({10, 20, 30})
+    assert isinstance(result, tuple)
+    assert isinstance(result[0], list)
+
+    # Convert to set of tuples for comparison (order may vary)
+    result_set = {tuple(item) for item in result[0]}
+    assert result_set == {(0, 10), (1, 20), (2, 30)}
+
+    # Test with custom start value
+    result = node.enumerate_set({10, 20, 30}, start=5)
+    result_set = {tuple(item) for item in result[0]}
+    assert result_set == {(5, 10), (6, 20), (7, 30)}
+
+    # Test with empty set
+    result = node.enumerate_set(set())
+    assert result[0] == []
+
+    # Test with mixed types
+    result = node.enumerate_set({1, "string", False})
+    assert len(result[0]) == 3
+    # Check format but not exact values due to arbitrary order
+    for item in result[0]:
+        assert isinstance(item, tuple)
+        assert len(item) == 2
+        assert isinstance(item[0], int)
+
+
+def test_set_sum():
+    node = SetSum()
+
+    # Test with integer set
+    int_result, float_result = node.sum_set({1, 2, 3})
+    assert int_result == 6
+    assert float_result == 6.0
+
+    # Test with float set
+    int_result, float_result = node.sum_set({1.5, 2.5, 3.0})
+    assert int_result == 7.0
+    assert float_result == 7.0
+
+    # Test with mixed numeric types
+    int_result, float_result = node.sum_set({1, 2.5, 3})
+    assert int_result == 6.5
+    assert float_result == 6.5
+
+    # Test with custom start value
+    int_result, float_result = node.sum_set({1, 2, 3}, start=10)
+    assert int_result == 16
+    assert float_result == 16.0
+
+    # Test with empty set
+    int_result, float_result = node.sum_set(set(), start=5)
+    assert int_result == 5
+    assert float_result == 5.0

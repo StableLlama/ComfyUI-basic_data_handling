@@ -274,6 +274,46 @@ ComfyUI has different data types that serve different purposes:
 - Supports built-in ComfyUI iteration over each item
 - Best for:
     - Working directly with multiple items in parallel
+    - Processing each item in a collection separately
+    - When you need ComfyUI's automatic iteration functionality
+
+### 2. LIST
+- A Python list passed as a single ComfyUI variable
+- Must be processed as a complete unit by compatible nodes
+- Operations apply to the entire LIST at once
+- Best for:
+    - Storing and manipulating structured data as a single unit
+    - When you need to preserve ordered collections
+    - Passing complex data structures between nodes
+
+### 3. SET
+- A Python set passed as a single ComfyUI variable
+- Unordered collection of unique items
+- Useful for membership testing, removing duplicates, and set operations
+- Best for:
+    - When you need to ensure uniqueness of items
+    - Performing mathematical set operations (union, intersection, difference)
+    - Efficient membership testing (contains operation)
+    - When item order doesn't matter
+
+## Control Flow Nodes
+
+Control flow nodes provide mechanisms to direct the flow of execution in your ComfyUI workflows, allowing for conditional processing and dynamic execution paths.
+
+### Available Control Flow Nodes:
+
+#### Conditional Processing
+- **if/else** - Routes execution based on a boolean condition
+- **if/elif/.../else** - Supports multiple conditional branches
+- **switch/case** - Selects from multiple options based on an index
+
+#### Execution Management
+- **disable flow** - Conditionally enables or disables a flow
+- **flow select** - Directs output to either "true" or "false" path
+- **force calculation** - Prevents caching and forces recalculation
+- **force execution order** - Controls the sequence of node execution
+
+These control flow nodes enable building more complex, dynamic workflows with decision-making capabilities based on runtime conditions.
     - Batch processing scenarios
     - When you need to apply the same operation to multiple inputs
     - When your operation needs to work with individual items separately

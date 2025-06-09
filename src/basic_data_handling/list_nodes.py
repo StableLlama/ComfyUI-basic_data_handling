@@ -143,6 +143,52 @@ class ListCreateFromString(ComfyNodeABC):
         return (values,)
 
 
+class ListAll:
+    """
+    Check if all elements in the list are true.
+    Returns true if all elements are true (or if the list is empty).
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls) -> dict:
+        return {
+            "required": {
+                "list": ("LIST",),
+            }
+        }
+
+    RETURN_TYPES = ("BOOLEAN",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_all"
+
+    def check_all(self, list: list[Any]) -> tuple[bool]:
+        return (all(list),)
+
+
+class ListAny:
+    """
+    Check if any element in the list is true.
+    Returns true if at least one element is true. Returns false if the list is empty.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls) -> dict:
+        return {
+            "required": {
+                "list": ("LIST",),
+            }
+        }
+
+    RETURN_TYPES = ("BOOLEAN",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "check_any"
+
+    def check_any(self, list: list[Any]) -> tuple[bool]:
+        return (any(list),)
+
+
 class ListAppend(ComfyNodeABC):
     """
     Adds an item to the end of a LIST.
@@ -220,6 +266,32 @@ class ListCount(ComfyNodeABC):
 
     def count(self, list: list[Any], value: Any) -> tuple[int]:
         return (list.count(value),)
+
+
+class ListEnumerate:
+    """
+    Enumerate a list, returning a list of [index, value] pairs.
+    Optionally, specify a starting value for the index.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls) -> dict:
+        return {
+            "required": {
+                "list": ("LIST",),
+            },
+            "optional": {
+                "start": ("INT", {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "enumerate_list"
+
+    def enumerate_list(self, list: list[Any], start: int = 0) -> tuple[list]:
+        return ([__builtins__['list'](enumerate(list, start=start))],)
 
 
 class ListExtend(ComfyNodeABC):
@@ -665,7 +737,6 @@ class ListSetItem(ComfyNodeABC):
         except IndexError:
             raise IndexError(f"Index {index} out of range for LIST of length {len(list)}")
 
-
 class ListSlice(ComfyNodeABC):
     """
     Creates a slice of a LIST.
@@ -694,7 +765,6 @@ class ListSlice(ComfyNodeABC):
     def slice(self, list: list[Any], start: int = 0, stop: int = INT_MAX,
               step: int = 1) -> tuple[list[Any]]:
         return (list[start:stop:step],)
-
 
 class ListSort(ComfyNodeABC):
     """
@@ -732,6 +802,33 @@ class ListSort(ComfyNodeABC):
             return (list.copy(),)
 
 
+class ListSum:
+    """
+    Sum all elements of the list.
+    Returns 0 for an empty list.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls) -> dict:
+        return {
+            "required": {
+                "list": ("LIST",),
+            },
+            "optional": {
+                "start": ("INT", {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("INT", "FLOAT",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "sum_list"
+
+    def sum_list(self, list: list[Any], start: int = 0) -> tuple[int, float]:
+        result = sum(list, start)
+        return result, float(result)
+
+
 class ListToDataList(ComfyNodeABC):
     """
     Converts a LIST object into a ComfyUI data list.
@@ -756,6 +853,7 @@ class ListToDataList(ComfyNodeABC):
 
     def convert(self, list) -> tuple[list[Any]]:
         return (list,)
+
 
 class ListToSet(ComfyNodeABC):
     """
@@ -787,9 +885,12 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListCreateFromFloat": ListCreateFromFloat,
     "Basic data handling: ListCreateFromInt": ListCreateFromInt,
     "Basic data handling: ListCreateFromString": ListCreateFromString,
+    "Basic data handling: ListAll": ListAll,
+    "Basic data handling: ListAny": ListAny,
     "Basic data handling: ListAppend": ListAppend,
     "Basic data handling: ListContains": ListContains,
     "Basic data handling: ListCount": ListCount,
+    "Basic data handling: ListEnumerate": ListEnumerate,
     "Basic data handling: ListExtend": ListExtend,
     "Basic data handling: ListFirst": ListFirst,
     "Basic data handling: ListGetItem": ListGetItem,
@@ -807,6 +908,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListSetItem": ListSetItem,
     "Basic data handling: ListSlice": ListSlice,
     "Basic data handling: ListSort": ListSort,
+    "Basic data handling: ListSum": ListSum,
     "Basic data handling: ListToDataList": ListToDataList,
     "Basic data handling: ListToSet": ListToSet,
 }
@@ -817,9 +919,12 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListCreateFromFloat": "create LIST from FLOATs",
     "Basic data handling: ListCreateFromInt": "create LIST from INTs",
     "Basic data handling: ListCreateFromString": "create LIST from STRINGs",
+    "Basic data handling: ListAll": "all",
+    "Basic data handling: ListAny": "any",
     "Basic data handling: ListAppend": "append",
     "Basic data handling: ListContains": "contains",
     "Basic data handling: ListCount": "count",
+    "Basic data handling: ListEnumerate": "enumerate",
     "Basic data handling: ListExtend": "extend",
     "Basic data handling: ListFirst": "first",
     "Basic data handling: ListGetItem": "get item",
@@ -837,6 +942,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListSetItem": "set item",
     "Basic data handling: ListSlice": "slice",
     "Basic data handling: ListSort": "sort",
+    "Basic data handling: ListSum": "sum",
     "Basic data handling: ListToDataList": "convert to Data List",
     "Basic data handling: ListToSet": "convert to SET",
 }

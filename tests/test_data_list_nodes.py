@@ -1,35 +1,39 @@
 import pytest
 from src.basic_data_handling.data_list_nodes import (
+    DataListAll,
+    DataListAny,
     DataListAppend,
+    DataListContains,
+    DataListCount,
     DataListCreate,
     DataListCreateFromBoolean,
     DataListCreateFromFloat,
     DataListCreateFromInt,
     DataListCreateFromString,
+    DataListEnumerate,
     DataListExtend,
-    DataListInsert,
-    DataListRange,
-    DataListRemove,
-    DataListPop,
-    DataListPopRandom,
-    DataListIndex,
-    DataListCount,
-    DataListSort,
-    DataListReverse,
-    DataListLength,
-    DataListSlice,
-    DataListGetItem,
-    DataListSetItem,
-    DataListContains,
-    DataListZip,
     DataListFilter,
     DataListFilterSelect,
     DataListFirst,
+    DataListGetItem,
+    DataListIndex,
+    DataListInsert,
     DataListLast,
-    DataListMin,
+    DataListLength,
     DataListMax,
+    DataListMin,
+    DataListPop,
+    DataListPopRandom,
+    DataListRange,
+    DataListRemove,
+    DataListReverse,
+    DataListSetItem,
+    DataListSlice,
+    DataListSort,
+    DataListSum,
     DataListToList,
     DataListToSet,
+    DataListZip,
 )
 
 
@@ -403,6 +407,59 @@ def test_to_set():
     assert node.convert(list=[1, 2, 1, 3, 2]) == ({1, 2, 3},)
     # Test with mixed types (that can be in a set)
     assert node.convert(list=[1, "two", 3.0]) == ({1, "two", 3.0},)
+
+
+def test_all():
+    node = DataListAll()
+    # All true values
+    assert node.check_all(list=[True, True, 1, "text"]) == (True,)
+    # Contains false value
+    assert node.check_all(list=[True, False, True]) == (False,)
+    # Empty list (returns True)
+    assert node.check_all(list=[]) == (True,)
+
+
+def test_any():
+    node = DataListAny()
+    # Contains true value
+    assert node.check_any(list=[False, True, False]) == (True,)
+    # All false values
+    assert node.check_any(list=[False, 0, "", None]) == (False,)
+    # Empty list (returns False)
+    assert node.check_any(list=[]) == (False,)
+
+
+def test_enumerate():
+    node = DataListEnumerate()
+    # Basic enumeration starting from 0
+    assert node.enumerate_list(list=['a', 'b', 'c']) == ([[0, 'a'], [1, 'b'], [2, 'c']],)
+    # Custom start index
+    assert node.enumerate_list(list=['x', 'y', 'z'], start=[10]) == ([[10, 'x'], [11, 'y'], [12, 'z']],)
+    # Empty list
+    assert node.enumerate_list(list=[]) == ([],)
+
+
+def test_sum():
+    node = DataListSum()
+    # Integer sum
+    int_sum, float_sum = node.sum_list(list=[1, 2, 3])
+    assert int_sum == 6
+    assert float_sum == 6.0
+
+    # Mixed number types
+    int_sum, float_sum = node.sum_list(list=[1, 2.5, 3])
+    assert int_sum == 6  # Integer part of the sum
+    assert float_sum == 6.5  # Full float sum
+
+    # With start value
+    int_sum, float_sum = node.sum_list(list=[1, 2, 3], start=[10])
+    assert int_sum == 16
+    assert float_sum == 16.0
+
+    # Empty list with start value
+    int_sum, float_sum = node.sum_list(list=[], start=[5])
+    assert int_sum == 5
+    assert float_sum == 5.0
 
 
 def test_range():
