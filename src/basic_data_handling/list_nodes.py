@@ -548,6 +548,36 @@ class ListPopRandom(ComfyNodeABC):
         return result, None
 
 
+class ListRange(ComfyNodeABC):
+    """
+    Creates a LIST containing a sequence of numbers.
+
+    This node generates a LIST of numbers similar to Python's range() function.
+    It takes start, stop, and step parameters to define the sequence.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "start": ("INT", {"default": 0}),
+                "stop": ("INT", {"default": 10}),
+            },
+            "optional": {
+                "step": ("INT", {"default": 1}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_range"
+
+    def create_range(self, start: int, stop: int, step: int = 1) -> tuple[list[int]]:
+        if step == 0:
+            raise ValueError("Step cannot be zero")
+        return (list(range(start, stop, step)),)
+
+
 class ListRemove(ComfyNodeABC):
     """
     Removes the first occurrence of a specified value from a LIST.
@@ -727,7 +757,6 @@ class ListToDataList(ComfyNodeABC):
     def convert(self, list) -> tuple[list[Any]]:
         return (list,)
 
-
 class ListToSet(ComfyNodeABC):
     """
     Converts a LIST into a SET.
@@ -772,6 +801,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListMin": ListMin,
     "Basic data handling: ListPop": ListPop,
     "Basic data handling: ListPopRandom": ListPopRandom,
+    "Basic data handling: ListRange": ListRange,
     "Basic data handling: ListRemove": ListRemove,
     "Basic data handling: ListReverse": ListReverse,
     "Basic data handling: ListSetItem": ListSetItem,
@@ -801,6 +831,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListMin": "min",
     "Basic data handling: ListPop": "pop",
     "Basic data handling: ListPopRandom": "pop random",
+    "Basic data handling: ListRange": "range",
     "Basic data handling: ListRemove": "remove",
     "Basic data handling: ListReverse": "reverse",
     "Basic data handling: ListSetItem": "set item",

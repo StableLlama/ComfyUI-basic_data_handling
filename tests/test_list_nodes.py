@@ -19,6 +19,7 @@ from src.basic_data_handling.list_nodes import (
     ListMin,
     ListPop,
     ListPopRandom,
+    ListRange,
     ListRemove,
     ListReverse,
     ListSetItem,
@@ -221,3 +222,28 @@ def test_list_to_set():
     assert node.convert([1, 2, 3, 2, 1]) == ({1, 2, 3},)
     assert node.convert([]) == (set(),)
     assert node.convert(["a", "b", "a", "c"]) == ({"a", "b", "c"},)
+
+
+def test_list_range():
+    node = ListRange()
+    # Basic range with default step=1
+    assert node.create_range(start=0, stop=5) == ([0, 1, 2, 3, 4],)
+
+    # Range with custom step
+    assert node.create_range(start=0, stop=10, step=2) == ([0, 2, 4, 6, 8],)
+
+    # Negative step (counting down)
+    assert node.create_range(start=5, stop=0, step=-1) == ([5, 4, 3, 2, 1],)
+
+    # Start > stop with positive step (empty list)
+    assert node.create_range(start=10, stop=5) == ([],)
+
+    # Empty range
+    assert node.create_range(start=0, stop=0) == ([],)
+
+    # Test with negative indices
+    assert node.create_range(start=-5, stop=0) == ([-5, -4, -3, -2, -1],)
+
+    # Test error case: step=0
+    with pytest.raises(ValueError, match="Step cannot be zero"):
+        node.create_range(start=0, stop=5, step=0)

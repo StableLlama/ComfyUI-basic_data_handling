@@ -90,7 +90,7 @@ class IfElifElse(ComfyNodeABC):
         # Check if condition
         if kwargs.get("if", False) and kwargs.get("then") is None:
             needed.append("then")
-            return needed  # If main condition is true, we only need "then"
+            return needed  # If the main condition is true, we only need "then"
 
         # Check each elif condition
         elif_index = 0
@@ -153,7 +153,7 @@ class SwitchCase(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": ContainsDynamicDict({
-                "selector": (IO.INT, {"default": 0, "min": 0}),
+                "select": (IO.INT, {"default": 0, "min": 0}),
                 "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number"}),
             }),
             "optional": {
@@ -167,29 +167,29 @@ class SwitchCase(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
-    def check_lazy_status(self, selector: int, **kwargs) -> list[str]:
+    def check_lazy_status(self, select: int, **kwargs) -> list[str]:
         needed = []
 
-        # Check for needed case inputs based on selector
+        # Check for necessary case inputs based on select
         case_count = 0
         for key, value in kwargs.items():
             if key.startswith("case_"):
                 try:
                     case_index = int(key.split("_")[1])
                     case_count = max(case_count, case_index + 1)
-                    if value is None and selector == case_index:
+                    if value is None and select == case_index:
                         needed.append(key)
                 except ValueError:
                     pass  # Not a numeric case key
 
-        # Check if default is needed when selector is out of range
-        if "default" in kwargs and kwargs["default"] is None and not 0 <= selector < case_count:
+        # Check if default is needed when select is out of range
+        if "default" in kwargs and kwargs["default"] is None and not 0 <= select < case_count:
             needed.append("default")
 
         return needed
 
     def execute(self, selector: int, **kwargs) -> tuple[Any]:
-        # Build cases array from all case_X inputs
+        # Build a case array from all case_X inputs
         cases = []
         for i in range(len(kwargs)):
             case_key = f"case_{i}"
@@ -202,8 +202,42 @@ class SwitchCase(ComfyNodeABC):
         if 0 <= selector < len(cases) and cases[selector] is not None:
             return (cases[selector],)
 
-        # If selector is out of range or the selected case is None, return default
+        # If select is out of range or the selected case is None, return default
         return (kwargs.get("default"),)
+
+
+class DisableFlow(ComfyNodeABC):
+    """
+    Conditionally enable or disable a flow.
+
+    This node takes a value and either passes it through or blocks execution
+    based on the 'select' parameter. When 'select' is True, the value passes through;
+    when False, execution is blocked.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {}),
+                "select": (IO.BOOLEAN, {"default": True}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("value",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    @classmethod
+    def IS_CHANGED(s, value: Any):
+        return float("NaN") # not equal to anything -> trigger recalculation
+
+    def execute(self, value: Any, select: bool = True) -> tuple[Any]:
+        if select:
+            return (value,)
+        else:
+            return (ExecutionBlocker(None),)
 
 
 class FlowSelect(ComfyNodeABC):
@@ -237,6 +271,35 @@ class FlowSelect(ComfyNodeABC):
             return ExecutionBlocker(None), value
 
 
+class ForceCalculation(ComfyNodeABC):
+    """
+    Forces recalculation of the connected nodes.
+
+    This node passes the input directly to the output but prevents caching
+    by marking itself as an output node and also indicates the out has changed.
+    Use this when you need to ensure nodes are always recalculated.
+    """
+
+    OUTPUT_NODE = True  # Marks as an output node to force calculation
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("value",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    def execute(self, value: Any) -> tuple[Any, int]:
+        return (value,)
+
+
 class ExecutionOrder(ComfyNodeABC):
     """
     Force execution order in the workflow.
@@ -268,7 +331,9 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
+    "Basic data handling: DisableFlow": DisableFlow,
     "Basic data handling: FlowSelect": FlowSelect,
+    "Basic data handling: ForceCalculation": ForceCalculation,
     "Basic data handling: ExecutionOrder": ExecutionOrder,
 }
 
@@ -276,6 +341,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
     "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
+    "Basic data handling: DisableFlow": "disable flow",
     "Basic data handling: FlowSelect": "flow select",
+    "Basic data handling: ForceCalculation": "force calculation",
     "Basic data handling: ExecutionOrder": "force execution order",
 }

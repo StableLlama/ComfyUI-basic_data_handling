@@ -675,6 +675,37 @@ class DataListPopRandom(ComfyNodeABC):
         return input_list, None
 
 
+class DataListRange(ComfyNodeABC):
+    """
+    Creates a data list containing a sequence of numbers.
+
+    This node generates a sequence of numbers similar to Python's range() function.
+    It takes start, stop, and step parameters to define the sequence.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "start": ("INT", {"default": 0}),
+                "stop": ("INT", {"default": 10}),
+            },
+            "optional": {
+                "step": ("INT", {"default": 1}),
+            }
+        }
+
+    RETURN_TYPES = ("INT",)
+    FUNCTION = "create_range"
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    OUTPUT_IS_LIST = (True,)
+
+    def create_range(self, stop: int, start: int = 0, step: int = 1) -> tuple[list[int]]:
+        if step == 0:
+            raise ValueError("Step cannot be zero")
+        return (list(range(start, stop, step)),)
+
+
 class DataListRemove(ComfyNodeABC):
     """
     Removes the first occurrence of a specified value from a list.
@@ -960,6 +991,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListMin": DataListMin,
     "Basic data handling: DataListPop": DataListPop,
     "Basic data handling: DataListPopRandom": DataListPopRandom,
+    "Basic data handling: DataListRange": DataListRange,
     "Basic data handling: DataListRemove": DataListRemove,
     "Basic data handling: DataListReverse": DataListReverse,
     "Basic data handling: DataListSetItem": DataListSetItem,
@@ -992,6 +1024,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListMin": "min",
     "Basic data handling: DataListPop": "pop",
     "Basic data handling: DataListPopRandom": "pop random",
+    "Basic data handling: DataListRange": "range",
     "Basic data handling: DataListRemove": "remove",
     "Basic data handling: DataListReverse": "reverse",
     "Basic data handling: DataListSetItem": "set item",
