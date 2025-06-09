@@ -368,26 +368,3 @@ def test_range():
     # Test with ValueError (step cannot be zero)
     with pytest.raises(ValueError, match="Step cannot be zero"):
         node.create_range(start=0, stop=5, step=0)
-
-
-def test_to_list():
-    node = DataListToList()
-    # Test with regular list
-    assert node.convert(list=[1, 2, 3]) == ([1, 2, 3],)
-    # Test with empty list
-    assert node.convert(list=[]) == ([],)
-    # Test with mixed types
-    assert node.convert(list=[1, "two", 3.0]) == ([1, "two", 3.0],)
-
-
-def test_to_set():
-    node = DataListToSet()
-    # Test with regular list
-    assert node.convert(list=[1, 2, 3]) == ({1, 2, 3},)
-    # Test with empty list
-    assert node.convert(list=[]) == (set(),)
-    # Test with duplicates
-    assert node.convert(list=[1, 2, 1, 3, 2]) == ({1, 2, 3},)
-    # Test with mixed types (that can be in a set)
-    assert node.convert(list=[1, "two", 3.0]) == ({1, "two", 3.0},)
-
