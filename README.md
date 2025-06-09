@@ -6,9 +6,17 @@ These nodes are very lightweight and require no additional dependencies.
 
 ## Quickstart
 
+### Recommended
+
 1. Install [ComfyUI](https://docs.comfy.org/get_started).
 1. Install [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager)
-1. Look up this extension in ComfyUI-Manager. If you are installing manually, clone this repository under `ComfyUI/custom_nodes`.
+1. Look up the "Basic data handling" extension in ComfyUI-Manager.
+1. Restart ComfyUI.
+
+### Alternative (manual installation)
+
+1. Install [ComfyUI](https://docs.comfy.org/get_started).
+1. Clone this repository under `ComfyUI/custom_nodes`.
 1. Restart ComfyUI.
 
 # Features
