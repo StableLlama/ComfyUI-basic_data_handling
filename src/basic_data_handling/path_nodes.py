@@ -564,6 +564,32 @@ class PathSplitExt(ComfyNodeABC):
         return os.path.splitext(path)
 
 
+class PathCombo(ComfyNodeABC):
+    """
+    Converts a path to a combo type.
+
+    This node takes a path string input and outputs it as a COMBO type with the path
+    as the single entry in the options list. This can be useful when you need to pass
+    a path to nodes that expect a COMBO input selection.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "path": (IO.STRING, {"default": ""}),
+            }
+        }
+
+    RETURN_TYPES = ("COMBO",)
+    RETURN_NAMES = ("path combo",)
+    CATEGORY = "Basic/Path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "to_combo"
+
+    def to_combo(self, path: str) -> tuple[str]:
+        return ([path],)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: PathAbspath": PathAbspath,
     "Basic data handling: PathBasename": PathBasename,
@@ -585,6 +611,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: PathRelative": PathRelative,
     "Basic data handling: PathSplit": PathSplit,
     "Basic data handling: PathSplitExt": PathSplitExt,
+    "Basic data handling: PathCombo": PathCombo,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -608,4 +635,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: PathRelative": "relative",
     "Basic data handling: PathSplit": "split",
     "Basic data handling: PathSplitExt": "splitext",
+    "Basic data handling: PathCombo": "to combo",
 }
