@@ -1,5 +1,7 @@
 import pytest
 from src.basic_data_handling.list_nodes import (
+    ListAll,
+    ListAny,
     ListAppend,
     ListContains,
     ListCount,
@@ -8,6 +10,7 @@ from src.basic_data_handling.list_nodes import (
     ListCreateFromFloat,
     ListCreateFromInt,
     ListCreateFromString,
+    ListEnumerate,
     ListExtend,
     ListFirst,
     ListGetItem,
@@ -19,11 +22,13 @@ from src.basic_data_handling.list_nodes import (
     ListMin,
     ListPop,
     ListPopRandom,
+    ListRange,
     ListRemove,
     ListReverse,
     ListSetItem,
     ListSlice,
     ListSort,
+    ListSum,
     ListToDataList,
     ListToSet,
 )
@@ -221,3 +226,121 @@ def test_list_to_set():
     assert node.convert([1, 2, 3, 2, 1]) == ({1, 2, 3},)
     assert node.convert([]) == (set(),)
     assert node.convert(["a", "b", "a", "c"]) == ({"a", "b", "c"},)
+
+
+def test_list_range():
+    node = ListRange()
+    # Basic range with default step=1
+    assert node.create_range(start=0, stop=5) == ([0, 1, 2, 3, 4],)
+
+    # Range with custom step
+    assert node.create_range(start=0, stop=10, step=2) == ([0, 2, 4, 6, 8],)
+
+    # Negative step (counting down)
+    assert node.create_range(start=5, stop=0, step=-1) == ([5, 4, 3, 2, 1],)
+
+    # Start > stop with positive step (empty list)
+    assert node.create_range(start=10, stop=5) == ([],)
+
+    # Empty range
+    assert node.create_range(start=0, stop=0) == ([],)
+
+    # Test with negative indices
+    assert node.create_range(start=-5, stop=0) == ([-5, -4, -3, -2, -1],)
+
+    # Test error case: step=0
+    with pytest.raises(ValueError, match="Step cannot be zero"):
+        node.create_range(start=0, stop=5, step=0)
+
+
+def test_list_all():
+    node = ListAll()
+    # All true values
+    assert node.check_all([True, True, True]) == (True,)
+
+    # Mixed values (all truthy)
+    assert node.check_all([1, "text", [1, 2]]) == (True,)
+
+    # Contains a false value
+    assert node.check_all([True, False, True]) == (False,)
+
+    # Contains a falsy value
+    assert node.check_all([True, 0, True]) == (False,)
+
+    # Empty list (returns True according to Python's all() behavior)
+    assert node.check_all([]) == (True,)
+
+
+def test_list_any():
+    node = ListAny()
+    # All true values
+    assert node.check_any([True, True, True]) == (True,)
+
+    # Mixed values with at least one true
+    assert node.check_any([False, True, False]) == (True,)
+
+    # Mixed values with at least one truthy
+    assert node.check_any([0, "", 1]) == (True,)
+
+    # All false values
+    assert node.check_any([False, False, False]) == (False,)
+
+    # All falsy values
+    assert node.check_any([0, "", []]) == (False,)
+
+    # Empty list (returns False according to Python's any() behavior)
+    assert node.check_any([]) == (False,)
+
+
+def test_list_enumerate():
+    node = ListEnumerate()
+
+    # Basic enumeration with default start=0
+    result = node.enumerate_list(["a", "b", "c"])
+    assert result == ([[(0, "a"), (1, "b"), (2, "c")]],)
+
+    # Enumeration with custom start
+    result = node.enumerate_list(["x", "y", "z"], start=10)
+    assert result == ([[(10, "x"), (11, "y"), (12, "z")]],)
+
+    # Enumeration of empty list
+    result = node.enumerate_list([])
+    assert result == ([[]],)
+
+    # Enumeration of list with mixed types
+    result = node.enumerate_list([1, "text", True])
+    assert result == ([[(0, 1), (1, "text"), (2, True)]],)
+
+
+def test_list_sum():
+    node = ListSum()
+
+    # Sum of integers
+    int_result, float_result = node.sum_list([1, 2, 3, 4])
+    assert int_result == 10
+    assert float_result == 10.0
+
+    # Sum with default start value (0)
+    int_result, float_result = node.sum_list([5, 10, 15])
+    assert int_result == 30
+    assert float_result == 30.0
+
+    # Sum with custom start value
+    int_result, float_result = node.sum_list([1, 2, 3], start=10)
+    assert int_result == 16
+    assert float_result == 16.0
+
+    # Sum of floats (should still return both int and float)
+    int_result, float_result = node.sum_list([1.5, 2.5, 3.0])
+    assert int_result == 7.0  # Note: This will be a float, but returned as first value
+    assert float_result == 7.0
+
+    # Sum of empty list
+    int_result, float_result = node.sum_list([])
+    assert int_result == 0
+    assert float_result == 0.0
+
+    # Sum of mixed numbers
+    int_result, float_result = node.sum_list([1, 2.5, 3])
+    assert int_result == 6.5
+    assert float_result == 6.5
