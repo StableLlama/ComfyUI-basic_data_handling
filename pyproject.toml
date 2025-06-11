@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "basic_data_handling"
 version = "0.4.2"
-description = """Basic Python functions for manipulating data that every programmer is used to.
+description = """Basic Python functions for manipulating data that every programmer is used to, lightweight with no additional dependencies.
 
 Supported data types:
 - ComfyUI native: BOOLEAN, FLOAT, INT, STRING, and data lists
@@ -21,9 +21,7 @@ Feature categories:
 - Mathematical formula node in a safe implementation
 - String manipulation
 - File system path handling
-- SET operations
-
-All nodes are lightweight with no additional dependencies required."""
+- SET operations"""
 authors = [
   {name = "StableLlama"}
 ]
