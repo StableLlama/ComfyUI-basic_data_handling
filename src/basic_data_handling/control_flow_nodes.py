@@ -206,7 +206,7 @@ class SwitchCase(ComfyNodeABC):
         return (kwargs.get("default"),)
 
 
-class DisableFlow(ComfyNodeABC):
+class ContinueFlow(ComfyNodeABC):
     """
     Conditionally enable or disable a flow.
 
@@ -331,7 +331,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
-    "Basic data handling: DisableFlow": DisableFlow,
+    "Basic data handling: ContinueFlow": ContinueFlow,
     "Basic data handling: FlowSelect": FlowSelect,
     "Basic data handling: ForceCalculation": ForceCalculation,
     "Basic data handling: ExecutionOrder": ExecutionOrder,
@@ -341,7 +341,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
     "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
-    "Basic data handling: DisableFlow": "disable flow",
+    "Basic data handling: ContinueFlow": "continue flow",
     "Basic data handling: FlowSelect": "flow select",
     "Basic data handling: ForceCalculation": "force calculation",
     "Basic data handling: ExecutionOrder": "force execution order",
