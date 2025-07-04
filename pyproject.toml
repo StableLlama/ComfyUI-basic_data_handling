@@ -28,10 +28,7 @@ authors = [
 readme = "README.md"
 license = { file = "LICENSE" }
 classifiers = []
-dependencies = [
-    "numpy",
-    "Pillow"
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
