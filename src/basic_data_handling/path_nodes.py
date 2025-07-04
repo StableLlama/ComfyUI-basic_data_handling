@@ -850,8 +850,8 @@ class PathSaveStringFile(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.STRING, IO.BOOLEAN)
-    RETURN_NAMES = ("path", "success")
+    RETURN_TYPES = (IO.BOOLEAN)
+    RETURN_NAMES = ("success")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_text"
@@ -859,7 +859,7 @@ class PathSaveStringFile(ComfyNodeABC):
 
     def save_text(self, text: str, path: str, create_dirs: bool = True, encoding: str = "utf-8"):
         if not path:
-            return (path, False)
+            return (False,)
 
         try:
             # Create directories if needed
@@ -870,10 +870,10 @@ class PathSaveStringFile(ComfyNodeABC):
             with open(path, "w", encoding=encoding) as f:
                 f.write(text)
 
-            return (path, True)
+            return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving text file: {e}")
-            return (path, False)
+            return (False,)
 
 
 class PathSaveImageRGB(ComfyNodeABC):
@@ -881,7 +881,7 @@ class PathSaveImageRGB(ComfyNodeABC):
     Saves an image to a file.
 
     This node takes an image tensor and saves it to the specified path.
-    Supports various image formats like PNG, JPG, WEBP, etc.
+    Supports various image formats like PNG, JPG, WEBP, JXL (if pillow-jxl is installed), etc.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -906,7 +906,7 @@ class PathSaveImageRGB(ComfyNodeABC):
 
     def save_image(self, images, path: str, format: str = "png", quality: int = 95, create_dirs: bool = True):
         if not path:
-            return (False)
+            return (False,)
 
         # If the path doesn't have an extension or it doesn't match the format, add it
         if not path.lower().endswith(f".{format.lower()}"):
@@ -915,6 +915,18 @@ class PathSaveImageRGB(ComfyNodeABC):
         try:
             import numpy as np
             from PIL import Image
+
+            # Check if pillow_jxl is available for JXL support
+            has_jxl_support = False
+            try:
+                import pillow_jxl
+                has_jxl_support = True
+            except ModuleNotFoundError:
+                # pillow_jxl is not installed
+                if format.lower() == "jxl":
+                    print("Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
+                          "Please install it with 'pip install pillow-jxl-plugin'.")
+                    return (False,)
 
             # Create directories if needed
             directory = os.path.dirname(path)
@@ -937,13 +949,16 @@ class PathSaveImageRGB(ComfyNodeABC):
                 pil_img.save(path, format="JPEG", quality=quality)
             elif format.lower() == "webp":
                 pil_img.save(path, format="WEBP", quality=quality)
+            elif format.lower() == "jxl" and has_jxl_support:
+                # JPEG XL specific options
+                pil_img.save(path, format="JXL", quality=quality)
             else:
                 pil_img.save(path, format=format.upper())
 
-            return (True)
+            return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving image: {e}")
-            return (False)
+            return (False,)
 
 
 class PathSaveImageRGBA(ComfyNodeABC):
@@ -981,7 +996,7 @@ class PathSaveImageRGBA(ComfyNodeABC):
                             quality: int = 95, invert_mask: bool = False,
                             create_dirs: bool = True):
         if not path:
-            return (False)
+            return (False,)
 
         # Check format compatibility - needs to support alpha channel
         if format.lower() in ["jpg", "jpeg"]:
@@ -996,6 +1011,18 @@ class PathSaveImageRGBA(ComfyNodeABC):
             import numpy as np
             import torch
             from PIL import Image
+
+            # Check if pillow_jxl is available for JXL support
+            has_jxl_support = False
+            try:
+                import pillow_jxl
+                has_jxl_support = True
+            except ModuleNotFoundError:
+                # pillow_jxl is not installed
+                if format.lower() == "jxl":
+                    print("Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
+                          "Please install it with 'pip install pillow-jxl-plugin'.")
+                    return (False,)
 
             # Create directories if needed
             directory = os.path.dirname(path)
@@ -1030,14 +1057,17 @@ class PathSaveImageRGBA(ComfyNodeABC):
 
             # Save the image
             if format.lower() == "webp":
-                pil_img_rgba.save(format="WEBP", quality=quality)
+                pil_img_rgba.save(path, format="WEBP", quality=quality)
+            elif format.lower() == "jxl" and has_jxl_support:
+                # JPEG XL supports alpha channel
+                pil_img_rgba.save(path, format="JXL", quality=quality)
             else:
-                pil_img_rgba.save(format=format.upper())
+                pil_img_rgba.save(path, format=format.upper())
 
-            return (True)
+            return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving image with mask: {e}")
-            return (False)
+            return (False,)
 
 
 NODE_CLASS_MAPPINGS = {
