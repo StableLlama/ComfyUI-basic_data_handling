@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "0.4.3"
+version = "0.4.4"
 description = """Basic Python functions for manipulating data that every programmer is used to, lightweight with no additional dependencies.
 
 Supported data types:
@@ -20,7 +20,7 @@ Feature categories:
 - Mathematical operations
 - Mathematical formula node in a safe implementation
 - String manipulation
-- File system path handling
+- File system path handling, including STRING, IMAGE and MASK load and save
 - SET operations"""
 authors = [
   {name = "StableLlama"}
