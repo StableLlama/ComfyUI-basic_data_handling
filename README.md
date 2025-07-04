@@ -173,6 +173,16 @@ These nodes are very lightweight and require no additional dependencies.
 - Path conversions:
     - relative - Computes a relative path from a start path to a target path
     - expand_vars - Replaces environment variables in a path with their values
+- File loading:
+    - load STRING from file - Loads a text file and returns its content as a STRING
+    - load IMAGE from file (RGB) - Loads an image and returns RGB channels as a tensor
+    - load IMAGE+MASK from file (RGBA) - Loads an image and returns RGB channels as a tensor and alpha channel as a mask
+    - load MASK from alpha channel - Loads an image and extracts its alpha channel as a mask
+    - load MASK from greyscale/red - Loads an image and creates a mask from its greyscale or red channel
+- File saving:
+    - save STRING to file - Saves a string to a text file with optional directory creation
+    - save IMAGE to file - Saves an image tensor to a file in various formats (PNG, JPG, WEBP, JXL)
+    - save IMAGE+MASK to file - Saves an image with transparency using a mask as the alpha channel
 
 ### SET: Python set manipulation nodes (as a single variable)
 - Creation:

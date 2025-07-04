@@ -11,6 +11,8 @@ except:
         FLOAT = "FLOAT"
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
+        IMAGE = "IMAGE"
+        MASK = "MASK"
         ANY = "*"
     ComfyNodeABC = object
 
