@@ -23,7 +23,7 @@ def load_image_helper(path: str):
     """Helper function to load an image from a path"""
     from PIL import Image, ImageOps
     try:
-        import pillow_jxl
+        import pillow_jxl  # noqa: F401 - imported but unused, kept for JPEG XL support
     except ModuleNotFoundError:
         pass
 
@@ -921,7 +921,7 @@ class PathSaveImageRGB(ComfyNodeABC):
             # Check if pillow_jxl is available for JXL support
             has_jxl_support = False
             try:
-                import pillow_jxl
+                import pillow_jxl # noqa: F401 - imported but unused, kept for JPEG XL support
                 has_jxl_support = True
             except ModuleNotFoundError:
                 # pillow_jxl is not installed
@@ -1017,7 +1017,7 @@ class PathSaveImageRGBA(ComfyNodeABC):
             # Check if pillow_jxl is available for JXL support
             has_jxl_support = False
             try:
-                import pillow_jxl
+                import pillow_jxl # noqa: F401 - imported but unused, kept for JPEG XL support
                 has_jxl_support = True
             except ModuleNotFoundError:
                 # pillow_jxl is not installed
