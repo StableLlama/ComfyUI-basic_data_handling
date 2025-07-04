@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .[dev] numpy
+          pip install .[dev] numpy torch
       - name: Run Linting
         run: |
           ruff check .
