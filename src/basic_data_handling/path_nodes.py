@@ -1011,7 +1011,6 @@ class PathSaveImageRGBA(ComfyNodeABC):
 
         try:
             import numpy as np
-            import torch
             from PIL import Image
 
             # Check if pillow_jxl is available for JXL support
