@@ -43,14 +43,16 @@ class MathFormula(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": ContainsDynamicDict({
-                "formula": (IO.STRING, {"default": "-e() ** -2"}),
-                "a": (IO.NUMBER, {"default": 3.0, "_dynamic": "letter"}),
+            "required": {
+                "formula": (IO.STRING, {"default": "-pi() ** 2"}),
+            },
+            "optional": ContainsDynamicDict({
+                "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter"}),
             }),
         }
 
     RETURN_TYPES = (IO.FLOAT,)
-    CATEGORY = "math"
+    CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "evaluate"
 
