@@ -28,13 +28,15 @@ def load_image_helper(path: str):
         pass
 
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Basic data handling: Image file not found: {path}")
+        return None
 
     # Open and process the image
-    img = Image.open(path)
-    img = ImageOps.exif_transpose(img)
-
-    return img
+    try:
+        img = Image.open(path)
+        img = ImageOps.exif_transpose(img)
+        return img
+    except Exception:
+        return None
 
 
 def extract_mask_from_alpha(img):
@@ -675,19 +677,33 @@ class PathLoadStringFile(ComfyNodeABC):
             },
         }
 
-    RETURN_TYPES = (IO.STRING,)
-    RETURN_NAMES = ("text",)
+    RETURN_TYPES = (IO.STRING, IO.BOOLEAN)
+    RETURN_NAMES = ("text", "exists")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_text"
 
-    def load_text(self, path: str):
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Basic data handling: String file not found: {path}")
+    @classmethod
+    def IS_CHANGED(cls, path):
+        try:
+            if os.path.exists(path):
+                return os.path.getmtime(path)
+        except Exception:
+            pass
+        return float("NaN")  # Return NaN if file doesn't exist or can't access modification time
 
-        with open(path, "r", encoding="utf-8") as f:
-            text = f.read()
-        return (text,)
+    def load_text(self, path: str):
+        exists = os.path.exists(path)
+
+        if not exists:
+            return ("", False)
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                text = f.read()
+            return (text, True)
+        except Exception:
+            return ("", False)
 
 
 class PathLoadImageRGB(ComfyNodeABC):
@@ -705,17 +721,31 @@ class PathLoadImageRGB(ComfyNodeABC):
             },
         }
 
-    RETURN_TYPES = (IO.IMAGE,)
-    RETURN_NAMES = ("image",)
+    RETURN_TYPES = (IO.IMAGE, IO.BOOLEAN)
+    RETURN_NAMES = ("image", "exists")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgb"
+
+    @classmethod
+    def IS_CHANGED(cls, path):
+        try:
+            if os.path.exists(path):
+                return os.path.getmtime(path)
+        except Exception:
+            pass
+        return float("NaN")  # Return NaN if file doesn't exist or can't access modification time
 
     def load_image_rgb(self, path: str):
         import numpy as np
         import torch
 
         img = load_image_helper(path)
+
+        if img is None:
+            # Create an empty 1x1 image
+            empty_tensor = torch.zeros((1, 1, 1, 3), dtype=torch.float32)
+            return (empty_tensor, False)
 
         # Convert to RGB (removing alpha if present)
         img_rgb = img.convert("RGB")
@@ -724,7 +754,7 @@ class PathLoadImageRGB(ComfyNodeABC):
         image_tensor = np.array(img_rgb).astype(np.float32) / 255.0
         image_tensor = torch.from_numpy(image_tensor)[None,]
 
-        return (image_tensor,)
+        return (image_tensor, True)
 
 
 class PathLoadImageRGBA(ComfyNodeABC):
@@ -743,17 +773,32 @@ class PathLoadImageRGBA(ComfyNodeABC):
             },
         }
 
-    RETURN_TYPES = (IO.IMAGE, IO.MASK)
-    RETURN_NAMES = ("image", "mask")
+    RETURN_TYPES = (IO.IMAGE, IO.MASK, IO.BOOLEAN)
+    RETURN_NAMES = ("image", "mask", "exists")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgba"
+
+    @classmethod
+    def IS_CHANGED(cls, path):
+        try:
+            if os.path.exists(path):
+                return os.path.getmtime(path)
+        except Exception:
+            pass
+        return float("NaN")  # Return NaN if file doesn't exist or can't access modification time
 
     def load_image_rgba(self, path: str):
         import numpy as np
         import torch
 
         img = load_image_helper(path)
+
+        if img is None:
+            # Create empty 1x1 image and mask
+            empty_image = torch.zeros((1, 1, 1, 3), dtype=torch.float32)
+            empty_mask = torch.zeros((1, 1, 1), dtype=torch.float32)
+            return (empty_image, empty_mask, False)
 
         # Convert to RGB for the image
         img_rgb = img.convert("RGB")
@@ -765,7 +810,7 @@ class PathLoadImageRGBA(ComfyNodeABC):
         # Extract alpha channel as mask
         mask_tensor = extract_mask_from_alpha(img)
 
-        return (image_tensor, mask_tensor)
+        return (image_tensor, mask_tensor, True)
 
 
 class PathLoadMaskFromAlpha(ComfyNodeABC):
@@ -784,16 +829,33 @@ class PathLoadMaskFromAlpha(ComfyNodeABC):
             },
         }
 
-    RETURN_TYPES = (IO.MASK,)
-    RETURN_NAMES = ("mask",)
+    RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
+    RETURN_NAMES = ("mask", "exists")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_alpha"
 
+    @classmethod
+    def IS_CHANGED(cls, path):
+        try:
+            if os.path.exists(path):
+                return os.path.getmtime(path)
+        except Exception:
+            pass
+        return float("NaN")  # Return NaN if file doesn't exist or can't access modification time
+
     def load_mask_from_alpha(self, path: str):
+        import torch
+
         img = load_image_helper(path)
+
+        if img is None:
+            # Return empty 1x1 mask
+            empty_mask = torch.zeros((1, 1, 1), dtype=torch.float32)
+            return (empty_mask, False)
+
         mask_tensor = extract_mask_from_alpha(img)
-        return (mask_tensor,)
+        return (mask_tensor, True)
 
 
 class PathLoadMaskFromGreyscale(ComfyNodeABC):
@@ -815,21 +877,38 @@ class PathLoadMaskFromGreyscale(ComfyNodeABC):
             },
         }
 
-    RETURN_TYPES = (IO.MASK,)
-    RETURN_NAMES = ("mask",)
+    RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
+    RETURN_NAMES = ("mask", "exists")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_greyscale"
 
+    @classmethod
+    def IS_CHANGED(cls, path):
+        try:
+            if os.path.exists(path):
+                return os.path.getmtime(path)
+        except Exception:
+            pass
+        return float("NaN")  # Return NaN if file doesn't exist or can't access modification time
+
     def load_mask_from_greyscale(self, path: str, invert: bool = False):
+        import torch
+
         img = load_image_helper(path)
+
+        if img is None:
+            # Return empty 1x1 mask
+            empty_mask = torch.zeros((1, 1, 1), dtype=torch.float32)
+            return (empty_mask, False)
+
         mask_tensor = extract_mask_from_greyscale(img)
 
         # Optionally invert the mask (1.0 - mask)
         if invert:
             mask_tensor = 1.0 - mask_tensor
 
-        return (mask_tensor,)
+        return (mask_tensor, True)
 
 
 class PathSaveStringFile(ComfyNodeABC):
@@ -852,8 +931,8 @@ class PathSaveStringFile(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.BOOLEAN)
-    RETURN_NAMES = ("success")
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("success",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_text"
@@ -861,6 +940,7 @@ class PathSaveStringFile(ComfyNodeABC):
 
     def save_text(self, text: str, path: str, create_dirs: bool = True, encoding: str = "utf-8"):
         if not path:
+            print("Basic data handling: Save failed - no path specified")
             return (False,)
 
         try:
@@ -872,6 +952,7 @@ class PathSaveStringFile(ComfyNodeABC):
             with open(path, "w", encoding=encoding) as f:
                 f.write(text)
 
+            print(f"Basic data handling: Successfully saved text to {path}")
             return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving text file: {e}")
@@ -899,8 +980,8 @@ class PathSaveImageRGB(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.BOOLEAN)
-    RETURN_NAMES = ("success")
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("success",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image"
@@ -908,6 +989,7 @@ class PathSaveImageRGB(ComfyNodeABC):
 
     def save_image(self, images, path: str, format: str = "png", quality: int = 95, create_dirs: bool = True):
         if not path:
+            print("Basic data handling: Save failed - no path specified")
             return (False,)
 
         # If the path doesn't have an extension or it doesn't match the format, add it
@@ -957,6 +1039,7 @@ class PathSaveImageRGB(ComfyNodeABC):
             else:
                 pil_img.save(path, format=format.upper())
 
+            print(f"Basic data handling: Successfully saved image to {path}")
             return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving image: {e}")
@@ -987,8 +1070,8 @@ class PathSaveImageRGBA(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.BOOLEAN)
-    RETURN_NAMES = ("success")
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("success",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image_with_mask"
@@ -998,6 +1081,7 @@ class PathSaveImageRGBA(ComfyNodeABC):
                             quality: int = 95, invert_mask: bool = False,
                             create_dirs: bool = True):
         if not path:
+            print("Basic data handling: Save failed - no path specified")
             return (False,)
 
         # Check format compatibility - needs to support alpha channel
@@ -1065,6 +1149,7 @@ class PathSaveImageRGBA(ComfyNodeABC):
             else:
                 pil_img_rgba.save(path, format=format.upper())
 
+            print(f"Basic data handling: Successfully saved image with mask to {path}")
             return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving image with mask: {e}")
