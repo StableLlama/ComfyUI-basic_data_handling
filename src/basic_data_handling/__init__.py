@@ -1,7 +1,7 @@
 from . import (boolean_nodes, casting_nodes, comparison_nodes, control_flow_nodes,
                data_list_nodes, dict_nodes, float_nodes, int_nodes, list_nodes,
                math_nodes, math_formula_node, path_nodes, regex_nodes, set_nodes,
-               string_nodes)
+               string_nodes, time_nodes)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_CLASS_MAPPINGS.update(boolean_nodes.NODE_CLASS_MAPPINGS)
@@ -19,6 +19,7 @@ NODE_CLASS_MAPPINGS.update(set_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(math_nodes.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(math_formula_node.NODE_CLASS_MAPPINGS)
 NODE_CLASS_MAPPINGS.update(string_nodes.NODE_CLASS_MAPPINGS)
+NODE_CLASS_MAPPINGS.update(time_nodes.NODE_CLASS_MAPPINGS)
 
 NODE_DISPLAY_NAME_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS.update(boolean_nodes.NODE_DISPLAY_NAME_MAPPINGS)
@@ -36,3 +37,4 @@ NODE_DISPLAY_NAME_MAPPINGS.update(set_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(math_nodes.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(math_formula_node.NODE_DISPLAY_NAME_MAPPINGS)
 NODE_DISPLAY_NAME_MAPPINGS.update(string_nodes.NODE_DISPLAY_NAME_MAPPINGS)
+NODE_DISPLAY_NAME_MAPPINGS.update(time_nodes.NODE_DISPLAY_NAME_MAPPINGS)
