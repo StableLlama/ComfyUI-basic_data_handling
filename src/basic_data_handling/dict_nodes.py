@@ -736,6 +736,10 @@ class DictPopRandom(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random"
 
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")  # Not equal to anything -> trigger recalculation
+
     def pop_random(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
         import random
         result = input_dict.copy()

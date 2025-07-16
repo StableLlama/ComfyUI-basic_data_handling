@@ -747,6 +747,10 @@ class DataListPopRandom(ComfyNodeABC):
     INPUT_IS_LIST = True
     OUTPUT_IS_LIST = (True, False)
 
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")  # Not equal to anything -> trigger recalculation
+
     def pop_random_element(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
         from random import randrange
         input_list = kwargs.get('list', []).copy()

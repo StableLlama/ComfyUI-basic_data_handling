@@ -610,6 +610,10 @@ class ListPopRandom(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random_element"
 
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")  # Not equal to anything -> trigger recalculation
+
     def pop_random_element(self, list: list[Any]) -> tuple[list[Any], Any]:
         import random
         result = list.copy()
