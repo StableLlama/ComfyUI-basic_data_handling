@@ -308,6 +308,9 @@ class ExecutionOrder(ComfyNodeABC):
     the execution order of nodes in the workflow. You only need to chain this node
     with the other execution order nodes in the desired order and add any
     output of the nodes you want to force execution order on.
+
+    This node also passes through any input connected to "any node output" as
+    its second output.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -318,13 +321,16 @@ class ExecutionOrder(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = ("E/O",)
+    RETURN_TYPES = ("E/O", IO.ANY)
+    RETURN_NAMES = ("E/O", "passthrough")
+    FUNCTION = "execution_order"
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
-    def execute(self, **kwargs) -> tuple[Any]:
-        return (None,)
+    def execute(self, **kwargs: list[Any]) -> tuple[None, Any]:
+        any_node_output = kwargs.get('any node output', [])
+        return (None, any_node_output)
 
 
 NODE_CLASS_MAPPINGS = {

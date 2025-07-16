@@ -41,7 +41,7 @@ def test_path_load_save_string_file(tmp_path):
     # Test loading the string back
     load_node = PathLoadStringFile()
     loaded_string = load_node.load_text(file_path)
-    assert loaded_string == (test_string,)
+    assert loaded_string == (test_string, True)
 
     # Test creating directories when saving
     nested_path = str(tmp_path / "nested" / "dir" / "test.txt")
@@ -52,12 +52,10 @@ def test_path_load_save_string_file(tmp_path):
     utf8_text = "UTF-8 text with special chars: 你好, ñ, é, ö"
     utf8_path = str(tmp_path / "utf8_test.txt")
     assert save_node.save_text(utf8_text, utf8_path, encoding="utf-8") == (True,)
-    assert load_node.load_text(utf8_path) == (utf8_text,)
+    assert load_node.load_text(utf8_path) == (utf8_text, True)
 
     # Test error handling
-    with pytest.raises(FileNotFoundError):
-        load_node.load_text(str(tmp_path / "nonexistent.txt"))
-
+    assert load_node.load_text(str(tmp_path / "nonexistent.txt")) == ("", False)
 
 
 def test_path_abspath():
@@ -304,7 +302,7 @@ def test_path_load_mask_nodes(tmp_path, monkeypatch):
 
     # Verify the mask shape
     assert isinstance(alpha_mask, tuple)
-    assert len(alpha_mask) == 1
+    assert len(alpha_mask) == 2
     assert isinstance(alpha_mask[0], torch.Tensor)
     assert alpha_mask[0].shape == (1, img_size[1], img_size[0])
 
@@ -314,7 +312,7 @@ def test_path_load_mask_nodes(tmp_path, monkeypatch):
 
     # Verify the mask shape
     assert isinstance(gray_mask, tuple)
-    assert len(gray_mask) == 1
+    assert len(gray_mask) == 2
     assert isinstance(gray_mask[0], torch.Tensor)
     assert gray_mask[0].shape == (1, img_size[1], img_size[0])
 
@@ -352,7 +350,7 @@ def test_path_load_save_image_rgba(tmp_path, monkeypatch):
 
     # Test loading an image with alpha
     load_node = PathLoadImageRGBA()
-    loaded_img, loaded_mask = load_node.load_image_rgba(img_path)
+    loaded_img, loaded_mask, success = load_node.load_image_rgba(img_path)
 
     # Verify that the returned objects are tensors with the right shapes
     assert isinstance(loaded_img, torch.Tensor)
@@ -410,7 +408,7 @@ def test_path_load_save_image_rgb(tmp_path, monkeypatch):
 
     # Verify that the returned object is a tensor with the right shape
     assert isinstance(loaded_img, tuple)
-    assert len(loaded_img) == 1
+    assert len(loaded_img) == 2
     assert isinstance(loaded_img[0], torch.Tensor)
     assert loaded_img[0].shape == (1, img_size[1], img_size[0], 3)  # (batch, height, width, channels)
 
