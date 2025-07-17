@@ -29,16 +29,7 @@ Boolean logic operations:
 ### Cast
 
 Type conversion nodes for ComfyUI data types:
-
-- **Basic data type conversions**:
-    - to BOOLEAN - Converts any input to a Boolean using Python's truthy/falsy rules
-    - to FLOAT - Converts numeric input to a floating-point number
-    - to INT - Converts numeric input to an integer
-    - to STRING - Converts any input to a string
-- **Collection type conversions**:
-    - to DICT - Converts compatible inputs to a dictionary
-    - to LIST - Converts input to a LIST
-    - to SET - Converts input to a SET (removing duplicates)
+to BOOLEAN, to FLOAT, to INT, to STRING, to DICT, to LIST, to SET
 
 ### Comparison
 
