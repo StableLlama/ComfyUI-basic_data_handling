@@ -60,7 +60,7 @@ class TimeToUnix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dt": (IO.DATETIME, {}),
+                "datetime": (IO.DATETIME, {}),
             }
         }
 
@@ -70,11 +70,11 @@ class TimeToUnix(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_unix"
 
-    def to_unix(self, dt: datetime.datetime) -> tuple[float]:
+    def to_unix(self, datetime: datetime.datetime) -> tuple[float]:
         """
         Converts the given datetime object to a Unix timestamp.
         """
-        return (dt.timestamp(),)
+        return (datetime.timestamp(),)
 
 
 class UnixToTime(ComfyNodeABC):
@@ -111,7 +111,7 @@ class TimeFormat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dt": (IO.DATETIME, {}),
+                "datetime": (IO.DATETIME, {}),
                 "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S"}),
             }
         }
@@ -122,11 +122,11 @@ class TimeFormat(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "format_time"
 
-    def format_time(self, dt: datetime.datetime, format_string: str) -> tuple[str]:
+    def format_time(self, datetime: datetime.datetime, format_string: str) -> tuple[str]:
         """
         Formats a datetime object into a string.
         """
-        return (dt.strftime(format_string),)
+        return (datetime.strftime(format_string),)
 
 
 class TimeParse(ComfyNodeABC):
@@ -193,7 +193,7 @@ class TimeAddDelta(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dt": (IO.DATETIME, {}),
+                "datetime": (IO.DATETIME, {}),
                 "delta": (IO.TIMEDELTA, {}),
             }
         }
@@ -203,11 +203,11 @@ class TimeAddDelta(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
 
-    def add(self, dt: datetime.datetime, delta: datetime.timedelta) -> tuple[datetime.datetime]:
+    def add(self, datetime: datetime.datetime, delta: datetime.timedelta) -> tuple[datetime.datetime]:
         """
         Adds a timedelta to a datetime object.
         """
-        return (dt + delta,)
+        return (datetime + delta,)
 
 
 class TimeSubtractDelta(ComfyNodeABC):
@@ -218,7 +218,7 @@ class TimeSubtractDelta(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dt": (IO.DATETIME, {}),
+                "datetime": (IO.DATETIME, {}),
                 "delta": (IO.TIMEDELTA, {}),
             }
         }
@@ -228,11 +228,11 @@ class TimeSubtractDelta(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
 
-    def subtract(self, dt: datetime.datetime, delta: datetime.timedelta) -> tuple[datetime.datetime]:
+    def subtract(self, datetime: datetime.datetime, delta: datetime.timedelta) -> tuple[datetime.datetime]:
         """
         Subtracts a timedelta from a datetime object.
         """
-        return (dt - delta,)
+        return (datetime - delta,)
 
 
 class TimeDifference(ComfyNodeABC):
@@ -243,8 +243,8 @@ class TimeDifference(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dt1": (IO.DATETIME, {}),
-                "dt2": (IO.DATETIME, {}),
+                "datetime1": (IO.DATETIME, {}),
+                "datetime2": (IO.DATETIME, {}),
             }
         }
 
@@ -253,11 +253,11 @@ class TimeDifference(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "difference"
 
-    def difference(self, dt1: datetime.datetime, dt2: datetime.datetime) -> tuple[datetime.timedelta]:
+    def difference(self, datetime1: datetime.datetime, datetime2: datetime.datetime) -> tuple[datetime.timedelta]:
         """
         Calculates the duration between two datetime objects.
         """
-        return (dt1 - dt2,)
+        return (datetime1 - datetime2,)
 
 
 class TimeExtract(ComfyNodeABC):
@@ -268,7 +268,7 @@ class TimeExtract(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": { "dt": (IO.DATETIME, {}) }
+            "required": { "datetime": (IO.DATETIME, {}) }
         }
 
     RETURN_TYPES = (IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT)
@@ -277,11 +277,12 @@ class TimeExtract(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extract"
 
-    def extract(self, dt: datetime.datetime) -> tuple[int, int, int, int, int, int, int, int]:
+    def extract(self, datetime: datetime.datetime) -> tuple[int, int, int, int, int, int, int, int]:
         """
         Extracts all time components from a datetime object.
         """
-        return (dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond, dt.weekday())
+        return (datetime.year, datetime.month, datetime.day, datetime.hour,
+                datetime.minute, datetime.second, datetime.microsecond, datetime.weekday())
 
 
 NODE_CLASS_MAPPINGS = {
