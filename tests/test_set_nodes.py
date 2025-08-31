@@ -1,5 +1,5 @@
 #import pytest
-from ..src.basic_data_handling.set_nodes import (
+from src.basic_data_handling.set_nodes import (
     SetAdd,
     SetAll,
     SetAny,

@@ -1,7 +1,7 @@
 import pytest
 import math
 from math import sin, cos
-from ..src.basic_data_handling.math_formula_node import MathFormula
+from src.basic_data_handling.math_formula_node import MathFormula
 
 def test_basic_formula_evaluation():
     """Test basic formula evaluation with simple operations."""

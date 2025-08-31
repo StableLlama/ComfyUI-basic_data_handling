@@ -1,5 +1,5 @@
 import pytest
-from ..src.basic_data_handling.comparison_nodes import (
+from src.basic_data_handling.comparison_nodes import (
     Equal,
     NotEqual,
     GreaterThan,

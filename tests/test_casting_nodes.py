@@ -1,5 +1,5 @@
 import pytest
-from ..src.basic_data_handling.casting_nodes import (CastToString, CastToInt, CastToFloat, CastToBoolean,
+from src.basic_data_handling.casting_nodes import (CastToString, CastToInt, CastToFloat, CastToBoolean,
                            CastToList, CastToSet, CastToDict)
 
 

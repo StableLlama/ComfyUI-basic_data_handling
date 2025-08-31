@@ -1,5 +1,5 @@
 #import pytest
-from ..src.basic_data_handling.dict_nodes import (
+from src.basic_data_handling.dict_nodes import (
     DictCompare,
     DictContainsKey,
     DictCreate,

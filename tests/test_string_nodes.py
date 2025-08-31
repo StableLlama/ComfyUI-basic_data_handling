@@ -1,6 +1,6 @@
 #import pytest
 
-from ..src.basic_data_handling.string_nodes import (
+from src.basic_data_handling.string_nodes import (
     StringCapitalize,
     StringCasefold,
     StringCenter,

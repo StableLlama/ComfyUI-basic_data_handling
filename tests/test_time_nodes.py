@@ -1,7 +1,7 @@
 #import pytest
 
 from datetime import datetime, timedelta
-from ..src.basic_data_handling.time_nodes import (
+from src.basic_data_handling.time_nodes import (
     TimeNow,
     TimeToUnix,
     UnixToTime,
