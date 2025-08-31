@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from src.basic_data_handling.path_nodes import (
+from ..src.basic_data_handling.path_nodes import (
     PathJoin, PathAbspath, PathExists, PathIsFile, PathIsDir, PathGetSize,
     PathSplit, PathSplitExt, PathBasename, PathDirname, PathGetExtension,
     PathSetExtension, PathNormalize, PathRelative, PathGlob, PathExpandVars, PathGetCwd,

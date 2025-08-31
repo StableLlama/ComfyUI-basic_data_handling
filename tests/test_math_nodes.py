@@ -1,6 +1,6 @@
 import pytest
 import math
-from src.basic_data_handling.math_nodes import (
+from ..src.basic_data_handling.math_nodes import (
     MathSin, MathCos, MathTan, MathAsin, MathAcos, MathAtan, MathAtan2,
     MathSqrt, MathExp, MathLog, MathLog10, MathDegrees, MathRadians,
     MathFloor, MathCeil, MathAbs, MathPi, MathE, MathMin, MathMax,

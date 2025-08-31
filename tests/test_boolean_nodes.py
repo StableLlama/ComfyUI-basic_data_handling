@@ -1,6 +1,6 @@
 #import pytest
 
-from src.basic_data_handling.boolean_nodes import (
+from ..src.basic_data_handling.boolean_nodes import (
     BooleanAnd,
     BooleanOr,
     BooleanNot,

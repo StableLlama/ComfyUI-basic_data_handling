@@ -1,5 +1,5 @@
 import pytest
-from src.basic_data_handling.list_nodes import (
+from ..src.basic_data_handling.list_nodes import (
     ListAll,
     ListAny,
     ListAppend,

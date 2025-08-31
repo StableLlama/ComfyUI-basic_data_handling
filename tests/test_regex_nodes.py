@@ -1,5 +1,5 @@
 #import pytest
-from src.basic_data_handling.regex_nodes import (
+from ..src.basic_data_handling.regex_nodes import (
     RegexSearchGroupsDataList,
     RegexGroupDict,
     RegexFindallDataList,

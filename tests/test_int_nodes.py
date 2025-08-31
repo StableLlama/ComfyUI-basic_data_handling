@@ -1,5 +1,5 @@
 import pytest
-from src.basic_data_handling.int_nodes import (
+from ..src.basic_data_handling.int_nodes import (
     IntAdd,
     IntSubtract,
     IntMultiply,

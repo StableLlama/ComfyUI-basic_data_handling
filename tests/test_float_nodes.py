@@ -1,6 +1,6 @@
 import math
 import pytest
-from src.basic_data_handling.float_nodes import (
+from ..src.basic_data_handling.float_nodes import (
     FloatCreate,
     FloatAdd,
     FloatSubtract,
