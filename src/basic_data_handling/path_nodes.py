@@ -16,6 +16,14 @@ except:
         ANY = "*"
     ComfyNodeABC = object
 
+try:
+    from folder_paths import get_input_directory, get_output_directory
+except:
+    def get_input_directory():
+        return "./"
+
+    get_output_directory = get_input_directory
+
 
 # helper functions:
 
@@ -1156,6 +1164,48 @@ class PathSaveImageRGBA(ComfyNodeABC):
             return (False,)
 
 
+class PathInputDir(ComfyNodeABC):
+    """
+    Returns the ComfyUI input path.
+
+    This is where input images are usually stored when using ComfyUI
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {}
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("input_path",)
+    CATEGORY = "Basic/Path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+    DISPLAY_NAME = "Get ComfyUI Input Path"
+
+    def execute(self) -> tuple[str]:
+        return (get_input_directory(),)
+
+
+class PathOutputDir(ComfyNodeABC):
+    """
+    Returns the ComfyUI output path.
+
+    This is where output images are usually stored when using ComfyUI
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {}
+
+    RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("output_path",)
+    CATEGORY = "Basic/Path"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+    DISPLAY_NAME = "Get ComfyUI Output Path"
+
+    def execute(self) -> tuple[str]:
+        return (get_output_directory(),)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: PathAbspath": PathAbspath,
     "Basic data handling: PathBasename": PathBasename,
@@ -1168,12 +1218,14 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: PathSetExtension": PathSetExtension,
     "Basic data handling: PathGetSize": PathGetSize,
     "Basic data handling: PathGlob": PathGlob,
+    "Basic data handling: PathInputDir": PathInputDir,
     "Basic data handling: PathIsAbsolute": PathIsAbsolute,
     "Basic data handling: PathIsDir": PathIsDir,
     "Basic data handling: PathIsFile": PathIsFile,
     "Basic data handling: PathJoin": PathJoin,
     "Basic data handling: PathListDir": PathListDir,
     "Basic data handling: PathNormalize": PathNormalize,
+    "Basic data handling: PathOutputDir": PathOutputDir,
     "Basic data handling: PathRelative": PathRelative,
     "Basic data handling: PathSplit": PathSplit,
     "Basic data handling: PathSplitExt": PathSplitExt,
@@ -1199,12 +1251,14 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: PathSetExtension": "set extension",
     "Basic data handling: PathGetSize": "get size",
     "Basic data handling: PathGlob": "glob",
+    "Basic data handling: PathInputDir": "input dir",
     "Basic data handling: PathIsAbsolute": "is absolute",
     "Basic data handling: PathIsDir": "is dir",
     "Basic data handling: PathIsFile": "is file",
     "Basic data handling: PathJoin": "join",
     "Basic data handling: PathListDir": "list dir",
     "Basic data handling: PathNormalize": "normalize",
+    "Basic data handling: PathOutputDir": "output dir",
     "Basic data handling: PathRelative": "relative",
     "Basic data handling: PathSplit": "split",
     "Basic data handling: PathSplitExt": "splitext",

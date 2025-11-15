@@ -127,7 +127,7 @@ Mathematical operations:
 File system path manipulation nodes:
 
 - **Basic operations**: join, split, splitext, basename, dirname, normalize
-- **Path information**: abspath, exists, is_file, is_dir, is_absolute, get_size, get_extension, set_extension
+- **Path information**: abspath, exists, is_file, is_dir, is_absolute, get_size, get_extension, set_extension, input_dir, output_dir
 - **Directory operations**: list_dir, get_cwd
 - **Path searching**: glob, common_prefix
 - **Path conversions**: relative, expand_vars
