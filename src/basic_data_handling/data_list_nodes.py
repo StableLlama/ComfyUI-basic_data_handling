@@ -45,6 +45,36 @@ class DataListCreate(ComfyNodeABC):
         return (values[:-1],)
 
 
+class DataListListCreate(ComfyNodeABC):
+    """
+    Creates a new Data List from items.
+
+    This node creates and returns a Data List. The list of items is dynamically
+    extended based on the number of inputs provided.
+
+    Each input can be a list, so you'll get a list of lists.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": ContainsDynamicDict({
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
+            })
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_list"
+    OUTPUT_IS_LIST = (True,)
+    INPUT_IS_LIST = True
+
+    def create_list(self, **kwargs: list[Any]) -> tuple[list]:
+        values = list(kwargs.values())
+        return (values[:-1],)
+
+
 class DataListCreateFromBoolean(ComfyNodeABC):
     """
     Creates a new Data List from BOOLEAN items.
@@ -1087,6 +1117,7 @@ class DataListToSet(ComfyNodeABC):
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListCreate": DataListCreate,
+    "Basic data handling: DataListListCreate": DataListListCreate,
     "Basic data handling: DataListCreateFromBoolean": DataListCreateFromBoolean,
     "Basic data handling: DataListCreateFromFloat": DataListCreateFromFloat,
     "Basic data handling: DataListCreateFromInt": DataListCreateFromInt,
@@ -1124,6 +1155,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListCreate": "create Data List",
+    "Basic data handling: DataListListCreate": "create Data List of Lists",
     "Basic data handling: DataListCreateFromBoolean": "create Data List from BOOLEANs",
     "Basic data handling: DataListCreateFromFloat": "create Data List from FLOATs",
     "Basic data handling: DataListCreateFromInt": "create Data List from INTs",
