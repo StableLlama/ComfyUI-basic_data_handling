@@ -196,7 +196,6 @@ class DictCreateFromItemsDataList(ComfyNodeABC):
             # Check if items are valid (key-value pairs)
             items = kwargs.get('item', [])
             for item in items:
-                print(f'item: "{item}", len(item): {len(item)}, items: "{items}", len(items): {len(items)}')
                 if not isinstance(item, tuple) and len(item) != 2:
                     raise ValueError("Each item must be a (key, value) pair")
 
@@ -228,7 +227,6 @@ class DictCreateFromItemsList(ComfyNodeABC):
         try:
             # Check if items are valid (key-value pairs)
             for item in items:
-                print(f'item: "{item}", len(item): {len(item)}, items: "{items}", len(items): {len(items)}')
                 if not isinstance(item, tuple) and len(item) != 2:
                     raise ValueError("Each item must be a (key, value) pair")
 
