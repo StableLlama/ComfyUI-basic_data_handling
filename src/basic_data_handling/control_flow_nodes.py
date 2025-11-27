@@ -101,6 +101,10 @@ class IfElifElse(ComfyNodeABC):
             if elif_key not in kwargs:
                 break
 
+            if kwargs.get(elif_key) is None:
+                needed.append(elif_key)
+                return needed
+
             # If this elif condition is true and its value is None, add it to needed
             if kwargs.get(elif_key, False) and kwargs.get(then_key) is None:
                 needed.append(then_key)
