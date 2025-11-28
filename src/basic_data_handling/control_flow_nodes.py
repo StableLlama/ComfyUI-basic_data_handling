@@ -217,6 +217,9 @@ class ContinueFlow(ComfyNodeABC):
     This node takes a value and either passes it through or blocks execution
     based on the 'select' parameter. When 'select' is True, the value passes through;
     when False, execution is blocked.
+
+    When a `message` is provided ComfyUI will display it in a dialog.
+    Leave it empty for silent operation.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -224,6 +227,9 @@ class ContinueFlow(ComfyNodeABC):
             "required": {
                 "value": (IO.ANY, {}),
                 "select": (IO.BOOLEAN, {"default": True}),
+            },
+            "optional": {
+                "message": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -233,11 +239,11 @@ class ContinueFlow(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
 
-    def execute(self, value: Any, select: bool = True) -> tuple[Any]:
+    def execute(self, value: Any, select: bool = True, message: str = "") -> tuple[Any]:
         if select:
             return (value,)
         else:
-            return (ExecutionBlocker(None),)
+            return (ExecutionBlocker(message if message else None),)
 
 
 class FlowSelect(ComfyNodeABC):
