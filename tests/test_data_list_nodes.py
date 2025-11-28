@@ -20,6 +20,7 @@ from src.basic_data_handling.data_list_nodes import (
     DataListInsert,
     DataListLast,
     DataListLength,
+    DataListListCreate,
     DataListMax,
     DataListMin,
     DataListPop,
@@ -234,6 +235,20 @@ def test_create_from_string():
 
     # Testing with string-convertible values
     assert node.create_list(item_0=123, item_1=True, _dynamic_number=2) == (["123", "True"],)
+
+    # Testing with empty list
+    assert node.create_list(_dynamic_number=0) == ([],)
+
+
+def test_list_create():
+    node = DataListListCreate()
+    # Testing with string values
+    assert (node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], _dynamic_number=2) ==
+            ([["hello", "world"], ["bye", "bye!"]],))
+
+    # Testing with mixed values
+    assert (node.create_list(item_0=[123, 456], item_1=[True, False], _dynamic_number=2) ==
+            ([[123, 456], [True, False]],))
 
     # Testing with empty list
     assert node.create_list(_dynamic_number=0) == ([],)
