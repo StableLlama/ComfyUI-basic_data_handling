@@ -52,6 +52,38 @@ class TimeNow(ComfyNodeABC):
         return (datetime.datetime.now(),)
 
 
+class TimeNowUTC(ComfyNodeABC):
+    """
+    Returns the current time and date as a DATETIME object, in the UTC timezone.
+    Note: Output changes for every run, providing a fresh timestamp each time.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "trigger": (IO.ANY, {"description": "Optional input to trigger execution"})
+            }
+        }
+
+    RETURN_TYPES = (IO.DATETIME,)
+    RETURN_NAMES = ("now",)
+    CATEGORY = "Basic/time"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "get_now_utc"
+
+    @classmethod
+    def IS_CHANGED(s, **kwargs):
+        # Always return a changing value to indicate the output changes every run
+        return time.time()
+
+    def get_now_utc(self, trigger=None) -> tuple[datetime.datetime]:
+        """
+        Retrieves the current system time in the UTC timezone.
+        The optional trigger input can be used to trigger execution.
+        """
+        return (datetime.datetime.now(datetime.UTC),)
+
+
 class TimeToUnix(ComfyNodeABC):
     """
     Converts a DATETIME object to a Unix timestamp (a float representing seconds since the epoch).
@@ -287,6 +319,7 @@ class TimeExtract(ComfyNodeABC):
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: TimeNow": TimeNow,
+    "Basic data handling: TimeNowUTC": TimeNowUTC,
     "Basic data handling: TimeToUnix": TimeToUnix,
     "Basic data handling: UnixToTime": UnixToTime,
     "Basic data handling: TimeFormat": TimeFormat,
@@ -300,6 +333,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: TimeNow": "Time Now",
+    "Basic data handling: TimeNowUTC": "Time Now (UTC)",
     "Basic data handling: TimeToUnix": "Time to Unix Timestamp",
     "Basic data handling: UnixToTime": "Unix Timestamp to Time",
     "Basic data handling: TimeFormat": "Format Time String",
