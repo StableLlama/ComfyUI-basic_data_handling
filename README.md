@@ -163,7 +163,7 @@ String manipulation nodes:
 
 Date and time manipulation nodes:
 
-- **DateTime creation/conversion**: TimeNow, TimeToUnix, UnixToTime
+- **DateTime creation/conversion**: TimeNow, TimeNowUTC, TimeToUnix, UnixToTime
 - **String formatting/parsing**: TimeFormat, TimeParse
 - **Time calculations**: TimeDelta, TimeAddDelta, TimeSubtractDelta, TimeDifference
 - **Component extraction**: TimeExtract (year, month, day, hour, etc.)

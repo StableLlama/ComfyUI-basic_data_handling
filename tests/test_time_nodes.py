@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from src.basic_data_handling.time_nodes import (
     TimeNow,
+    TimeNowUTC,
     TimeToUnix,
     UnixToTime,
     TimeFormat,
@@ -23,6 +24,19 @@ def test_time_now():
 
     # Test with trigger parameter
     result_with_trigger = node.get_now(trigger="any value")
+    assert isinstance(result_with_trigger, tuple)
+    assert len(result_with_trigger) == 1
+    assert isinstance(result_with_trigger[0], datetime)
+
+def test_time_now_utc():
+    node = TimeNowUTC()
+    result = node.get_now_utc()
+    assert isinstance(result, tuple)
+    assert len(result) == 1
+    assert isinstance(result[0], datetime)
+
+    # Test with trigger parameter
+    result_with_trigger = node.get_now_utc(trigger="any value")
     assert isinstance(result_with_trigger, tuple)
     assert len(result_with_trigger) == 1
     assert isinstance(result_with_trigger[0], datetime)
