@@ -81,7 +81,7 @@ class TimeNowUTC(ComfyNodeABC):
         Retrieves the current system time in the UTC timezone.
         The optional trigger input can be used to trigger execution.
         """
-        return (datetime.datetime.now(datetime.UTC),)
+        return (datetime.datetime.now(datetime.timezone.utc),)
 
 
 class TimeToUnix(ComfyNodeABC):
