@@ -343,6 +343,31 @@ class ExecutionOrder(ComfyNodeABC):
         return (None, any_node_output)
 
 
+class IsConnected(ComfyNodeABC):
+    """
+    Checks if the input is connected.
+
+    This node returns True if the 'input' is connected to another node's output,
+    and False otherwise.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "input": (IO.ANY, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("is_connected",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+
+    def execute(self, input: Any = None) -> tuple[bool]:
+        return (input is not None,)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
@@ -351,6 +376,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: FlowSelect": FlowSelect,
     "Basic data handling: ForceCalculation": ForceCalculation,
     "Basic data handling: ExecutionOrder": ExecutionOrder,
+    "Basic data handling: IsConnected": IsConnected,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -361,4 +387,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: FlowSelect": "flow select",
     "Basic data handling: ForceCalculation": "force calculation",
     "Basic data handling: ExecutionOrder": "force execution order",
+    "Basic data handling: IsConnected": "is connected",
 }
