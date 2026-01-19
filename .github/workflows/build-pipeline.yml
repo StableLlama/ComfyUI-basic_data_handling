@@ -1,5 +1,7 @@
 # GitHub CI build pipeline
 name: basic_data_handling CI build
+permissions:
+  contents: read
 
 on:
   pull_request:
