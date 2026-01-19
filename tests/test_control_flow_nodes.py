@@ -1,6 +1,6 @@
 #import pytest
 from src.basic_data_handling.control_flow_nodes import (
-    IfElse, SwitchCase, IfElifElse, ContinueFlow, FlowSelect, ForceCalculation, ExecutionOrder
+    IfElse, SwitchCase, IfElifElse, ContinueFlow, FlowSelect, ForceCalculation, ExecutionOrder, IsConnected
 )
 
 
@@ -194,3 +194,14 @@ def test_execution_order():
     assert node.execute(other_kwarg="some_val") == (None, [])
     # with multiple kwargs
     assert node.execute(**{'any node output': "passthrough_val", "E/O": "ignored"}) == (None, "passthrough_val")
+
+
+def test_is_connected():
+    node = IsConnected()
+    # Test when input is connected (not None)
+    assert node.execute("connected") == (True,)
+    assert node.execute(0) == (True,)
+    assert node.execute(False) == (True,)
+    # Test when input is NOT connected (None)
+    assert node.execute(None) == (False,)
+    assert node.execute() == (False,)
