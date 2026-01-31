@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "1.2.0"
+version = "1.3.0"
 description = """Basic Python functions for manipulating data that every programmer is used to, lightweight with no additional dependencies.
 
 Supported data types:

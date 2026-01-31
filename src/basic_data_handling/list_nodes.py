@@ -39,8 +39,8 @@ class ListCreate(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = list(kwargs.values())
-        return (values[:-1],)
+        values = list(kwargs.values())[:-1]
+        return (values,)
 
 
 class ListCreateFromBoolean(ComfyNodeABC):
@@ -64,8 +64,8 @@ class ListCreateFromBoolean(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = [bool(value) for value in kwargs.values()]
-        return (values[:-1],)
+        values = [bool(value) for value in list(kwargs.values())[:-1]]
+        return (values,)
 
 
 class ListCreateFromFloat(ComfyNodeABC):
@@ -741,6 +741,35 @@ class ListSetItem(ComfyNodeABC):
         except IndexError:
             raise IndexError(f"Index {index} out of range for LIST of length {len(list)}")
 
+
+class ListShuffle(ComfyNodeABC):
+    """
+    Shuffles the items in a list using a seed for reproducibility.
+
+    This node takes a LIST and a seed as input and returns a new shuffled LIST.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {}),
+                "seed": ("INT", {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "shuffle_list"
+
+    def shuffle_list(self, list: list[Any], seed: int) -> tuple[list[Any]]:
+        import random
+        random.seed(seed)
+        result = list.copy()
+        random.shuffle(result)
+        return (result,)
+
+
 class ListSlice(ComfyNodeABC):
     """
     Creates a slice of a LIST.
@@ -910,6 +939,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListRemove": ListRemove,
     "Basic data handling: ListReverse": ListReverse,
     "Basic data handling: ListSetItem": ListSetItem,
+    "Basic data handling: ListShuffle": ListShuffle,
     "Basic data handling: ListSlice": ListSlice,
     "Basic data handling: ListSort": ListSort,
     "Basic data handling: ListSum": ListSum,
@@ -944,6 +974,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListRemove": "remove",
     "Basic data handling: ListReverse": "reverse",
     "Basic data handling: ListSetItem": "set item",
+    "Basic data handling: ListShuffle": "shuffle",
     "Basic data handling: ListSlice": "slice",
     "Basic data handling: ListSort": "sort",
     "Basic data handling: ListSum": "sum",
