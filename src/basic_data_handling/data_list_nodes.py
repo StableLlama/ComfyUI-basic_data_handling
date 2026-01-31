@@ -920,6 +920,39 @@ class DataListSetItem(ComfyNodeABC):
             raise IndexError(f"Index {index} out of range for list of length {len(input_list)}")
 
 
+class DataListShuffle(ComfyNodeABC):
+    """
+    Shuffles the items in a list using a seed for reproducibility.
+
+    This node takes a list and a seed as input and returns a new shuffled list.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {}),
+                "seed": (IO.INT, {"default": 0}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("list",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "shuffle_list"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
+
+    def shuffle_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        import random
+        input_list = kwargs.get('list', [])
+        seed = kwargs.get('seed', [0])[0]
+        random.seed(seed)
+        result = input_list.copy()
+        random.shuffle(result)
+        return (result,)
+
+
 class DataListSlice(ComfyNodeABC):
     """
     Creates a slice of a list.
@@ -1145,6 +1178,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListRemove": DataListRemove,
     "Basic data handling: DataListReverse": DataListReverse,
     "Basic data handling: DataListSetItem": DataListSetItem,
+    "Basic data handling: DataListShuffle": DataListShuffle,
     "Basic data handling: DataListSlice": DataListSlice,
     "Basic data handling: DataListSort": DataListSort,
     "Basic data handling: DataListSum": DataListSum,
@@ -1183,6 +1217,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListRemove": "remove",
     "Basic data handling: DataListReverse": "reverse",
     "Basic data handling: DataListSetItem": "set item",
+    "Basic data handling: DataListShuffle": "shuffle",
     "Basic data handling: DataListSlice": "slice",
     "Basic data handling: DataListSort": "sort",
     "Basic data handling: DataListSum": "sum",

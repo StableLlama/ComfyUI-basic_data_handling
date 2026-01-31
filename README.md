@@ -60,7 +60,7 @@ Mechanisms to direct workflow execution:
 ComfyUI list manipulation nodes (for processing individual items):
 
 - **Creation**: create Data List (generic and type-specific versions)
-- **Modification**: append, extend, insert, set item, remove, pop, pop random
+- **Modification**: append, extend, insert, set item, shuffle, remove, pop, pop random
 - **Filtering**: filter, filter select
 - **Access**: get item, first, last, slice, index, contains
 - **Information**: length, count
@@ -103,7 +103,7 @@ Integer operation nodes:
 Python list manipulation nodes (as a single variable):
 
 - **Creation**: create LIST (generic and type-specific versions)
-- **Modification**: append, extend, insert, remove, pop, pop random, set_item
+- **Modification**: append, extend, insert, remove, pop, pop random, set_item, shuffle
 - **Access**: get_item, first, last, slice, index, contains
 - **Information**: length, count
 - **Operations**: sort, reverse, min, max

@@ -29,6 +29,7 @@ from src.basic_data_handling.data_list_nodes import (
     DataListRemove,
     DataListReverse,
     DataListSetItem,
+    DataListShuffle,
     DataListSlice,
     DataListSort,
     DataListSum,
@@ -126,6 +127,41 @@ def test_set_item():
     assert node.set_item(list=["a", "b", "c"], index=[-1], value=["z"]) == (["a", "b", "z"],)
     with pytest.raises(IndexError):
         node.set_item(list=[], index=[0], value=["test"])  # Out of range
+
+
+def test_shuffle():
+    node = DataListShuffle()
+
+    # Test determinism: Same seed should produce the same shuffle
+    original_list = [1, 2, 3, 4, 5]
+    result1 = node.shuffle_list(list=original_list, seed=[42])
+    result2 = node.shuffle_list(list=original_list, seed=[42])
+    assert result1 == result2  # Same seed, same output
+
+    # Verify the output is a permutation of the input
+    assert sorted(result1[0]) == sorted(original_list)
+    assert len(result1[0]) == len(original_list)
+
+    # Test different seeds produce different shuffles (not guaranteed, but likely for this list)
+    result3 = node.shuffle_list(list=original_list, seed=[123])
+    assert result1 != result3  # Different seed, likely different output
+
+    # Test empty list
+    assert node.shuffle_list(list=[], seed=[0]) == ([],)
+
+    # Test single-item list
+    assert node.shuffle_list(list=[42], seed=[99]) == ([42],)
+
+    # Test mixed data types
+    mixed_list = ["apple", 3.14, True, 42]
+    result4 = node.shuffle_list(list=mixed_list, seed=[7])
+    assert sorted(result4[0], key=str) == sorted(mixed_list, key=str)  # Sort for comparison since types may not be directly comparable
+    assert len(result4[0]) == len(mixed_list)
+
+    # Test that the original list is not modified (node should return a copy)
+    original_copy = original_list.copy()
+    node.shuffle_list(list=original_list, seed=[1])
+    assert original_list == original_copy  # Original should remain unchanged
 
 
 def test_contains():
