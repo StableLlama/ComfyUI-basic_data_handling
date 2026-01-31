@@ -39,8 +39,8 @@ class ListCreate(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = list(kwargs.values())
-        return (values[:-1],)
+        values = list(kwargs.values())[:-1]
+        return (values,)
 
 
 class ListCreateFromBoolean(ComfyNodeABC):
@@ -64,8 +64,8 @@ class ListCreateFromBoolean(ComfyNodeABC):
     FUNCTION = "create_list"
 
     def create_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = [bool(value) for value in kwargs.values()]
-        return (values[:-1],)
+        values = [bool(value) for value in list(kwargs.values())[:-1]]
+        return (values,)
 
 
 class ListCreateFromFloat(ComfyNodeABC):

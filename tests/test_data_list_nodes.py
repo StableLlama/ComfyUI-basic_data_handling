@@ -183,75 +183,75 @@ def test_filter_select():
 def test_create():
     node = DataListCreate()
     # Testing with one item
-    assert node.create_list(item_0="test", _dynamic_number=1) == (["test"],)
+    assert node.create_list(item_0="test", item_1="") == (["test"],)
 
     # Testing with multiple items of different types
-    assert node.create_list(item_0=1, item_1="two", item_2=3.0, _dynamic_number=3) == ([1, "two", 3.0],)
+    assert node.create_list(item_0=1, item_1="two", item_2=3.0, item_3="") == ([1, "two", 3.0],)
 
     # Testing with empty list (no items)
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0="") == ([],)
 
 
 def test_create_from_boolean():
     node = DataListCreateFromBoolean()
     # Testing with boolean values
-    assert node.create_list(item_0=True, item_1=False, _dynamic_number=2) == ([True, False],)
+    assert node.create_list(item_0=True, item_1=False, item_2=False) == ([True, False],)
 
     # Testing with boolean-convertible values
-    assert node.create_list(item_0=1, item_1=0, _dynamic_number=2) == ([True, False],)
+    assert node.create_list(item_0=1, item_1=0, item_2="") == ([True, False],)
 
     # Testing with empty list
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0=0) == ([],)
 
 
 def test_create_from_float():
     node = DataListCreateFromFloat()
     # Testing with float values
-    assert node.create_list(item_0=1.5, item_1=2.5, _dynamic_number=2) == ([1.5, 2.5],)
+    assert node.create_list(item_0=1.5, item_1=2.5, item_2=2) == ([1.5, 2.5],)
 
     # Testing with float-convertible values
-    assert node.create_list(item_0=1, item_1="2.5", _dynamic_number=2) == ([1.0, 2.5],)
+    assert node.create_list(item_0=1, item_1="2.5", item_2="") == ([1.0, 2.5],)
 
     # Testing with empty list
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0="") == ([],)
 
 
 def test_create_from_int():
     node = DataListCreateFromInt()
     # Testing with integer values
-    assert node.create_list(item_0=1, item_1=2, _dynamic_number=2) == ([1, 2],)
+    assert node.create_list(item_0=1, item_1=2, item_2="") == ([1, 2],)
 
     # Testing with int-convertible values
-    assert node.create_list(item_0="1", item_1=2.0, _dynamic_number=2) == ([1, 2],)
+    assert node.create_list(item_0="1", item_1=2.0, item_2="") == ([1, 2],)
 
     # Testing with empty list
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0="") == ([],)
 
 
 def test_create_from_string():
     node = DataListCreateFromString()
     # Testing with string values
-    assert node.create_list(item_0="hello", item_1="world", _dynamic_number=2) == (["hello", "world"],)
+    assert node.create_list(item_0="hello", item_1="world", item_2="") == (["hello", "world"],)
 
     # Testing with string-convertible values
-    assert node.create_list(item_0=123, item_1=True, _dynamic_number=2) == (["123", "True"],)
+    assert node.create_list(item_0=123, item_1=True, item_2="") == (["123", "True"],)
 
     # Testing with empty list
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0="") == ([],)
 
 
 def test_list_create():
     node = DataListListCreate()
     # Testing with string values
-    assert (node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], _dynamic_number=2) ==
+    assert (node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], item_2="") ==
             ([["hello", "world"], ["bye", "bye!"]],))
 
     # Testing with mixed values
-    assert (node.create_list(item_0=[123, 456], item_1=[True, False], _dynamic_number=2) ==
+    assert (node.create_list(item_0=[123, 456], item_1=[True, False], item_2="") ==
             ([[123, 456], [True, False]],))
 
     # Testing with empty list
-    assert node.create_list(_dynamic_number=0) == ([],)
+    assert node.create_list(item_0="") == ([],)
 
 
 def test_pop_random():
