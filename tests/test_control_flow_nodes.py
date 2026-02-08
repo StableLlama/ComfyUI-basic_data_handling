@@ -156,25 +156,37 @@ def test_continue_flow():
     # select is True
     assert node.execute("some value", select=True) == ("some value",)
     # select is False
-    assert node.execute("some value", select=False) == (None,)  # ExecutionBlocker(None) becomes None
+    res = node.execute("some value", select=False)
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
     # select is default (True)
     assert node.execute("some value") == ("some value",)
     # Test with different value types
     assert node.execute(123, select=True) == (123,)
-    assert node.execute([1, 2], select=False) == (None,)
+    res = node.execute([1, 2], select=False)
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
 
 
 def test_flow_select():
     node = FlowSelect()
     # select is True
-    assert node.select("some value", select=True) == ("some value", None)
+    res = node.select("some value", select=True)
+    assert res[0] == "some value"
+    assert res[1] is None or "ExecutionBlocker" in str(res[1])
     # select is False
-    assert node.select("some value", select=False) == (None, "some value")
+    res = node.select("some value", select=False)
+    assert res[0] is None or "ExecutionBlocker" in str(res[0])
+    assert res[1] == "some value"
     # select is default (True)
-    assert node.select("some value") == ("some value", None)
+    res = node.select("some value")
+    assert res[0] == "some value"
+    assert res[1] is None or "ExecutionBlocker" in str(res[1])
     # Test with different value types
-    assert node.select(42, select=True) == (42, None)
-    assert node.select({'a': 1}, select=False) == (None, {'a': 1})
+    res = node.select(42, select=True)
+    assert res[0] == 42
+    assert res[1] is None or "ExecutionBlocker" in str(res[1])
+    res = node.select({'a': 1}, select=False)
+    assert res[0] is None or "ExecutionBlocker" in str(res[0])
+    assert res[1] == {'a': 1}
 
 
 def test_force_calculation():

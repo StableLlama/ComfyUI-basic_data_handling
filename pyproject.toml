@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "basic_data_handling"
-version = "1.3.0"
+version = "1.4.0"
 description = """Basic Python functions for manipulating data that every programmer is used to, lightweight with no additional dependencies.
 
 Supported data types:
 - ComfyUI native: BOOLEAN, FLOAT, INT, STRING, and data lists
 - Python types as custom data types: DICT, LIST, SET, DATETIME, TIMEDELTA
+- PyTorch: TENSOR
 
 Feature categories:
 - Boolean logic operations
@@ -22,7 +23,8 @@ Feature categories:
 - String manipulation
 - File system path handling, including STRING, IMAGE and MASK load and save
 - SET operations
-- time and date handling"""
+- time and date handling
+- PyTorch Tensor manipulation (arithmetic, slicing, reshaping)"""
 authors = [
   {name = "StableLlama"}
 ]
@@ -58,7 +60,7 @@ Icon = ""
 minversion = "8.0"
 pythonpath = [
     "src",
-    #"../..",  # Path to parent directory containing comfy module
+    "../..",  # Path to parent directory containing comfy module
     "."
 ]
 testpaths = [

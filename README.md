@@ -159,6 +159,18 @@ String manipulation nodes:
 - **Text modification**: concat, count, replace, strip, lstrip, rstrip, removeprefix, removesuffix
 - **Encoding/escaping**: decode, encode, escape, unescape, format_map
 
+### TENSOR
+
+PyTorch tensor manipulation nodes:
+
+- **Creation**: Tensor Create (from numbers, lists, or other tensors)
+- **Arithmetic**: Tensor Binary Op (add, subtract, multiply, divide, power, remainder, floor_divide)
+- **Functions**: Tensor Unary Op (abs, neg, exp, log, sin, cos, sqrt, sigmoid, relu)
+- **Reshaping**: Tensor Reshape, Tensor Permute (dims)
+- **Access**: Tensor Slice (supports Python-style slice strings like `0:10, :, 5`)
+- **Combined**: Tensor Join (concatenate or stack)
+- **Analysis**: Tensor Info (returns shape, dtype, device)
+
 ### Time
 
 Date and time manipulation nodes:
