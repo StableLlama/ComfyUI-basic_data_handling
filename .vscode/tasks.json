@@ -1,0 +1,85 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Tests (pytest)",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m pytest",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint (ruff)",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m ruff check .",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Format (ruff)",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m ruff format .",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Type Check (mypy)",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m mypy .",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Coverage",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m pytest --cov=src",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pre-commit Run All",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m pre_commit run --all-files",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump Version (patch)",
+            "type": "shell",
+            "command": "${workspaceFolder}/../../venv/bin/python -m bump_my_version bump patch",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
