@@ -1,6 +1,6 @@
 import torch
 from inspect import cleandoc
-from typing import Any, Union
+from typing import Any
 
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
