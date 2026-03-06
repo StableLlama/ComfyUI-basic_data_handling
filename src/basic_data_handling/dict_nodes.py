@@ -1,5 +1,6 @@
 from typing import Any
 from inspect import cleandoc
+from itertools import chain
 
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
@@ -624,17 +625,18 @@ class DictMerge(ComfyNodeABC):
     FUNCTION = "merge"
 
     def merge(self, dict1: dict, dict2=None, dict3=None, dict4=None) -> tuple[dict]:
-        result = dict1.copy()
+        extra_dicts = [x for x in (dict2, dict3, dict4) if x is not None]
+        if not extra_dicts:
+            return (dict1,)
 
-        if dict2 is not None:
-            result.update(dict2)
-
-        if dict3 is not None:
-            result.update(dict3)
-
-        if dict4 is not None:
-            result.update(dict4)
-
+        # dict1 might be something like frozendict or other immutable mapping class.
+        # Thus, we shouldn't just copy-and-update,
+        # but instead we should build a new instance of the same type:
+        dict1_type = type(dict1)
+        result = dict1_type(chain(
+            dict1.items(),
+            *(x.items() for x in extra_dicts),
+        ))
         return (result,)
 
 
@@ -806,8 +808,11 @@ class DictSet(ComfyNodeABC):
     FUNCTION = "set"
 
     def set(self, input_dict: dict, key: str, value: Any) -> tuple[dict]:
-        result = input_dict.copy()
-        result[key] = value
+        # input_dict might be something like frozendict or other immutable mapping class.
+        # Thus, we shouldn't just copy-and-update,
+        # but instead we should build a new instance of the same type:
+        dict_type = type(input_dict)
+        result = dict_type(chain(input_dict.items(), (key, value)))
         return (result,)
 
 
@@ -864,8 +869,11 @@ class DictUpdate(ComfyNodeABC):
     FUNCTION = "update"
 
     def update(self, dict1: dict, dict2: dict) -> tuple[dict]:
-        result = dict1.copy()
-        result.update(dict2)
+        # dict1 might be something like frozendict or other immutable mapping class.
+        # Thus, we shouldn't just copy-and-update,
+        # but instead we should build a new instance of the same type:
+        dict1_type = type(dict1)
+        result = dict1_type(chain(dict1.items(), dict2.items()))
         return (result,)
 
 
