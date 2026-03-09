@@ -35,6 +35,9 @@ VT4 = TypeVar('VT4')
 
 
 def _output_dict_preserving_type(result: Dict[KT, VT], in_type: Type[Mapping]) -> _U[Dict[KT, VT], Mapping[KT, VT]]:
+    """Internal function:
+    try returning the output dict as an instance of the same class as input dict.
+    """
     if in_type is dict:
         return result
 
