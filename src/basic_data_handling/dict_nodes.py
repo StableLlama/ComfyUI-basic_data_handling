@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Mapping, Type
+
 from inspect import cleandoc
-from itertools import chain
+import random
 
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
@@ -15,6 +16,24 @@ except:
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
+
+
+def _output_dict_preserving_type(result: dict, in_type: Type[Mapping]):
+    if in_type is dict:
+        return result
+
+    # Support other dict-like classes:
+    # noinspection PyBroadException
+    try:
+        return in_type(result)
+    except Exception:
+        pass
+
+    # noinspection PyBroadException
+    try:
+        return in_type(result.items())
+    except Exception:
+        return result
 
 
 class DictCreate(ComfyNodeABC):
@@ -351,7 +370,30 @@ class DictExcludeKeys(ComfyNodeABC):
     FUNCTION = "exclude_keys"
 
     def exclude_keys(self, input_dict: dict, keys_to_exclude: list) -> tuple[dict]:
-        result = {k: v for k, v in input_dict.items() if k not in keys_to_exclude}
+        if not(input_dict and keys_to_exclude):
+            return (input_dict,)
+
+        # `in` check is faster with sets + remove duplicates:
+        keys_to_exclude_set = set(keys_to_exclude)
+
+        if len(input_dict) <= len(keys_to_exclude_set):
+            # It's faster to rebuild the dict with filter.
+            result = {
+                k: v for k, v in input_dict.items()
+                if k not in keys_to_exclude_set
+            }
+        else:
+            # It's faster to duplicate the dict, then pop all the exclusions one-by-one.
+            result = dict(input_dict)
+            for key in keys_to_exclude_set:
+                if key in result:
+                    result.pop(key)
+
+        if len(result) == len(input_dict):
+            # No changes made
+            return (input_dict,)
+
+        result = _output_dict_preserving_type(result, type(input_dict))
         return (result,)
 
 
@@ -377,7 +419,30 @@ class DictFilterByKeys(ComfyNodeABC):
     FUNCTION = "filter_by_keys"
 
     def filter_by_keys(self, input_dict: dict, keys: list) -> tuple[dict]:
-        result = {k: input_dict[k] for k in keys if k in input_dict}
+        if not(input_dict and keys):
+            return (input_dict,)
+
+        # `in` check is faster with sets + remove duplicates:
+        keys_set = set(keys)
+
+        if len(keys_set) <= len(input_dict):
+            # It's faster to iterate over preserved keys
+            result = {
+                k: input_dict[k] for k in keys_set
+                if k in input_dict
+            }
+        else:
+            # It's faster to iterate over the input dict items
+            result = {
+                k: v for k, v in input_dict.items()
+                if k in keys_set
+            }
+
+        if len(result) == len(input_dict):
+            # No changes made
+            return (input_dict,)
+
+        result = _output_dict_preserving_type(result, type(input_dict))
         return (result,)
 
 
@@ -522,10 +587,12 @@ class DictInvert(ComfyNodeABC):
     def invert(self, input_dict: dict) -> tuple[dict, bool]:
         try:
             inverted = {v: k for k, v in input_dict.items()}
-            return inverted, True
         except Exception:
             # Return original dictionary if inversion fails (e.g., unhashable values)
             return input_dict, False
+
+        inverted = _output_dict_preserving_type(inverted, type(input_dict))
+        return inverted, True
 
 
 class DictItems(ComfyNodeABC):
@@ -629,14 +696,14 @@ class DictMerge(ComfyNodeABC):
         if not extra_dicts:
             return (dict1,)
 
-        # dict1 might be something like frozendict or other immutable mapping class.
-        # Thus, we shouldn't just copy-and-update,
-        # but instead we should build a new instance of the same type:
-        dict1_type = type(dict1)
-        result = dict1_type(chain(
-            dict1.items(),
-            *(x.items() for x in extra_dicts),
-        ))
+        # dict1 might be something like `frozendict` or other immutable mapping class.
+        # Thus, we shouldn't do `dict.copy()`,
+        # we must explicitly construct a `dict` object:
+        result = dict(dict1)
+        for extra in extra_dicts:
+            result.update(extra)
+
+        result = _output_dict_preserving_type(result, type(dict1))
         return (result,)
 
 
@@ -668,16 +735,20 @@ class DictPop(ComfyNodeABC):
     FUNCTION = "pop"
 
     def pop(self, input_dict: dict, key: str, default_value=None) -> tuple[dict, Any]:
-        result = input_dict.copy()
+        if key not in input_dict:
+            return input_dict, default_value
 
+        # input_dict might be something like `frozendict` or other immutable mapping class.
+        # Thus, we shouldn't do `dict.copy()`,
+        # we must explicitly construct a `dict` object:
+        result = dict(input_dict)
         try:
-            if key in result:
-                value = result.pop(key)
-                return result, value
-            else:
-                return result, default_value
+            value = result.pop(key)
         except Exception as e:
             raise ValueError(f"Error popping key from dictionary: {str(e)}")
+
+        result = _output_dict_preserving_type(result, type(input_dict))
+        return result, value
 
 
 class DictPopItem(ComfyNodeABC):
@@ -686,7 +757,8 @@ class DictPopItem(ComfyNodeABC):
 
     This node takes a dictionary as input, removes an arbitrary key-value pair,
     and returns the modified dictionary along with the removed key and value.
-    If the dictionary is empty, returns an error.
+    If operation fails, no error is thrown, but the last argument is `False`,
+    and the dictionary is returned intact.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -703,15 +775,18 @@ class DictPopItem(ComfyNodeABC):
     FUNCTION = "popitem"
 
     def popitem(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
-        result = input_dict.copy()
+        if not input_dict:
+            return input_dict, "", None, False
+
+        result = dict(input_dict)
+        # noinspection PyBroadException
         try:
-            if result:
-                key, value = result.popitem()
-                return result, key, value, True
-            else:
-                return result, "", None, False
-        except:
-            return result, "", None, False
+            key, value = result.popitem()
+        except Exception:
+            return input_dict, "", None, False
+
+        result = _output_dict_preserving_type(result, type(input_dict))
+        return result, key, value, True
 
 
 class DictPopRandom(ComfyNodeABC):
@@ -741,17 +816,18 @@ class DictPopRandom(ComfyNodeABC):
         return float("NaN")  # Not equal to anything -> trigger recalculation
 
     def pop_random(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
-        import random
-        result = input_dict.copy()
+        if not input_dict:
+            return input_dict, "", None, False
+
+        result = dict(input_dict)
         try:
-            if result:
-                random_key = random.choice(list(result.keys()))
-                random_value = result.pop(random_key)
-                return result, random_key, random_value, True
-            else:
-                return result, "", None, False
-        except:
-            return result, "", None, False
+            random_key = random.choice(list(result.keys()))
+            random_value = result.pop(random_key)
+        except Exception:
+            return input_dict, "", None, False
+
+        result = _output_dict_preserving_type(result, type(input_dict))
+        return result, random_key, random_value, True
 
 
 class DictRemove(ComfyNodeABC):
@@ -778,11 +854,14 @@ class DictRemove(ComfyNodeABC):
     FUNCTION = "remove"
 
     def remove(self, input_dict: dict, key: str) -> tuple[dict, bool]:
-        result = input_dict.copy()
-        if key in result:
-            del result[key]
-            return result, True
-        return result, False
+        if key not in input_dict:
+            return input_dict, False
+
+        result = dict(input_dict)
+        del result[key]
+
+        result = _output_dict_preserving_type(result, type(input_dict))
+        return result, True
 
 
 class DictSet(ComfyNodeABC):
@@ -808,11 +887,10 @@ class DictSet(ComfyNodeABC):
     FUNCTION = "set"
 
     def set(self, input_dict: dict, key: str, value: Any) -> tuple[dict]:
-        # input_dict might be something like frozendict or other immutable mapping class.
-        # Thus, we shouldn't just copy-and-update,
-        # but instead we should build a new instance of the same type:
-        dict_type = type(input_dict)
-        result = dict_type(chain(input_dict.items(), (key, value)))
+        result = dict(input_dict)
+        result[key] = value
+
+        result = _output_dict_preserving_type(result, type(input_dict))
         return (result,)
 
 
@@ -840,9 +918,11 @@ class DictSetDefault(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "setdefault"
 
-    def setdefault(self, input_dict: dict, key: str, default_value=None) -> tuple[dict, Any]:
-        result = input_dict.copy()
+    def setdefault(self, input_dict: dict, key: str, default_value: Any = None) -> tuple[dict, Any]:
+        result = dict(input_dict)
         value = result.setdefault(key, default_value)
+
+        result = _output_dict_preserving_type(result, type(input_dict))
         return result, value
 
 
@@ -869,11 +949,13 @@ class DictUpdate(ComfyNodeABC):
     FUNCTION = "update"
 
     def update(self, dict1: dict, dict2: dict) -> tuple[dict]:
-        # dict1 might be something like frozendict or other immutable mapping class.
-        # Thus, we shouldn't just copy-and-update,
-        # but instead we should build a new instance of the same type:
-        dict1_type = type(dict1)
-        result = dict1_type(chain(dict1.items(), dict2.items()))
+        if not dict2:
+            return (dict1,)
+
+        result = dict(dict1)
+        result.update(dict2)
+
+        result = _output_dict_preserving_type(result, type(dict1))
         return (result,)
 
 
