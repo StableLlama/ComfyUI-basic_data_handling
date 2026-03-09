@@ -1,4 +1,7 @@
-from typing import Any, Mapping, Type
+from typing import (
+    Any, Dict, List, Mapping, Tuple, Type, TypeVar,
+    Union as _U, Optional as _O
+)
 
 from inspect import cleandoc
 import random
@@ -18,7 +21,20 @@ except:
 from ._dynamic_input import ContainsDynamicDict
 
 
-def _output_dict_preserving_type(result: dict, in_type: Type[Mapping]):
+T = TypeVar('T')  # Any type.
+
+KT = TypeVar('KT')  # Key type.
+KT2 = TypeVar('KT2')
+KT3 = TypeVar('KT3')
+KT4 = TypeVar('KT4')
+
+VT = TypeVar('VT')  # Value type.
+VT2 = TypeVar('VT2')
+VT3 = TypeVar('VT3')
+VT4 = TypeVar('VT4')
+
+
+def _output_dict_preserving_type(result: Dict[KT, VT], in_type: Type[Mapping]) -> _U[Dict[KT, VT], Mapping[KT, VT]]:
     if in_type is dict:
         return result
 
@@ -277,7 +293,7 @@ class DictCreateFromLists(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_from_lists"
 
-    def create_from_lists(self, keys: list, values: list) -> tuple[dict]:
+    def create_from_lists(self, keys: List[KT], values: List[VT]) -> tuple[Dict[KT, VT]]:
         # Pair keys with values up to the length of the shorter list
         result = dict(zip(keys, values))
         return (result,)
@@ -369,7 +385,7 @@ class DictExcludeKeys(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "exclude_keys"
 
-    def exclude_keys(self, input_dict: dict, keys_to_exclude: list) -> tuple[dict]:
+    def exclude_keys(self, input_dict: Mapping[KT, VT], keys_to_exclude: list) -> tuple[Mapping[KT, VT]]:
         if not(input_dict and keys_to_exclude):
             return (input_dict,)
 
@@ -418,7 +434,7 @@ class DictFilterByKeys(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "filter_by_keys"
 
-    def filter_by_keys(self, input_dict: dict, keys: list) -> tuple[dict]:
+    def filter_by_keys(self, input_dict: Mapping[KT, VT], keys: list) -> tuple[Mapping[KT, VT]]:
         if not(input_dict and keys):
             return (input_dict,)
 
@@ -470,7 +486,7 @@ class DictFromKeys(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_keys"
 
-    def from_keys(self, keys: list, value=None) -> tuple[dict]:
+    def from_keys(self, keys: List[KT], value: VT = None) -> tuple[Dict[KT, VT]]:
         return (dict.fromkeys(keys, value),)
 
 
@@ -500,7 +516,7 @@ class DictGet(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get"
 
-    def get(self, input_dict: dict, key: str, default=None) -> tuple[Any]:
+    def get(self, input_dict: Mapping[Any, VT], key: Any, default: T = None) -> tuple[_U[VT, T]]:
         return (input_dict.get(key, default),)
 
 
@@ -525,7 +541,7 @@ class DictGetKeysValues(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_keys_values"
 
-    def get_keys_values(self, input_dict: dict) -> tuple[list, list]:
+    def get_keys_values(self, input_dict: Mapping[KT, VT]) -> tuple[List[KT], List[VT]]:
         keys = list(input_dict.keys())
         values = list(input_dict.values())
         return keys, values
@@ -557,7 +573,10 @@ class DictGetMultiple(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_multiple"
 
-    def get_multiple(self, input_dict: dict, keys: list, default=None) -> tuple[list]:
+    def get_multiple(
+        self,
+        input_dict: Mapping[Any, VT], keys: list, default: T = None
+    ) -> tuple[List[_U[VT, T]]]:
         values = [input_dict.get(key, default) for key in keys]
         return (values,)
 
@@ -584,7 +603,7 @@ class DictInvert(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "invert"
 
-    def invert(self, input_dict: dict) -> tuple[dict, bool]:
+    def invert(self, input_dict: Mapping[KT, VT]) -> tuple[Mapping[VT, KT], bool]:
         try:
             inverted = {v: k for k, v in input_dict.items()}
         except Exception:
@@ -615,7 +634,7 @@ class DictItems(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "items"
 
-    def items(self, input_dict: dict) -> tuple[list]:
+    def items(self, input_dict: Mapping[KT, VT]) -> tuple[List[Tuple[KT, VT]]]:
         return (list(input_dict.items()),)
 
 
@@ -638,7 +657,7 @@ class DictKeys(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "keys"
 
-    def keys(self, input_dict: dict) -> tuple[list]:
+    def keys(self, input_dict: Mapping[KT, Any]) -> tuple[List[KT]]:
         return (list(input_dict.keys()),)
 
 
@@ -662,7 +681,7 @@ class DictLength(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
 
-    def length(self, input_dict: dict) -> tuple[int]:
+    def length(self, input_dict: Mapping) -> tuple[int]:
         return (len(input_dict),)
 
 
@@ -691,7 +710,13 @@ class DictMerge(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "merge"
 
-    def merge(self, dict1: dict, dict2: dict = None, dict3: dict = None, dict4: dict = None) -> tuple[dict]:
+    def merge(
+        self,
+        dict1: Mapping[KT, VT],
+        dict2: Mapping[KT2, VT2] = None,
+        dict3: Mapping[KT3, VT3] = None,
+        dict4: Mapping[KT4, VT4] = None,
+    ) -> tuple[Mapping[_U[KT, KT2, KT3, KT4], _U[VT, VT2, VT3, VT4]]]:
         extra_dicts = [x for x in (dict2, dict3, dict4) if x is not None]
         if not extra_dicts:
             return (dict1,)
@@ -734,7 +759,7 @@ class DictPop(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
 
-    def pop(self, input_dict: dict, key: str, default_value=None) -> tuple[dict, Any]:
+    def pop(self, input_dict: Mapping[KT, VT], key: Any, default_value: T = None) -> tuple[Mapping[KT, VT], _U[VT, T]]:
         if key not in input_dict:
             return input_dict, default_value
 
@@ -774,7 +799,7 @@ class DictPopItem(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "popitem"
 
-    def popitem(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
+    def popitem(self, input_dict: Mapping[KT, VT]) -> tuple[Mapping[KT, VT], _U[KT, str], _O[VT], bool]:
         if not input_dict:
             return input_dict, "", None, False
 
@@ -815,7 +840,7 @@ class DictPopRandom(ComfyNodeABC):
     def IS_CHANGED(cls, **kwargs):
         return float("NaN")  # Not equal to anything -> trigger recalculation
 
-    def pop_random(self, input_dict: dict) -> tuple[dict, str, Any, bool]:
+    def pop_random(self, input_dict: Mapping[KT, VT]) -> tuple[Mapping[KT, VT], _U[KT, str], _O[VT], bool]:
         if not input_dict:
             return input_dict, "", None, False
 
@@ -853,7 +878,7 @@ class DictRemove(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
 
-    def remove(self, input_dict: dict, key: str) -> tuple[dict, bool]:
+    def remove(self, input_dict: Mapping[KT, VT], key: Any) -> tuple[Mapping[KT, VT], bool]:
         if key not in input_dict:
             return input_dict, False
 
@@ -886,7 +911,7 @@ class DictSet(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set"
 
-    def set(self, input_dict: dict, key: str, value: Any) -> tuple[dict]:
+    def set(self, input_dict: Mapping[KT, VT], key: KT2, value: VT2) -> tuple[Mapping[_U[KT, KT2], _U[VT, VT2]]]:
         result = dict(input_dict)
         result[key] = value
 
@@ -918,7 +943,7 @@ class DictSetDefault(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "setdefault"
 
-    def setdefault(self, input_dict: dict, key: str, default_value: Any = None) -> tuple[dict, Any]:
+    def setdefault(self, input_dict: Mapping[KT, VT], key: KT2, default_value: VT2 = None) -> tuple[Mapping[_U[KT, KT2], _U[VT, VT2]], _U[VT, VT2]]:
         result = dict(input_dict)
         value = result.setdefault(key, default_value)
 
@@ -948,7 +973,7 @@ class DictUpdate(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "update"
 
-    def update(self, dict1: dict, dict2: dict) -> tuple[dict]:
+    def update(self, dict1: Mapping[KT, VT], dict2: Mapping[KT2, VT2]) -> tuple[Mapping[_U[KT, KT2], _U[VT, VT2]]]:
         if not dict2:
             return (dict1,)
 
@@ -978,7 +1003,7 @@ class DictValues(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "values"
 
-    def values(self, input_dict: dict) -> tuple[list]:
+    def values(self, input_dict: Mapping[Any, VT]) -> tuple[List[VT]]:
         return (list(input_dict.values()),)
 
 
