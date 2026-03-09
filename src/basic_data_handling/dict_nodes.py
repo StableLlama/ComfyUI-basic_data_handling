@@ -624,7 +624,7 @@ class DictMerge(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "merge"
 
-    def merge(self, dict1: dict, dict2=None, dict3=None, dict4=None) -> tuple[dict]:
+    def merge(self, dict1: dict, dict2: dict = None, dict3: dict = None, dict4: dict = None) -> tuple[dict]:
         extra_dicts = [x for x in (dict2, dict3, dict4) if x is not None]
         if not extra_dicts:
             return (dict1,)
