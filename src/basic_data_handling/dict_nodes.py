@@ -438,8 +438,10 @@ class DictFilterByKeys(ComfyNodeABC):
     FUNCTION = "filter_by_keys"
 
     def filter_by_keys(self, input_dict: Mapping[KT, VT], keys: list) -> tuple[Mapping[KT, VT]]:
-        if not(input_dict and keys):
+        if not input_dict:
             return (input_dict,)
+        if not keys:
+            return (_output_dict_preserving_type({}, type(input_dict)),)
 
         # `in` check is faster with sets + remove duplicates:
         keys_set = set(keys)
