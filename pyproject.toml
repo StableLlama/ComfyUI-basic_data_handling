@@ -37,6 +37,7 @@ dependencies = []
 dev = [
     "bump-my-version",
     "coverage",  # testing
+    "frozendict", # an example not-a-dict-but-mapping class for dict nodes
     "mypy",  # linting
     "pre-commit", # runs linting on commit
     "pytest",  # testing
