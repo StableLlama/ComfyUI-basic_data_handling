@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+  workflow_dispatch:  # make manually launchable (on demand)
 
 jobs:
   validate:
