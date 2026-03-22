@@ -13,6 +13,7 @@ permissions:
 jobs:
   publish-node:
     name: Publish Custom Node to registry
+    if: github.repository_owner == 'StableLlama'  # prevent unwanted runs on forks
     runs-on: ubuntu-latest
     steps:
       - name: ♻️ Check out code
