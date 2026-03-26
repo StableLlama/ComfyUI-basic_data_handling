@@ -1,4 +1,11 @@
-import torch
+try:
+    import torch
+except ModuleNotFoundError as e:
+    raise ModuleNotFoundError(
+        "basic_data_handling: Missing dependency 'torch'. It seems your ComfyUI installation is faulty."
+        "Only for development purposes: Install it with `pip install .[dev] numpy torch pillow` or `pip install torch`."
+    ) from e
+
 from inspect import cleandoc
 from typing import Any
 

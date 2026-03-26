@@ -11,7 +11,7 @@ from src.basic_data_handling.path_nodes import (
     PathSetExtension, PathNormalize, PathRelative, PathGlob, PathExpandVars, PathGetCwd,
     PathListDir, PathIsAbsolute, PathCommonPrefix, PathLoadStringFile, PathSaveStringFile,
     PathLoadImageRGB, PathSaveImageRGB, PathLoadImageRGBA, PathSaveImageRGBA,
-    PathLoadMaskFromAlpha, PathLoadMaskFromGreyscale,
+    PathLoadMaskFromAlpha, PathLoadMaskFromGreyscale, PathInputDir, PathOutputDir,
 )
 
 
@@ -517,6 +517,25 @@ def test_path_glob(tmp_path):
     # Test with no matches
     no_match_result = node.glob_paths(str(tmp_path / "nomatch*.txt"))
     assert len(no_match_result[0]) == 0
+
+
+def test_path_input_output_dir(monkeypatch):
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_input_directory", lambda: "/tmp/input")
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: "/tmp/output")
+
+    input_node = PathInputDir()
+    output_node = PathOutputDir()
+
+    assert input_node.execute() == ("/tmp/input",)
+    assert output_node.execute() == ("/tmp/output",)
+
+    # fallback to defaults if functions are not patched
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_input_directory", lambda: "./")
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: "./")
+
+    assert PathInputDir().execute() == ("./",)
+    assert PathOutputDir().execute() == ("./",)
+
 
 
 def test_path_expand_vars(monkeypatch):
