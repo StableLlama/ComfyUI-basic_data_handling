@@ -1141,8 +1141,8 @@ class PathSaveImageRGBA(ComfyNodeABC):
             # Create PIL image (RGB)
             pil_img = Image.fromarray(img_np)
 
-            # Create alpha channel image
-            alpha_img = Image.fromarray(alpha_np, mode='L')
+            # Create alpha channel image (avoid deprecated 'mode' kwarg in Pillow 13+)
+            alpha_img = Image.fromarray(alpha_np).convert("L")
 
             # Convert to RGBA and add alpha channel
             pil_img_rgba = pil_img.convert("RGBA")
