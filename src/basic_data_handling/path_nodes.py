@@ -25,11 +25,44 @@ except:
     get_output_directory = get_input_directory
 
 
+def _require_numpy():
+    try:
+        import numpy as np
+        return np
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            "basic_data_handling: Missing dependency 'numpy'. It seems your ComfyUI installation is faulty."
+            "Only for development purposes: Install it with `pip install .[dev] numpy torch pillow` or `pip install numpy`."
+        ) from e
+
+
+def _require_torch():
+    try:
+        import torch
+        return torch
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            "basic_data_handling: Missing dependency 'torch'. It seems your ComfyUI installation is faulty."
+            "Only for development purposes: Install it with `pip install .[dev] numpy torch pillow` or `pip install torch`."
+        ) from e
+
+
+def _require_pillow():
+    try:
+        from PIL import Image, ImageOps
+        return Image, ImageOps
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError(
+            "basic_data_handling: Missing dependency 'pillow'. It seems your ComfyUI installation is faulty."
+            "Only for development purposes: Install it with `pip install .[dev] numpy torch pillow` or `pip install pillow`."
+        ) from e
+
+
 # helper functions:
 
 def load_image_helper(path: str):
     """Helper function to load an image from a path"""
-    from PIL import Image, ImageOps
+    Image, ImageOps = _require_pillow()
     try:
         import pillow_jxl  # noqa: F401 - imported but unused, kept for JPEG XL support
     except ModuleNotFoundError:
@@ -49,8 +82,8 @@ def load_image_helper(path: str):
 
 def extract_mask_from_alpha(img):
     """Extract a mask from the alpha channel of an image"""
-    import numpy as np
-    import torch
+    np = _require_numpy()
+    torch = _require_torch()
 
     if 'A' in img.getbands():
         alpha = np.array(img.getchannel('A')).astype(np.float32) / 255.0
@@ -70,8 +103,8 @@ def extract_mask_from_alpha(img):
 
 def extract_mask_from_greyscale(img):
     """Extract a mask from a greyscale image or the red channel of an RGB image"""
-    import numpy as np
-    import torch
+    np = _require_numpy()
+    torch = _require_torch()
 
     if img.mode == 'L':
         # Image is already greyscale
