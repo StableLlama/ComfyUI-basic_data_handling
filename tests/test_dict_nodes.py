@@ -7,6 +7,8 @@ from src.basic_data_handling.dict_nodes import (
     DictCreateFromBoolean,
     DictCreateFromFloat,
     DictCreateFromInt,
+    DictCreateFromItemsDataList,
+    DictCreateFromItemsList,
     DictCreateFromLists,
     DictCreateFromString,
     DictExcludeKeys,
@@ -108,6 +110,20 @@ def test_dict_create_from_string():
     assert result == (_dict_x2,)
     # Test with empty inputs
     assert node.create() == ({},)
+
+
+def test_dict_create_from_items_datalist():
+    node = DictCreateFromItemsDataList()
+    assert node.create_from_items(item=[("key1", "value1"), ("key2", "value2")]) == (_dict_x2,)
+    with pytest.raises(ValueError):
+        node.create_from_items(item=[("key1", "value1", "extra")])
+
+
+def test_dict_create_from_items_list():
+    node = DictCreateFromItemsList()
+    assert node.create_from_items(items=[("key1", "value1"), ("key2", "value2")]) == (_dict_x2,)
+    with pytest.raises(ValueError):
+        node.create_from_items(items=[("key1", "value1", "extra")])
 
 
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
@@ -377,6 +393,14 @@ def test_dict_invert(dict_type, in_dict, out_dict, success, message):
     result = node.invert(dict_type(in_dict))
     assert result == (dict_type(out_dict), success), f"Wrong result: {message}"
     assert type(result[0]) == dict_type, f"Wrong type: {message}"
+
+
+def test_dict_invert_unhashable_values():
+    node = DictInvert()
+    my_dict = {"key1": [1], "key2": [2]}
+    result, success = node.invert(my_dict)
+    assert result == my_dict
+    assert success is False
 
 
 def test_dict_create_from_lists():
