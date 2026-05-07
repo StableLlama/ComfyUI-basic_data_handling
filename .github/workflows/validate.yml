@@ -7,6 +7,9 @@ on:
       - main
   workflow_dispatch:  # make manually launchable (on demand)
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
