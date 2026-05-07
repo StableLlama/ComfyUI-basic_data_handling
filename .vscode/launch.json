@@ -9,6 +9,51 @@
                         "type": "debugpy",
                         "request": "launch",
                         "program": "${file}"
+                },
+                {
+                        "name": "Python: pytest all tests",
+                        "type": "python",
+                        "request": "launch",
+                        "module": "pytest",
+                        "args": ["tests"],
+                        "cwd": "${workspaceFolder}",
+                        "console": "integratedTerminal"
+                },
+                {
+                        "name": "Python: pytest test_data_list_nodes.py",
+                        "type": "python",
+                        "request": "launch",
+                        "module": "pytest",
+                        "args": ["tests/test_data_list_nodes.py"],
+                        "cwd": "${workspaceFolder}",
+                        "console": "integratedTerminal"
+                },
+                {
+                        "name": "Python: pytest tests.test_data_list_nodes.test_create_from_int",
+                        "type": "python",
+                        "request": "launch",
+                        "module": "pytest",
+                        "args": ["-k", "test_create_from_int", "tests/test_data_list_nodes.py"],
+                        "cwd": "${workspaceFolder}",
+                        "console": "integratedTerminal"
+                },
+                {
+                        "name": "Python: pytest tests.test_data_list_nodes.test_shuffle",
+                        "type": "python",
+                        "request": "launch",
+                        "module": "pytest",
+                        "args": ["-k", "test_shuffle", "tests/test_data_list_nodes.py"],
+                        "cwd": "${workspaceFolder}",
+                        "console": "integratedTerminal"
+                },
+                {
+                        "name": "Python: pytest tests.test_list_nodes.test_shuffle",
+                        "type": "python",
+                        "request": "launch",
+                        "module": "pytest",
+                        "args": ["-k", "test_shuffle", "tests/test_list_nodes.py"],
+                        "cwd": "${workspaceFolder}",
+                        "console": "integratedTerminal"
                 }
         ]
 }
