@@ -303,6 +303,13 @@ def test_pop_random():
     # Empty list case
     assert node.pop_random_element(list=[]) == ([], None)
 
+    # Same seed should produce the same popped item
+    original_list = [1, 2, 3, 4]
+    result1, item1 = node.pop_random_element(list=original_list, seed=[42])
+    result2, item2 = node.pop_random_element(list=original_list, seed=[42])
+    assert item1 == item2
+    assert result1 == result2
+
 
 def test_first():
     node = DataListFirst()

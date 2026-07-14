@@ -595,13 +595,17 @@ class ListPopRandom(ComfyNodeABC):
 
     This node takes a LIST as input and returns the LIST with the random element removed
     and the removed element itself. If the LIST is empty, it returns None for the element.
+    An optional seed can be provided for reproducible selection.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "list": ("LIST", {}),
-            }
+            },
+            "optional": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+            },
         }
 
     RETURN_TYPES = ("LIST", IO.ANY)
@@ -612,13 +616,17 @@ class ListPopRandom(ComfyNodeABC):
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return float("NaN")  # Not equal to anything -> trigger recalculation
+        seed = kwargs.get("seed")
+        if seed is None:
+            return float("NaN")  # Not equal to anything -> trigger recalculation
+        return seed
 
-    def pop_random_element(self, list: list[Any]) -> tuple[list[Any], Any]:
+    def pop_random_element(self, list: list[Any], seed=None) -> tuple[list[Any], Any]:
         import random
+        rng = random.Random(seed) if seed is not None else random
         result = list.copy()
         if result:
-            random_index = random.randrange(len(result))
+            random_index = rng.randrange(len(result))
             random_element = result.pop(random_index)
             return result, random_element
         return result, None

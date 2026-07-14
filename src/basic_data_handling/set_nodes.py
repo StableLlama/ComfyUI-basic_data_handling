@@ -505,13 +505,17 @@ class SetPopRandom(ComfyNodeABC):
 
     This node takes a SET as input and returns the SET with a random element removed
     and the removed element itself. If the SET is empty, it returns None for the element.
+    An optional seed can be provided for reproducible selection.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "set": ("SET", {}),
-            }
+            },
+            "optional": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+            },
         }
 
     RETURN_TYPES = ("SET", IO.ANY)
@@ -522,13 +526,17 @@ class SetPopRandom(ComfyNodeABC):
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return float("NaN")  # Not equal to anything -> trigger recalculation
+        seed = kwargs.get("seed")
+        if seed is None:
+            return float("NaN")  # Not equal to anything -> trigger recalculation
+        return seed
 
-    def pop_random_element(self, set: set[Any]) -> tuple[set[Any], Any]:
+    def pop_random_element(self, set: set[Any], seed=None) -> tuple[set[Any], Any]:
         import random
+        rng = random.Random(seed) if seed is not None else random
         result = set.copy()
         if result:
-            random_element = random.choice(list(result))
+            random_element = rng.choice(list(result))
             result.remove(random_element)
             return result, random_element
         return result, None

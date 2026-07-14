@@ -760,13 +760,17 @@ class DataListPopRandom(ComfyNodeABC):
 
     This node takes a list as input and returns the list with the random element removed
     and the removed element itself. If the list is empty, it returns None for the element.
+    An optional seed can be provided for reproducible selection.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "list": (IO.ANY, {}),
-            }
+            },
+            "optional": {
+                "seed": (IO.INT, {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+            },
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
@@ -779,13 +783,24 @@ class DataListPopRandom(ComfyNodeABC):
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return float("NaN")  # Not equal to anything -> trigger recalculation
+        seed = kwargs.get("seed")
+        if seed is None:
+            return float("NaN")  # Not equal to anything -> trigger recalculation
+        # INPUT_IS_LIST wraps scalars in a list
+        if isinstance(seed, list):
+            seed = seed[0] if seed else None
+            if seed is None:
+                return float("NaN")
+        return seed
 
     def pop_random_element(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
-        from random import randrange
+        import random
         input_list = kwargs.get('list', []).copy()
+        seed_values = kwargs.get('seed')
+        seed = seed_values[0] if seed_values is not None else None
+        rng = random.Random(seed) if seed is not None else random
         if input_list:
-            random_element = input_list.pop(randrange(len(input_list)))
+            random_element = input_list.pop(rng.randrange(len(input_list)))
             return input_list, random_element
         return input_list, None
 
