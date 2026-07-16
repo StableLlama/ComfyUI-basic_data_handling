@@ -752,8 +752,7 @@ class StringListJoin(ComfyNodeABC):
     FUNCTION = "join"
 
     def join(self, sep, strings):
-        separator = sep[0]    # everything comes as a list, so sep is list[str]
-        return (separator.join(strings),)
+        return (sep.join(strings),)
 
 
 class StringLjust(ComfyNodeABC):

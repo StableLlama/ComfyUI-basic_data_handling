@@ -226,9 +226,9 @@ def test_join():
 
     # Test ListJoin variant
     node_list = StringListJoin()
-    assert node_list.join([", "], ["apple", "banana", "cherry"]) == ("apple, banana, cherry",)
-    assert node_list.join([""], ["a", "b", "c"]) == ("abc",)
-    assert node_list.join(["-"], []) == ("",)  # Empty list
+    assert node_list.join(", ", ["apple", "banana", "cherry"]) == ("apple, banana, cherry",)
+    assert node_list.join("", ["a", "b", "c"]) == ("abc",)
+    assert node_list.join("-", []) == ("",)  # Empty list
 
 def test_ljust():
     node = StringLjust()
