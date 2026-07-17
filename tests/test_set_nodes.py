@@ -132,6 +132,13 @@ def test_set_pop_random():
     empty_set = set()
     assert node.pop_random_element(empty_set) == (set(), None)
 
+    # Same seed should produce the same popped item for the same set contents
+    seeded_set = {1, 2, 3, 4}
+    result1, item1 = node.pop_random_element(seeded_set, seed=42)
+    result2, item2 = node.pop_random_element(seeded_set, seed=42)
+    assert item1 == item2
+    assert result1 == result2
+
 
 def test_set_union():
     node = SetUnion()

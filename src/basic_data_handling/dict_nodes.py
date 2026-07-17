@@ -826,13 +826,17 @@ class DictPopRandom(ComfyNodeABC):
     This node takes a dictionary as input, removes a random key-value pair,
     and returns the modified dictionary along with the removed key and value.
     If the dictionary is empty, it returns empty values.
+    An optional seed can be provided for reproducible selection.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "input_dict": ("DICT", {}),
-            }
+            },
+            "optional": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+            },
         }
 
     RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
@@ -843,15 +847,19 @@ class DictPopRandom(ComfyNodeABC):
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
-        return float("NaN")  # Not equal to anything -> trigger recalculation
+        seed = kwargs.get("seed")
+        if seed is None:
+            return float("NaN")  # Not equal to anything -> trigger recalculation
+        return seed
 
-    def pop_random(self, input_dict: Mapping[KT, VT]) -> tuple[Mapping[KT, VT], _U[KT, str], _O[VT], bool]:
+    def pop_random(self, input_dict: Mapping[KT, VT], seed: _O[int] = None) -> tuple[Mapping[KT, VT], _U[KT, str], _O[VT], bool]:
         if not input_dict:
             return input_dict, "", None, False
 
+        rng = random.Random(seed) if seed is not None else random
         result = dict(input_dict)
         try:
-            random_key = random.choice(list(result.keys()))
+            random_key = rng.choice(list(result.keys()))
             random_value = result.pop(random_key)
         except Exception:
             return input_dict, "", None, False

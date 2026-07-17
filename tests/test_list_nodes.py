@@ -87,6 +87,13 @@ def test_list_pop_random():
     # Test with empty list
     assert node.pop_random_element([]) == ([], None)
 
+    # Same seed should produce the same popped item
+    result1, item1 = node.pop_random_element(original_list, seed=42)
+    result2, item2 = node.pop_random_element(original_list, seed=42)
+    assert item1 == item2
+    assert result1 == result2
+    assert original_list == [1, 2, 3, 4]  # Input not mutated
+
 
 def test_list_first():
     node = ListFirst()

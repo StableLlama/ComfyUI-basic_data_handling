@@ -151,6 +151,11 @@ def test_dict_pop_random(dict_type):
     assert empty_value is None
     assert empty_success is False
 
+    # Same seed should produce the same popped key/value
+    result1 = node.pop_random(my_dict, seed=42)
+    result2 = node.pop_random(my_dict, seed=42)
+    assert result1 == result2
+
 
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_keys(dict_type):
