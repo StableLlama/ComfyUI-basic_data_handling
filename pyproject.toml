@@ -30,7 +30,9 @@ authors = [
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
-classifiers = []
+classifiers = [
+    "Operating System :: OS Independent",
+]
 dependencies = []
 
 [project.optional-dependencies]
@@ -45,14 +47,14 @@ dev = [
 ]
 
 [project.urls]
-bugs = "https://github.com/StableLlama/ComfyUI-basic_data_handling/issues"
+"Bug Tracker" = "https://github.com/StableLlama/ComfyUI-basic_data_handling/issues"
 homepage = "https://github.com/StableLlama/ComfyUI-basic_data_handling"
 Repository = "https://github.com/StableLlama/ComfyUI-basic_data_handling"
 
 [tool.comfy]
 PublisherId = "stablellama"
 DisplayName = "Basic data handling"
-Icon = ""
+Icon = "https://raw.githubusercontent.com/StableLlama/ComfyUI-basic_data_handling/refs/heads/main/web/img/basic_data_handling_icon_400.png"
 
 [tool.setuptools.package-data]
 "*" = ["*.*"]
