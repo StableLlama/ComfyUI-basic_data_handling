@@ -18,7 +18,45 @@ jobs:
     steps:
       - name: ♻️ Check out code
         uses: actions/checkout@v4
-      - name: 📦 Publish Custom Node
-        uses: Comfy-Org/publish-node-action@main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+          python-version: "3.10"
+
+      - name: Install comfy-cli
+        run: pip install comfy-cli
+
+      - name: Extract changelog section for this version
+        id: changelog
+        run: |
+          python - <<'EOF'
+          import pathlib
+          import re
+
+          pyproject = pathlib.Path("pyproject.toml").read_text(encoding="utf-8")
+          version = re.search(r'^\s*version\s*=\s*"([^"]+)"', pyproject, re.M).group(1)
+          changelog = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+
+          # Match headings like "## [1.7.0] - 2026-08-27", "## 1.7.0" or "## v1.7.0".
+          heading = re.compile(rf"^##\s+\[?v?{re.escape(version)}\]?\s*(?:-\s*\d{{4}}-\d{{2}}-\d{{2}})?\s*$", re.M)
+          match = heading.search(changelog)
+          if match is None:
+              print(f"::notice::No CHANGELOG.md section found for v{version}; publishing without a changelog")
+              pathlib.Path("CHANGELOG_CURRENT.md").write_text("", encoding="utf-8")
+          else:
+              end = heading.search(changelog, match.end())
+              section = changelog[match.end():end.start() if end else None].strip()
+              pathlib.Path("CHANGELOG_CURRENT.md").write_text(section + "\n", encoding="utf-8")
+          EOF
+
+      - name: 📦 Publish Custom Node
+        run: |
+          if [ -s CHANGELOG_CURRENT.md ]; then
+            comfy --skip-prompt --no-enable-telemetry node publish \
+              --token "${{ secrets.REGISTRY_ACCESS_TOKEN }}" \
+              --changelog-file CHANGELOG_CURRENT.md
+          else
+            comfy --skip-prompt --no-enable-telemetry node publish \
+              --token "${{ secrets.REGISTRY_ACCESS_TOKEN }}"
+          fi

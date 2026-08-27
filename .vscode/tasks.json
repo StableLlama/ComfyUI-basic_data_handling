@@ -69,17 +69,6 @@
                 "panel": "dedicated"
             },
             "problemMatcher": []
-        },
-        {
-            "label": "Bump Version (patch)",
-            "type": "shell",
-            "command": "${workspaceFolder}/../../venv/bin/python -m bump_my_version bump patch",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated"
-            },
-            "problemMatcher": []
         }
     ]
 }
