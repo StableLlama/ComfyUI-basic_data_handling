@@ -958,6 +958,8 @@ class PathSaveStringFile(ComfyNodeABC):
 
     This node takes a string and saves it to the specified path as a text file.
     Optionally, you can choose to create the directory if it doesn't exist.
+    If 'append' is True, the text is appended to an existing file instead of
+    overwriting it.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -968,6 +970,7 @@ class PathSaveStringFile(ComfyNodeABC):
             },
             "optional": {
                 "create_dirs": (IO.BOOLEAN, {"default": True}),
+                "append": (IO.BOOLEAN, {"default": False}),
                 "encoding": (IO.STRING, {"default": "utf-8"}),
             }
         }
@@ -979,7 +982,7 @@ class PathSaveStringFile(ComfyNodeABC):
     FUNCTION = "save_text"
     OUTPUT_NODE = True
 
-    def save_text(self, text: str, path: str, create_dirs: bool = True, encoding: str = "utf-8"):
+    def save_text(self, text: str, path: str, create_dirs: bool = True, append: bool = False, encoding: str = "utf-8"):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -990,10 +993,12 @@ class PathSaveStringFile(ComfyNodeABC):
             if directory and create_dirs and not os.path.exists(directory):
                 os.makedirs(directory)
 
-            with open(path, "w", encoding=encoding) as f:
+            mode = "a" if append else "w"
+            with open(path, mode, encoding=encoding) as f:
                 f.write(text)
 
-            print(f"Basic data handling: Successfully saved text to {path}")
+            action = "appended" if append else "saved"
+            print(f"Basic data handling: Successfully {action} text to {path}")
             return (True,)
         except Exception as e:
             print(f"Basic data handling: Error saving text file: {e}")
