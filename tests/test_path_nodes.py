@@ -57,6 +57,25 @@ def test_path_load_save_string_file(tmp_path):
     # Test error handling
     assert load_node.load_text(str(tmp_path / "nonexistent.txt")) == ("", False)
 
+def test_path_save_string_file_append(tmp_path):
+    # Test appending to an existing file
+    save_node = PathSaveStringFile()
+    load_node = PathLoadStringFile()
+    file_path = str(tmp_path / "append_test.txt")
+
+    # Save initial content
+    assert save_node.save_text("First line\n", file_path) == (True,)
+
+    # Append to the file
+    assert save_node.save_text("Second line\n", file_path, append=True) == (True,)
+
+    # Verify the content was appended, not overwritten
+    assert load_node.load_text(file_path) == ("First line\nSecond line\n", True)
+
+    # Verify default behavior still overwrites
+    assert save_node.save_text("Overwritten", file_path) == (True,)
+    assert load_node.load_text(file_path) == ("Overwritten", True)
+
 
 def test_path_abspath():
     node = PathAbspath()
