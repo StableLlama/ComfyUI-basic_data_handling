@@ -317,6 +317,59 @@ class TimeExtract(ComfyNodeABC):
                 datetime.minute, datetime.second, datetime.microsecond, datetime.weekday())
 
 
+class TimeDeltaToSeconds(ComfyNodeABC):
+    """
+    Converts a TIMEDELTA object to a float representing its duration in seconds.
+    A value of 1.0 corresponds to a time delta of one second.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "delta": (IO.TIMEDELTA, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("seconds",)
+    CATEGORY = "Basic/time"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "to_seconds"
+
+    def to_seconds(self, delta: datetime.timedelta) -> tuple[float]:
+        """
+        Converts a timedelta to a float value representing seconds.
+        """
+        return (delta.total_seconds(),)
+
+
+class TimeDeltaToMilliseconds(ComfyNodeABC):
+    """
+    Converts a TIMEDELTA object to an integer representing its duration in milliseconds.
+    A value of 1 corresponds to a time delta of one millisecond, rounded to the nearest millisecond.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "delta": (IO.TIMEDELTA, {}),
+            }
+        }
+
+    RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("milliseconds",)
+    CATEGORY = "Basic/time"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "to_milliseconds"
+
+    def to_milliseconds(self, delta: datetime.timedelta) -> tuple[int]:
+        """
+        Converts a timedelta to an integer value representing milliseconds,
+        rounded to the nearest millisecond.
+        """
+        return (round(delta.total_seconds() * 1000),)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: TimeNow": TimeNow,
     "Basic data handling: TimeNowUTC": TimeNowUTC,
@@ -329,6 +382,8 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: TimeSubtractDelta": TimeSubtractDelta,
     "Basic data handling: TimeDifference": TimeDifference,
     "Basic data handling: TimeExtract": TimeExtract,
+    "Basic data handling: TimeDeltaToSeconds": TimeDeltaToSeconds,
+    "Basic data handling: TimeDeltaToMilliseconds": TimeDeltaToMilliseconds,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -343,4 +398,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: TimeSubtractDelta": "Subtract Time Delta",
     "Basic data handling: TimeDifference": "Time Difference",
     "Basic data handling: TimeExtract": "Extract Time Components",
+    "Basic data handling: TimeDeltaToSeconds": "Time Delta to Seconds",
+    "Basic data handling: TimeDeltaToMilliseconds": "Time Delta to Milliseconds",
 }

@@ -179,6 +179,7 @@ Date and time manipulation nodes:
 - **String formatting/parsing**: TimeFormat, TimeParse
 - **Time calculations**: TimeDelta, TimeAddDelta, TimeSubtractDelta, TimeDifference
 - **Component extraction**: TimeExtract (year, month, day, hour, etc.)
+- **Duration conversion**: TimeDeltaToSeconds (float seconds), TimeDeltaToMilliseconds (int milliseconds)
 
 ## Understanding Data Types
 

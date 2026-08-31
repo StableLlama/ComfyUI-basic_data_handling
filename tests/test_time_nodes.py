@@ -13,6 +13,8 @@ from src.basic_data_handling.time_nodes import (
     TimeSubtractDelta,
     TimeDifference,
     TimeExtract,
+    TimeDeltaToSeconds,
+    TimeDeltaToMilliseconds,
 )
 
 def test_time_now():
@@ -209,3 +211,60 @@ def test_time_extract():
     assert microsecond == 123456
     # January 2, 2023 was a Monday (weekday 0)
     assert weekday == 0
+
+def test_time_delta_to_seconds():
+    node = TimeDeltaToSeconds()
+
+    # One second should equal 1.0
+    result = node.to_seconds(timedelta(seconds=1))
+    assert isinstance(result, tuple)
+    assert len(result) == 1
+    assert isinstance(result[0], float)
+    assert result[0] == 1.0
+
+    # Larger durations
+    result = node.to_seconds(timedelta(days=1, hours=2, minutes=30))
+    assert result[0] == 24*60*60 + 2*60*60 + 30*60
+
+    # Sub-second durations remain fractional
+    result = node.to_seconds(timedelta(milliseconds=500))
+    assert result[0] == 0.5
+
+    # Negative deltas
+    result = node.to_seconds(timedelta(seconds=-2))
+    assert result[0] == -2.0
+
+def test_time_delta_to_milliseconds():
+    node = TimeDeltaToMilliseconds()
+
+    # One millisecond should equal 1
+    result = node.to_milliseconds(timedelta(milliseconds=1))
+    assert isinstance(result, tuple)
+    assert len(result) == 1
+    assert isinstance(result[0], int)
+    assert result[0] == 1
+
+    # One second is 1000 milliseconds
+    result = node.to_milliseconds(timedelta(seconds=1))
+    assert result[0] == 1000
+
+    # Larger durations
+    result = node.to_milliseconds(timedelta(seconds=90))
+    assert result[0] == 90000
+
+    # Negative deltas
+    result = node.to_milliseconds(timedelta(milliseconds=-5))
+    assert result[0] == -5
+
+    # Sub-millisecond durations are rounded to the nearest millisecond
+    # 0.51 ms rounds up to 1
+    result = node.to_milliseconds(timedelta(microseconds=510))
+    assert result[0] == 1
+
+    # 0.49 ms rounds down to 0
+    result = node.to_milliseconds(timedelta(microseconds=490))
+    assert result[0] == 0
+
+    # 0.999 ms rounds up to 1
+    result = node.to_milliseconds(timedelta(microseconds=999))
+    assert result[0] == 1
