@@ -24,11 +24,13 @@ class FloatCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {"default": "0.0", "widgetType": "STRING"}),
+                "value": (IO.ANY, {"default": "0.0", "widgetType": "STRING", "tooltip": "Textual form of the number to parse, e.g. \"3.14\". Must be a valid float."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("float",)
+    OUTPUT_TOOLTIPS = ("The parsed FLOAT value.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -47,12 +49,14 @@ class FloatAdd(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": (IO.FLOAT, {"default": 0.0}),
-                "float2": (IO.FLOAT, {"default": 0.0}),
+                "float1": (IO.FLOAT, {"default": 0.0, "tooltip": "First addend."}),
+                "float2": (IO.FLOAT, {"default": 0.0, "tooltip": "Second addend."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The sum of the two floats.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -72,12 +76,14 @@ class FloatSubtract(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": (IO.FLOAT, {"default": 0.0}),
-                "float2": (IO.FLOAT, {"default": 0.0}),
+                "float1": (IO.FLOAT, {"default": 0.0, "tooltip": "Minuend (the value being subtracted from)."}),
+                "float2": (IO.FLOAT, {"default": 0.0, "tooltip": "Subtrahend (the value to subtract)."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The difference float1 - float2.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
@@ -96,12 +102,14 @@ class FloatMultiply(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": (IO.FLOAT, {"default": 1.0}),
-                "float2": (IO.FLOAT, {"default": 1.0}),
+                "float1": (IO.FLOAT, {"default": 1.0, "tooltip": "First factor."}),
+                "float2": (IO.FLOAT, {"default": 1.0, "tooltip": "Second factor."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The product of the two floats.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "multiply"
@@ -121,12 +129,14 @@ class FloatDivide(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": (IO.FLOAT, {"default": 1.0}),
-                "float2": (IO.FLOAT, {"default": 1.0}),
+                "float1": (IO.FLOAT, {"default": 1.0, "tooltip": "Dividend (numerator)."}),
+                "float2": (IO.FLOAT, {"default": 1.0, "tooltip": "Divisor (denominator); must not be 0."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The quotient float1 / float2.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -148,12 +158,14 @@ class FloatDivideSafe(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float1": (IO.FLOAT, {"default": 1.0}),
-                "float2": (IO.FLOAT, {"default": 1.0}),
+                "float1": (IO.FLOAT, {"default": 1.0, "tooltip": "Dividend (numerator)."}),
+                "float2": (IO.FLOAT, {"default": 1.0, "tooltip": "Divisor; a value of 0 yields +/-infinity instead of an error."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The quotient float1 / float2, or +/-infinity (NaN for 0/0) when the divisor is 0.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -177,12 +189,13 @@ class FloatAsIntegerRatio(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0, "tooltip": "The float to decompose into an exact integer ratio."}),
             }
         }
 
     RETURN_TYPES = (IO.INT, IO.INT)
     RETURN_NAMES = ("numerator", "denominator")
+    OUTPUT_TOOLTIPS = ("Numerator of the exact ratio.", "Denominator of the exact ratio.")
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "as_integer_ratio"
@@ -203,11 +216,13 @@ class FloatFromHex(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "hex_value": (IO.STRING, {"default": "0x0.0p+0"}),
+                "hex_value": (IO.STRING, {"default": "0x0.0p+0", "tooltip": "Hexadecimal float string as produced by the \"to hex\" node, e.g. 0x1.8p+1."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("float",)
+    OUTPUT_TOOLTIPS = ("The decoded FLOAT value.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_hex"
@@ -226,11 +241,13 @@ class FloatHex(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0, "tooltip": "The float to format as a hexadecimal string."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("hex_string",)
+    OUTPUT_TOOLTIPS = ("Hexadecimal representation of the float, e.g. '0x1.0000000000000p+0'.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_hex"
@@ -250,11 +267,13 @@ class FloatIsInteger(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
+                "float_value": (IO.FLOAT, {"default": 0.0, "tooltip": "The float to test."}),
             }
         }
 
     RETURN_TYPES = ("BOOLEAN",)
+    RETURN_NAMES = ("is_integer",)
+    OUTPUT_TOOLTIPS = ("True when the float has no fractional part (e.g. 3.0), otherwise False.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "is_integer"
@@ -274,12 +293,14 @@ class FloatPower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "base": (IO.FLOAT, {"default": 1.0}),
-                "exponent": (IO.FLOAT, {"default": 1.0}),
+                "base": (IO.FLOAT, {"default": 1.0, "tooltip": "The base of the power."}),
+                "exponent": (IO.FLOAT, {"default": 1.0, "tooltip": "The exponent to raise the base to."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The result of base ** exponent.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "power"
@@ -299,12 +320,14 @@ class FloatRound(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "float_value": (IO.FLOAT, {"default": 0.0}),
-                "decimal_places": (IO.INT, {"default": 2, "min": 0}),
+                "float_value": (IO.FLOAT, {"default": 0.0, "tooltip": "The float to round."}),
+                "decimal_places": (IO.INT, {"default": 2, "min": 0, "tooltip": "Number of decimal places to keep (0 rounds to a whole number)."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The float rounded to the requested number of decimal places.",)
     CATEGORY = "Basic/FLOAT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "round"

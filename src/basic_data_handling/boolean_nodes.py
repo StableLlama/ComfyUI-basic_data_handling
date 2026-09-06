@@ -18,20 +18,23 @@ from ._dynamic_input import ContainsDynamicDict
 
 class BooleanAnd(ComfyNodeABC):
     """
-    Returns the logical AND result of two boolean values.
+    Returns the logical AND (conjunction) of two boolean values.
 
-    This node takes two boolean inputs and returns their logical AND result.
+    Outputs True only when both inputs are True. This matches the behaviour of the
+    Python ``and`` operator applied to the two operands.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "First operand."}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "Second operand."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True only when both inputs are True, otherwise False.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "and_operation"
@@ -42,20 +45,22 @@ class BooleanAnd(ComfyNodeABC):
 
 class BooleanNand(ComfyNodeABC):
     """
-    Returns the logical NAND result of two boolean values.
+    Returns the logical NAND of two boolean values.
 
-    This node takes two boolean inputs and returns their logical NAND result.
+    Outputs False only when both inputs are True; it is the negation of AND.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "First operand."}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "Second operand."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("False only when both inputs are True, otherwise True.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "nand_operation"
@@ -66,20 +71,22 @@ class BooleanNand(ComfyNodeABC):
 
 class BooleanNor(ComfyNodeABC):
     """
-    Returns the logical NOR result of two boolean values.
+    Returns the logical NOR of two boolean values.
 
-    This node takes two boolean inputs and returns their logical NOR result.
+    Outputs True only when both inputs are False; it is the negation of OR.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "First operand."}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "Second operand."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True only when both inputs are False, otherwise False.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "nor_operation"
@@ -90,19 +97,21 @@ class BooleanNor(ComfyNodeABC):
 
 class BooleanNot(ComfyNodeABC):
     """
-    Returns the logical NOT result of a boolean value.
+    Returns the logical NOT (negation) of a boolean value.
 
-    This node takes one boolean input and returns its logical NOT result.
+    Outputs True when the input is False and False when the input is True.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "The value to negate."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the input is False, False when the input is True.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "not_operation"
@@ -113,20 +122,23 @@ class BooleanNot(ComfyNodeABC):
 
 class BooleanOr(ComfyNodeABC):
     """
-    Returns the logical OR result of two boolean values.
+    Returns the logical OR (disjunction) of two boolean values.
 
-    This node takes two boolean inputs and returns their logical OR result.
+    Outputs True when at least one input is True. This matches the behaviour of the
+    Python ``or`` operator applied to the two operands.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "First operand."}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "Second operand."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when at least one input is True, otherwise False.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "or_operation"
@@ -137,20 +149,22 @@ class BooleanOr(ComfyNodeABC):
 
 class BooleanXor(ComfyNodeABC):
     """
-    Returns the logical XOR result of two boolean values.
+    Returns the logical XOR (exclusive or) of two boolean values.
 
-    This node takes two boolean inputs and returns their logical XOR result.
+    Outputs True when the inputs differ from one another and False when they are equal.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True}),
-                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True}),
+                "input1": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "First operand."}),
+                "input2": (IO.BOOLEAN, {"default": False, "forceInput": True, "tooltip": "Second operand."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the two inputs differ, False when they are equal.",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "xor_operation"
@@ -161,24 +175,26 @@ class BooleanXor(ComfyNodeABC):
 
 class GenericOr(ComfyNodeABC):
     """
-    Returns the logical N/OR result of one or more values.
+    Returns the OR of any number of values, evaluated with Python truthiness.
 
-    This node takes a dynamic number of inputs and returns their logical N/OR result.
-    Note that values are evaluated according Python's rules. I.e. an empty string is
-    `false`, an integer 0 is also `false`, etc.
+    Connect additional values to the dynamic item input to add more operands. Because
+    Python truthiness is used, values such as ``0``, ``""``, ``[]``, ``{}`` and ``None``
+    count as False. When *invert* is enabled the result is negated (NOR).
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "invert": (IO.BOOLEAN, {"default": False}),
+                "invert": (IO.BOOLEAN, {"default": False, "tooltip": "When enabled, negates the result (turns OR into NOR)."}),
             },
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the values to combine. Connect more values to add operands."}),
             })
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when at least one connected value is truthy (unless inverted).",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "or_operation"
@@ -189,24 +205,26 @@ class GenericOr(ComfyNodeABC):
 
 class GenericAnd(ComfyNodeABC):
     """
-    Returns the logical N/AND result of one or more values.
+    Returns the AND of any number of values, evaluated with Python truthiness.
 
-    This node takes a dynamic number of inputs and returns their logical N/AND result.
-    Note that values are evaluated according Python's rules. I.e. an empty string is
-    `false`, an integer 0 is also `false`, etc.
+    Connect additional values to the dynamic item input to add more operands. Because
+    Python truthiness is used, values such as ``0``, ``""``, ``[]``, ``{}`` and ``None``
+    count as False. When *invert* is enabled the result is negated (NAND).
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "invert": (IO.BOOLEAN, {"default": False}),
+                "invert": (IO.BOOLEAN, {"default": False, "tooltip": "When enabled, negates the result (turns AND into NAND)."}),
             },
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "default": "True"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "default": "True", "tooltip": "One of the values to combine. Connect more values to add operands."}),
             })
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all connected values are truthy (unless inverted).",)
     CATEGORY = "Basic/BOOLEAN"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "and_operation"

@@ -24,11 +24,13 @@ class MathAbs(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The number to take the absolute value of."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The absolute (non-negative) value of the input.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -48,12 +50,14 @@ class MathAcos(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc cosine is computed."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The arc cosine angle in the chosen unit.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -76,12 +80,14 @@ class MathAsin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc sine is computed."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The arc sine angle in the chosen unit.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -104,12 +110,14 @@ class MathAtan(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The value whose arc tangent is computed."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The arc tangent angle in the chosen unit.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -133,13 +141,15 @@ class MathAtan2(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "y": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "x": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "y": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "Y coordinate (numerator)."}),
+                "x": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "X coordinate (denominator)."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The angle of the point (x, y) in the chosen unit.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -161,11 +171,13 @@ class MathCeil(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The number to round up."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The smallest integer greater than or equal to the value.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -186,12 +198,14 @@ class MathCos(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The angle to take the cosine of."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the input angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The cosine of the angle.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -213,11 +227,13 @@ class MathDegrees(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "radians": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The angle in radians to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The equivalent angle in degrees.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -237,6 +253,8 @@ class MathE(ComfyNodeABC):
         return {"required": {}}
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("Euler's number e, approximately 2.71828.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -255,11 +273,13 @@ class MathExp(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The exponent x in e^x."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("e raised to the power of the input value.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -278,11 +298,13 @@ class MathFloor(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The number to round down."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The largest integer less than or equal to the value.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -302,14 +324,16 @@ class MathLog(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING", "tooltip": "The positive number to take the logarithm of."}),
             },
             "optional": {
-                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "STRING"}),
+                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "STRING", "tooltip": "Logarithm base; e gives the natural logarithm."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The logarithm of the value in the chosen base.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -328,11 +352,13 @@ class MathLog10(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING", "tooltip": "The positive number to take the base-10 logarithm of."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The base-10 logarithm of the value.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -352,12 +378,14 @@ class MathMax(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "First value."}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "Second value."}),
             }
         }
 
     RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The larger of the two input values.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -377,12 +405,14 @@ class MathMin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "value1": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "First value."}),
+                "value2": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "Second value."}),
             }
         }
 
     RETURN_TYPES = ("*",)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The smaller of the two input values.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -402,6 +432,8 @@ class MathPi(ComfyNodeABC):
         return {"required": {}}
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The mathematical constant pi, approximately 3.14159.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -420,11 +452,13 @@ class MathRadians(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
+                "degrees": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The angle in degrees to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The equivalent angle in radians.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -445,12 +479,14 @@ class MathSin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The angle to take the sine of."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the input angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The sine of the angle.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -472,11 +508,13 @@ class MathSqrt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "STRING"}),
+                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "STRING", "tooltip": "The non-negative number to take the square root of."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The square root of the value.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"
@@ -497,12 +535,14 @@ class MathTan(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING"}),
-                "unit": (["radians", "degrees"], {"default": "degrees"}),
+                "angle": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The angle to take the tangent of."}),
+                "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the input angle."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The tangent of the angle (raises an error where the tangent is undefined).",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "calculate"

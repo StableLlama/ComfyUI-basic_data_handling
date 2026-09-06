@@ -29,12 +29,13 @@ class TimeNow(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "trigger": (IO.ANY, {"description": "Optional input to trigger execution"})
+                "trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("now",)
+    OUTPUT_TOOLTIPS = ("The current local date and time; a new value every run.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_now"
@@ -61,12 +62,13 @@ class TimeNowUTC(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "trigger": (IO.ANY, {"description": "Optional input to trigger execution"})
+                "trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("now",)
+    OUTPUT_TOOLTIPS = ("The current UTC date and time (timezone-aware); a new value every run.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_now_utc"
@@ -92,12 +94,13 @@ class TimeToUnix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "datetime": (IO.DATETIME, {}),
+                "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
     RETURN_NAMES = ("unix_timestamp",)
+    OUTPUT_TOOLTIPS = ("Seconds since the Unix epoch (1970-01-01 UTC).",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_unix"
@@ -117,12 +120,13 @@ class UnixToTime(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "unix_timestamp": (IO.NUMBER, {"default": 0.0}),
+                "unix_timestamp": (IO.NUMBER, {"default": 0.0, "tooltip": "Seconds since the Unix epoch (float or int)."}),
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("datetime",)
+    OUTPUT_TOOLTIPS = ("The DATETIME corresponding to the timestamp, in the local timezone.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_unix"
@@ -143,13 +147,14 @@ class TimeFormat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "datetime": (IO.DATETIME, {}),
-                "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S"}),
+                "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to format."}),
+                "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S", "tooltip": "strftime format code, e.g. %Y-%m-%d %H:%M:%S."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("formatted_string",)
+    OUTPUT_TOOLTIPS = ("The DATETIME rendered as a string using the format code.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "format_time"
@@ -169,13 +174,14 @@ class TimeParse(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "time_string": (IO.STRING, {}),
-                "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S"}),
+                "time_string": (IO.STRING, {"tooltip": "The date/time string to parse."}),
+                "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S", "tooltip": "strptime format code matching the input string, e.g. %Y-%m-%d %H:%M:%S."}),
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("datetime",)
+    OUTPUT_TOOLTIPS = ("The parsed DATETIME.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "parse_time"
@@ -195,17 +201,19 @@ class TimeDelta(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "days": (IO.FLOAT, {"default": 0}),
-                "seconds": (IO.FLOAT, {"default": 0}),
-                "microseconds": (IO.FLOAT, {"default": 0}),
-                "milliseconds": (IO.FLOAT, {"default": 0}),
-                "minutes": (IO.FLOAT, {"default": 0}),
-                "hours": (IO.FLOAT, {"default": 0}),
-                "weeks": (IO.FLOAT, {"default": 0}),
+                "days": (IO.FLOAT, {"default": 0, "tooltip": "Number of days."}),
+                "seconds": (IO.FLOAT, {"default": 0, "tooltip": "Number of seconds."}),
+                "microseconds": (IO.FLOAT, {"default": 0, "tooltip": "Number of microseconds."}),
+                "milliseconds": (IO.FLOAT, {"default": 0, "tooltip": "Number of milliseconds."}),
+                "minutes": (IO.FLOAT, {"default": 0, "tooltip": "Number of minutes."}),
+                "hours": (IO.FLOAT, {"default": 0, "tooltip": "Number of hours."}),
+                "weeks": (IO.FLOAT, {"default": 0, "tooltip": "Number of weeks."}),
             }
         }
 
     RETURN_TYPES = (IO.TIMEDELTA,)
+    RETURN_NAMES = ("delta",)
+    OUTPUT_TOOLTIPS = ("A TIMEDELTA representing the combined duration.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_delta"
@@ -225,12 +233,14 @@ class TimeAddDelta(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "datetime": (IO.DATETIME, {}),
-                "delta": (IO.TIMEDELTA, {}),
+                "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to add the duration to."}),
+                "delta": (IO.TIMEDELTA, {"tooltip": "The duration (TIMEDELTA) to add."}),
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The DATETIME advanced by the given duration.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -250,12 +260,14 @@ class TimeSubtractDelta(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "datetime": (IO.DATETIME, {}),
-                "delta": (IO.TIMEDELTA, {}),
+                "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to subtract the duration from."}),
+                "delta": (IO.TIMEDELTA, {"tooltip": "The duration (TIMEDELTA) to subtract."}),
             }
         }
 
     RETURN_TYPES = (IO.DATETIME,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The DATETIME moved back by the given duration.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
@@ -275,12 +287,14 @@ class TimeDifference(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "datetime1": (IO.DATETIME, {}),
-                "datetime2": (IO.DATETIME, {}),
+                "datetime1": (IO.DATETIME, {"tooltip": "First date/time (the minuend)."}),
+                "datetime2": (IO.DATETIME, {"tooltip": "Second date/time, subtracted from the first."}),
             }
         }
 
     RETURN_TYPES = (IO.TIMEDELTA,)
+    RETURN_NAMES = ("delta",)
+    OUTPUT_TOOLTIPS = ("The duration datetime1 - datetime2 (negative when datetime1 is earlier).",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "difference"
@@ -300,11 +314,12 @@ class TimeExtract(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": { "datetime": (IO.DATETIME, {}) }
+            "required": { "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to decompose."}) }
         }
 
     RETURN_TYPES = (IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT)
     RETURN_NAMES = ("year", "month", "day", "hour", "minute", "second", "microsecond", "weekday")
+    OUTPUT_TOOLTIPS = ("Year.", "Month (1-12).", "Day of the month.", "Hour (0-23).", "Minute (0-59).", "Second (0-59).", "Microsecond.", "Weekday (Monday = 0 .. Sunday = 6).")
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extract"
@@ -326,12 +341,13 @@ class TimeDeltaToSeconds(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "delta": (IO.TIMEDELTA, {}),
+                "delta": (IO.TIMEDELTA, {"tooltip": "The duration to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.FLOAT,)
     RETURN_NAMES = ("seconds",)
+    OUTPUT_TOOLTIPS = ("The duration expressed as a float in seconds.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_seconds"
@@ -352,12 +368,13 @@ class TimeDeltaToMilliseconds(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "delta": (IO.TIMEDELTA, {}),
+                "delta": (IO.TIMEDELTA, {"tooltip": "The duration to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("milliseconds",)
+    OUTPUT_TOOLTIPS = ("The duration expressed as an integer number of milliseconds, rounded to the nearest millisecond.",)
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_milliseconds"

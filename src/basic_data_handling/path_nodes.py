@@ -138,12 +138,13 @@ class PathAbspath(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to resolve to an absolute path."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("absolute path",)
+    OUTPUT_TOOLTIPS = ("The absolute path with relative components and symlinks resolved.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_abspath"
@@ -163,12 +164,13 @@ class PathBasename(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose final filename component is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("basename",)
+    OUTPUT_TOOLTIPS = ("The final filename component of the path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_basename"
@@ -187,15 +189,16 @@ class PathCommonPrefix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": (IO.STRING, {"default": ""}),
+                "path1": (IO.STRING, {"default": "", "tooltip": "First path."}),
             },
             "optional": {
-                "path2": (IO.STRING, {"default": ""}),
+                "path2": (IO.STRING, {"default": "", "tooltip": "Second path."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("common prefix",)
+    OUTPUT_TOOLTIPS = ("The longest common leading component of the given paths.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_common_prefix"
@@ -216,12 +219,13 @@ class PathDirname(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose directory component is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("dirname",)
+    OUTPUT_TOOLTIPS = ("The directory (parent) component of the path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_dirname"
@@ -241,12 +245,13 @@ class PathExists(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to check for existence."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("exists",)
+    OUTPUT_TOOLTIPS = ("True when the path exists as a file or directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_exists"
@@ -266,12 +271,13 @@ class PathExpandVars(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path that may contain environment variables (e.g. $HOME, %USERPROFILE%)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("expanded path",)
+    OUTPUT_TOOLTIPS = ("The path with environment variables expanded.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "expand_vars"
@@ -292,6 +298,7 @@ class PathGetCwd(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("current directory",)
+    OUTPUT_TOOLTIPS = ("The current working directory as an absolute path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_cwd"
@@ -311,12 +318,13 @@ class PathGetExtension(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose file extension is extracted."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("extension",)
+    OUTPUT_TOOLTIPS = ("The extension including the dot (e.g. '.txt'); empty when there is none.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_extension"
@@ -336,12 +344,13 @@ class PathGetSize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "File whose size in bytes is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("size (bytes)",)
+    OUTPUT_TOOLTIPS = ("The file size in bytes.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_size"
@@ -369,15 +378,16 @@ class PathGlob(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": (IO.STRING, {"default": "*.txt"}),
+                "pattern": (IO.STRING, {"default": "*.txt", "tooltip": "Shell-style pattern to match, e.g. '*.txt'."}),
             },
             "optional": {
-                "recursive": (IO.BOOLEAN, {"default": False}),
+                "recursive": (IO.BOOLEAN, {"default": False, "tooltip": "When True, '**' also matches inside subdirectories."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("matching paths",)
+    OUTPUT_TOOLTIPS = ("All paths matching the pattern, as a data list.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "glob_paths"
@@ -427,12 +437,13 @@ class PathIsAbsolute(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is absolute",)
+    OUTPUT_TOOLTIPS = ("True when the path is absolute (starts at the root).",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_absolute"
@@ -452,12 +463,13 @@ class PathIsDir(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is dir",)
+    OUTPUT_TOOLTIPS = ("True when the path exists and is a directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_dir"
@@ -477,12 +489,13 @@ class PathIsFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is file",)
+    OUTPUT_TOOLTIPS = ("True when the path exists and is a regular file.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_file"
@@ -503,15 +516,16 @@ class PathJoin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": (IO.STRING, {"default": ""}),
+                "path1": (IO.STRING, {"default": "", "tooltip": "First path component."}),
             },
             "optional": {
-                "path2": (IO.STRING, {"default": ""}),
+                "path2": (IO.STRING, {"default": "", "tooltip": "Second path component."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
+    OUTPUT_TOOLTIPS = ("The components joined into a single path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join_paths"
@@ -534,16 +548,17 @@ class PathListDir(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Directory to list."}),
             },
             "optional": {
-                "files_only": (IO.BOOLEAN, {"default": False}),
-                "dirs_only": (IO.BOOLEAN, {"default": False}),
+                "files_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only files are returned."}),
+                "dirs_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only directories are returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("entries",)
+    OUTPUT_TOOLTIPS = ("The names of the directory entries, as a data list.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_directory"
@@ -580,12 +595,13 @@ class PathNormalize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to normalize."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("normalized path",)
+    OUTPUT_TOOLTIPS = ("The path with redundant separators and up-level references collapsed.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "normalize_path"
@@ -605,13 +621,14 @@ class PathSetExtension(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {}),
-                "extension": (IO.STRING, {"default": ".txt"}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose extension is replaced."}),
+                "extension": (IO.STRING, {"default": ".txt", "tooltip": "The new extension; a leading dot is added if missing."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
+    OUTPUT_TOOLTIPS = ("The path with its extension replaced.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_extension"
@@ -636,15 +653,16 @@ class PathRelative(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to express relative to start."}),
             },
             "optional": {
-                "start": (IO.STRING, {"default": ""}),
+                "start": (IO.STRING, {"default": "", "tooltip": "Base path; the current working directory is used when empty."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("relative path",)
+    OUTPUT_TOOLTIPS = ("The path expressed relative to start.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_relative_path"
@@ -666,12 +684,13 @@ class PathSplit(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to split into directory and filename."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("directory", "filename")
+    OUTPUT_TOOLTIPS = ("The directory (head) component.", "The filename (tail) component.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_path"
@@ -691,12 +710,13 @@ class PathSplitExt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to split into name and extension."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("path without ext", "extension")
+    OUTPUT_TOOLTIPS = ("The path without its extension.", "The extension including the dot (empty when none).")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_ext"
@@ -714,12 +734,13 @@ class PathLoadStringFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the UTF-8 text file to read."}),
             },
         }
 
     RETURN_TYPES = (IO.STRING, IO.BOOLEAN)
     RETURN_NAMES = ("text", "exists")
+    OUTPUT_TOOLTIPS = ("The file content (empty when the file is missing or unreadable).", "True when the file exists and was read.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_text"
@@ -758,12 +779,13 @@ class PathLoadImageRGB(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image file to load."}),
             },
         }
 
     RETURN_TYPES = (IO.IMAGE, IO.BOOLEAN)
     RETURN_NAMES = ("image", "exists")
+    OUTPUT_TOOLTIPS = ("The RGB image as a tensor (a blank 1x1 image when the file is missing).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgb"
@@ -810,12 +832,13 @@ class PathLoadImageRGBA(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image file to load."}),
             },
         }
 
     RETURN_TYPES = (IO.IMAGE, IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("image", "mask", "exists")
+    OUTPUT_TOOLTIPS = ("The RGB image as a tensor.", "The alpha channel as a mask (blank when the image has none).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgba"
@@ -866,12 +889,13 @@ class PathLoadMaskFromAlpha(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image whose alpha channel is used."}),
             },
         }
 
     RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("mask", "exists")
+    OUTPUT_TOOLTIPS = ("The alpha channel as a mask (blank when the image has none or is missing).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_alpha"
@@ -911,15 +935,16 @@ class PathLoadMaskFromGreyscale(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image to build the mask from."}),
             },
             "optional": {
-                "invert": (IO.BOOLEAN, {"default": False}),
+                "invert": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask (1.0 - mask) after extraction."}),
             },
         }
 
     RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("mask", "exists")
+    OUTPUT_TOOLTIPS = ("The mask derived from the greyscale/red channel.", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_greyscale"
@@ -965,18 +990,19 @@ class PathSaveStringFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": (IO.STRING, {"default": ""}),
-                "path": (IO.STRING, {"default": ""}),
+                "text": (IO.STRING, {"default": "", "tooltip": "The text to write."}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path."}),
             },
             "optional": {
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
-                "append": (IO.BOOLEAN, {"default": False}),
-                "encoding": (IO.STRING, {"default": "utf-8"}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "append": (IO.BOOLEAN, {"default": False, "tooltip": "Append to an existing file instead of overwriting it."}),
+                "encoding": (IO.STRING, {"default": "utf-8", "tooltip": "Text encoding to use when writing."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the file was written successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_text"
@@ -1140,19 +1166,20 @@ class PathSaveImageRGB(ComfyNodeABC):
         return {
             "required": {
                 "images": (IO.IMAGE,),
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing)."}),
             },
             "optional": {
-                "format": (IO.STRING, {"default": "png"}),
-                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
-                "prompt": (IO.STRING, {"default": ""}),
-                "negative_prompt": (IO.STRING, {"default": ""}),
+                "format": (IO.STRING, {"default": "png", "tooltip": "Image format: png, jpg, webp or jxl (jxl needs pillow-jxl installed)."}),
+                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (jpg/webp/jxl)."}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
+                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the image was saved successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image"
@@ -1246,20 +1273,21 @@ class PathSaveImageRGBA(ComfyNodeABC):
             "required": {
                 "images": (IO.IMAGE,),
                 "mask": (IO.MASK,),
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing)."}),
             },
             "optional": {
-                "format": (IO.STRING, {"default": "png"}),
-                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
-                "invert_mask": (IO.BOOLEAN, {"default": False}),
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
-                "prompt": (IO.STRING, {"default": ""}),
-                "negative_prompt": (IO.STRING, {"default": ""}),
+                "format": (IO.STRING, {"default": "png", "tooltip": "Image format supporting alpha: png, webp or jxl; jpg is coerced to png."}),
+                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (webp/jxl)."}),
+                "invert_mask": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask before using it as the alpha channel."}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
+                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the image with alpha was saved successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image_with_mask"
@@ -1365,6 +1393,7 @@ class PathInputDir(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("input_path",)
+    OUTPUT_TOOLTIPS = ("Absolute path of ComfyUI's input directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -1386,6 +1415,7 @@ class PathOutputDir(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("output_path",)
+    OUTPUT_TOOLTIPS = ("Absolute path of ComfyUI's output directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"

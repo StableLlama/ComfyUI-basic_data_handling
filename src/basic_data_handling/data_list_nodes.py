@@ -29,12 +29,13 @@ class DataListCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items of the Data List. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The items as a ComfyUI data list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -58,12 +59,13 @@ class DataListListCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items of the Data List; each may itself be a list, producing a list of lists."}),
             })
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The items as a ComfyUI data list of lists.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -86,12 +88,13 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the boolean items of the Data List. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The boolean items as a ComfyUI data list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -113,12 +116,13 @@ class DataListCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the float items of the Data List. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = (IO.FLOAT,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The float items as a ComfyUI data list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -140,12 +144,13 @@ class DataListCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the integer items of the Data List. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The integer items as a ComfyUI data list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -167,12 +172,13 @@ class DataListCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the string items of the Data List. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The string items as a ComfyUI data list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_list"
@@ -193,12 +199,13 @@ class DataListAll(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to evaluate."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when every element is truthy (or the list is empty).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_all"
@@ -218,12 +225,13 @@ class DataListAny(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to evaluate."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when at least one element is truthy (False for an empty list).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_any"
@@ -244,13 +252,14 @@ class DataListAppend(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list":(IO.ANY,{}),
-                "item":(IO.ANY,{}),
+                "list":(IO.ANY,{"tooltip": "The Data List to append to."}),
+                "item":(IO.ANY,{"tooltip": "The item to append at the end."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with the item appended.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "append"
@@ -276,13 +285,14 @@ class DataListContains(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "value": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to search."}),
+                "value": (IO.ANY, {"tooltip": "The value to look for."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("contains",)
+    OUTPUT_TOOLTIPS = ("True when the value is present in the list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
@@ -306,13 +316,14 @@ class DataListCount(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "value": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to count in."}),
+                "value": (IO.ANY, {"tooltip": "The value whose occurrences are counted."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("count",)
+    OUTPUT_TOOLTIPS = ("The number of times the value occurs in the list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
@@ -333,15 +344,16 @@ class DataListEnumerate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to enumerate."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0}),
+                "start": (IO.INT, {"default": 0, "tooltip": "Index assigned to the first element."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A Data List of [index, value] pairs.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "enumerate_list"
@@ -365,13 +377,14 @@ class DataListExtend(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list_a": (IO.ANY,{}),
-                "list_b": (IO.ANY,{}),
+                "list_a":(IO.ANY,{"tooltip": "First Data List (kept as-is)."}),
+                "list_b":(IO.ANY,{"tooltip": "Second Data List whose elements are appended."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with all elements of both inputs.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extend"
@@ -397,13 +410,14 @@ class DataListFilter(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
-                "filter": (IO.BOOLEAN, {"forceInput": True}),
+                "value": (IO.ANY, {"tooltip": "The Data List of values to filter."}),
+                "filter": (IO.BOOLEAN, {"forceInput": True, "tooltip": "Data List of booleans; items whose filter is False are kept."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("filtered_list",)
+    OUTPUT_TOOLTIPS = ("The values kept where the filter was False.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "filter_data"
@@ -435,13 +449,14 @@ class DataListFilterSelect(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
-                "select": (IO.BOOLEAN, {}),
+                "value": (IO.ANY, {"tooltip": "The Data List of values to split."}),
+                "select": (IO.BOOLEAN, {"tooltip": "Data List of booleans routing each value to the 'true' or 'false' output."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("true", "false")
+    OUTPUT_TOOLTIPS = ("Values whose selector was True.", "Values whose selector was False.")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "select"
@@ -471,12 +486,13 @@ class DataListFirst(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to read from."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("first_element",)
+    OUTPUT_TOOLTIPS = ("The first element of the list (None when empty).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_first_element"
@@ -499,13 +515,14 @@ class DataListGetItem(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "index": (IO.INT, {"default": 0}),
+                "list": (IO.ANY, {"tooltip": "The Data List to read from."}),
+                "index": (IO.INT, {"default": 0, "tooltip": "Position of the item; negative counts from the end."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("item",)
+    OUTPUT_TOOLTIPS = ("The item at the index (None when out of range).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_item"
@@ -531,17 +548,18 @@ class DataListIndex(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "value": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to search."}),
+                "value": (IO.ANY, {"tooltip": "The value whose first occurrence is located."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0}),
-                "end": (IO.INT, {"default": -1}),
+                "start": (IO.INT, {"default": 0, "tooltip": "Start position of the search slice."}),
+                "end": (IO.INT, {"default": -1, "tooltip": "End position of the search slice (-1 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("index",)
+    OUTPUT_TOOLTIPS = ("Index of the first occurrence (-1 when the value is absent).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_index"
@@ -572,14 +590,15 @@ class DataListInsert(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "index": (IO.INT, {"default": 0}),
-                "item": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to insert into."}),
+                "index": (IO.INT, {"default": 0, "tooltip": "Position at which to insert the item."}),
+                "item": (IO.ANY, {"tooltip": "The item to insert."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with the item inserted at the index.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "insert"
@@ -603,12 +622,13 @@ class DataListLast(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to read from."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("last_element",)
+    OUTPUT_TOOLTIPS = ("The last element of the list (None when empty).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_last_element"
@@ -629,12 +649,13 @@ class DataListLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to measure."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("length",)
+    OUTPUT_TOOLTIPS = ("The number of items in the list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
@@ -656,12 +677,13 @@ class DataListMax(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.NUMBER, {}),
+                "list": (IO.NUMBER, {"tooltip": "The Data List of numbers."}),
             }
         }
 
     RETURN_TYPES = (IO.NUMBER,)
     RETURN_NAMES = ("max",)
+    OUTPUT_TOOLTIPS = ("The maximum value (None when empty or not comparable).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_max"
@@ -692,12 +714,13 @@ class DataListMin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.NUMBER, {}),
+                "list": (IO.NUMBER, {"tooltip": "The Data List of numbers."}),
             }
         }
 
     RETURN_TYPES = (IO.NUMBER,)
     RETURN_NAMES = ("min",)
+    OUTPUT_TOOLTIPS = ("The minimum value (None when empty or not comparable).",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find_min"
@@ -729,15 +752,16 @@ class DataListPop(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to pop from."}),
             },
             "optional": {
-                "index": (IO.INT, {"default": -1}),
+                "index": (IO.INT, {"default": -1, "tooltip": "Position of the item to remove (-1 = last item)."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("list", "item")
+    OUTPUT_TOOLTIPS = ("The list with the item removed.", "The removed item (None when empty or the index is invalid).")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
@@ -766,15 +790,16 @@ class DataListPopRandom(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to pop a random element from."}),
             },
             "optional": {
-                "seed": (IO.INT, {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+                "seed": (IO.INT, {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
             },
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("list", "item")
+    OUTPUT_TOOLTIPS = ("The list with a random element removed.", "The removed element (None when the list is empty).")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random_element"
@@ -816,16 +841,18 @@ class DataListRange(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "start": ("INT", {"default": 0}),
-                "stop": ("INT", {"default": 10}),
+                "start": ("INT", {"default": 0, "tooltip": "First number of the sequence (inclusive)."}),
+                "stop": ("INT", {"default": 10, "tooltip": "Stop value of the sequence (exclusive)."}),
             },
             "optional": {
-                "step": ("INT", {"default": 1}),
+                "step": ("INT", {"default": 1, "tooltip": "Step between numbers; must not be 0."}),
             }
         }
 
     RETURN_TYPES = ("INT",)
     FUNCTION = "create_range"
+    RETURN_NAMES = ("range",)
+    OUTPUT_TOOLTIPS = ("The generated numbers as a Data List.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     OUTPUT_IS_LIST = (True,)
@@ -847,13 +874,14 @@ class DataListRemove(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "value": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to remove from."}),
+                "value": (IO.ANY, {"tooltip": "The value whose first occurrence is removed."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.BOOLEAN,)
     RETURN_NAMES = ("list", "success",)
+    OUTPUT_TOOLTIPS = ("The list with the first occurrence removed.", "True when the value was present and removed.")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
@@ -880,12 +908,13 @@ class DataListReverse(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to reverse."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with the items in reversed order.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "reverse"
@@ -909,14 +938,15 @@ class DataListSetItem(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
-                "index": (IO.INT, {"default": 0}),
-                "value": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to modify."}),
+                "index": (IO.INT, {"default": 0, "tooltip": "Position of the item to replace."}),
+                "value": (IO.ANY, {"tooltip": "The new value."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with the item at the index replaced.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_item"
@@ -945,13 +975,14 @@ class DataListShuffle(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
-                "seed": (IO.INT, {"default": 0}),
+                "list": (IO.ANY, {"tooltip": "The Data List to shuffle."}),
+                "seed": (IO.INT, {"default": 0, "tooltip": "Seed for reproducible shuffling."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List with the items shuffled.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "shuffle_list"
@@ -979,17 +1010,18 @@ class DataListSlice(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to slice."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0}),
-                "stop": (IO.INT, {"default": INT_MAX}),
-                "step": (IO.INT, {"default": 1}),
+                "start": (IO.INT, {"default": 0, "tooltip": "Start index (inclusive)."}),
+                "stop": (IO.INT, {"default": INT_MAX, "tooltip": "Stop index (exclusive); INT_MAX means the end."}),
+                "step": (IO.INT, {"default": 1, "tooltip": "Step between indices."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The requested slice of the list.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice"
@@ -1016,15 +1048,16 @@ class DataListSort(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY,),
+                "list": (IO.ANY, {"tooltip": "The Data List to sort."}),
             },
             "optional": {
-                "reverse": (["False", "True"], {"default": "False"}),
+                "reverse": (["False", "True"], {"default": "False", "tooltip": "Sort in descending order when True."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new sorted Data List.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sort"
@@ -1049,15 +1082,16 @@ class DataListSum(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.NUMBER, {}),
+                "list": (IO.NUMBER, {"tooltip": "The Data List of numbers to sum."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0}),
+                "start": (IO.INT, {"default": 0, "tooltip": "Initial value added to the sum."}),
             }
         }
 
     RETURN_TYPES = (IO.INT, IO.FLOAT,)
     RETURN_NAMES = ("int_sum", "float_sum",)
+    OUTPUT_TOOLTIPS = ("The total as an integer.", "The total as a float.")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sum_list"
@@ -1082,17 +1116,18 @@ class DataListZip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list1": (IO.ANY,),
-                "list2": (IO.ANY,),
+                "list1": (IO.ANY, {"tooltip": "First Data List."}),
+                "list2": (IO.ANY, {"tooltip": "Second Data List."}),
             },
             "optional": {
-                "list3": (IO.ANY,),
-                "list4": (IO.ANY,),
+                "list3": (IO.ANY, {"tooltip": "Optional additional Data List."}),
+                "list4": (IO.ANY, {"tooltip": "Optional additional Data List."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("Elements combined element-wise; length matches the shortest input.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "zip_lists"
@@ -1124,11 +1159,13 @@ class DataListToList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to convert."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The Data List's items as a single Python LIST value.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
@@ -1149,11 +1186,13 @@ class DataListToSet(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "list": (IO.ANY, {}),
+                "list": (IO.ANY, {"tooltip": "The Data List to convert."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("A SET of the Data List's unique items.",)
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"

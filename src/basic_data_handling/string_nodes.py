@@ -18,11 +18,13 @@ class StringCapitalize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to capitalize."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with its first character uppercased and the rest lowercased.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "capitalize"
@@ -43,11 +45,13 @@ class StringCasefold(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to casefold."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text casefolded for case-insensitive comparisons.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "casefold"
@@ -68,15 +72,17 @@ class StringCenter(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "width": (IO.INT, {"default": 20, "min": 0, "max": 1000}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to center."}),
+                "width": (IO.INT, {"default": 20, "min": 0, "max": 1000, "tooltip": "Total width of the resulting field."}),
             },
             "optional": {
-                "fillchar": (IO.STRING, {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text centered within the field width.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "center"
@@ -97,12 +103,14 @@ class StringConcat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string_a": (IO.STRING, {"default": ""}),
-                "string_b": (IO.STRING, {"default": ""}),
+                "string_a": (IO.STRING, {"default": "", "tooltip": "First text (left side)."}),
+                "string_b": (IO.STRING, {"default": "", "tooltip": "Second text (right side)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The two texts joined end-to-end.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "concat"
@@ -122,16 +130,18 @@ class StringCount(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "substring": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to search in."}),
+                "substring": (IO.STRING, {"default": "", "tooltip": "The text whose occurrences are counted."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0, "min": 0}),
-                "end": (IO.INT, {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
+                "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("count",)
+    OUTPUT_TOOLTIPS = ("The number of non-overlapping occurrences of the substring.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "count"
@@ -156,13 +166,15 @@ class StringDecode(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "bytes_string": (IO.STRING, {"default": "b''"}),
-                "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
-                "errors": (["strict", "ignore", "replace", "backslashreplace"],),
+                "bytes_string": (IO.STRING, {"default": "b''", "tooltip": "String representation of bytes, e.g. b'text', as produced by the encode node."}),
+                "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"], {"tooltip": "Character encoding to decode with."}),
+                "errors": (["strict", "ignore", "replace", "backslashreplace"], {"tooltip": "How to handle decoding errors."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The decoded text (or an error message when decoding fails).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "decode"
@@ -205,13 +217,15 @@ class StringEncode(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],),
-                "errors": (["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"],),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to encode."}),
+                "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"], {"tooltip": "Character encoding to use."}),
+                "errors": (["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"], {"tooltip": "How to handle characters that cannot be encoded."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The bytes as a string representation (or an error message on failure).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "encode"
@@ -241,16 +255,18 @@ class StringEndswith(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "suffix": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to test."}),
+                "suffix": (IO.STRING, {"default": "", "tooltip": "The suffix to look for."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0, "min": 0}),
-                "end": (IO.INT, {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the checked range."}),
+                "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the checked range (0 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the text ends with the suffix.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "endswith"
@@ -275,14 +291,16 @@ class StringExpandtabs(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to expand."}),
             },
             "optional": {
-                "tabsize": (IO.INT, {"default": 8, "min": 1, "max": 100}),
+                "tabsize": (IO.INT, {"default": 8, "min": 1, "max": 100, "tooltip": "Number of spaces each tab expands to."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with tab characters replaced by spaces.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "expandtabs"
@@ -303,16 +321,18 @@ class StringFind(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "substring": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to search in."}),
+                "substring": (IO.STRING, {"default": "", "tooltip": "The text to search for."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0, "min": 0}),
-                "end": (IO.INT, {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
+                "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("index",)
+    OUTPUT_TOOLTIPS = ("Index of the first occurrence, or -1 when not found.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "find"
@@ -338,12 +358,14 @@ class StringFormatMap(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "template": (IO.STRING, {"default": "Hello, {key}"}),
-                "mapping": ("DICT", {"default": {}}),
+                "template": (IO.STRING, {"default": "Hello, {key}", "tooltip": "Format string with {placeholder} fields referencing mapping keys."}),
+                "mapping": ("DICT", {"default": {}, "tooltip": "Dictionary providing the values for the placeholders."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The formatted string (or an error message when a key is missing).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "format_map"
@@ -370,12 +392,14 @@ class StringIn(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "substring": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to search in."}),
+                "substring": (IO.STRING, {"default": "", "tooltip": "The text to look for."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("contains",)
+    OUTPUT_TOOLTIPS = ("True when the substring occurs in the text.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
@@ -395,11 +419,13 @@ class StringIsAlnum(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are alphanumeric and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isalnum"
@@ -419,11 +445,13 @@ class StringIsAlpha(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are alphabetic and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isalpha"
@@ -443,11 +471,13 @@ class StringIsAscii(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when every character is in the ASCII character set.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isascii"
@@ -469,11 +499,13 @@ class StringIsDecimal(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are decimal digits and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isdecimal"
@@ -493,11 +525,13 @@ class StringIsDigit(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are digits and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isdigit"
@@ -518,11 +552,13 @@ class StringIsIdentifier(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the string is a valid Python identifier.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isidentifier"
@@ -542,11 +578,13 @@ class StringIsLower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all cased characters are lowercase and at least one exists.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "islower"
@@ -567,11 +605,13 @@ class StringIsNumeric(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are numeric and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isnumeric"
@@ -591,11 +631,13 @@ class StringIsPrintable(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are printable.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isprintable"
@@ -615,11 +657,13 @@ class StringIsSpace(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all characters are whitespace and the string is non-empty.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isspace"
@@ -640,11 +684,13 @@ class StringIsTitle(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the string is titlecased.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "istitle"
@@ -664,11 +710,13 @@ class StringIsUpper(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The string to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when all cased characters are uppercase and at least one exists.",)
     CATEGORY = "Basic/STRING/is"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "isupper"
@@ -688,11 +736,13 @@ class StringLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to measure."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("length",)
+    OUTPUT_TOOLTIPS = ("The number of characters in the text.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
@@ -713,12 +763,14 @@ class StringDataListJoin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "strings": (IO.STRING, {"forceInput": True}),
-                "sep": (IO.STRING, {"default": " "}),
+                "strings": (IO.STRING, {"forceInput": True, "tooltip": "Data list of strings to join."}),
+                "sep": (IO.STRING, {"default": " ", "tooltip": "Separator placed between each pair of strings."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The strings joined with the separator.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join"
@@ -741,12 +793,14 @@ class StringListJoin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "strings": ("LIST", {"forceInput": True}),
-                "sep": (IO.STRING, {"default": " "}),
+                "strings": ("LIST", {"forceInput": True, "tooltip": "LIST of strings to join."}),
+                "sep": (IO.STRING, {"default": " ", "tooltip": "Separator placed between each pair of strings."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The strings joined with the separator.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join"
@@ -766,15 +820,17 @@ class StringLjust(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "width": (IO.INT, {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to align."}),
+                "width": (IO.INT, {"default": 10, "min": 0, "tooltip": "Total width of the resulting field."}),
             },
             "optional": {
-                "fillchar": (IO.STRING, {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text left-aligned within the field width.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "ljust"
@@ -796,11 +852,13 @@ class StringLower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text converted to lowercase.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "lower"
@@ -821,14 +879,16 @@ class StringLstrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to strip."}),
             },
             "optional": {
-                "chars": (IO.STRING, {"default": ""}),
+                "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from the start (whitespace when empty)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with leading characters removed.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "lstrip"
@@ -850,12 +910,14 @@ class StringRemoveprefix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "prefix": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to modify."}),
+                "prefix": (IO.STRING, {"default": "", "tooltip": "The prefix to remove when present."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text without the prefix (unchanged when the prefix is absent).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "removeprefix"
@@ -875,12 +937,14 @@ class StringRemovesuffix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "suffix": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to modify."}),
+                "suffix": (IO.STRING, {"default": "", "tooltip": "The suffix to remove when present."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text without the suffix (unchanged when the suffix is absent).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "removesuffix"
@@ -901,11 +965,13 @@ class StringUnescape(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to unescape."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with escape sequences converted to their actual characters.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "unescape"
@@ -936,11 +1002,13 @@ class StringEscape(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to escape."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with special characters turned into escape sequences.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "escape"
@@ -969,16 +1037,18 @@ class StringReplace(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "old": (IO.STRING, {"default": ""}),
-                "new": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to modify."}),
+                "old": (IO.STRING, {"default": "", "tooltip": "The substring to replace."}),
+                "new": (IO.STRING, {"default": "", "tooltip": "The replacement text."}),
             },
             "optional": {
-                "count": (IO.INT, {"default": -1, "min": -1}),
+                "count": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of replacements (-1 replaces all)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with the occurrences replaced.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "replace"
@@ -999,16 +1069,18 @@ class StringRfind(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "substring": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to search in."}),
+                "substring": (IO.STRING, {"default": "", "tooltip": "The text to search for."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0, "min": 0}),
-                "end": (IO.INT, {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
+                "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("index",)
+    OUTPUT_TOOLTIPS = ("Index of the last occurrence, or -1 when not found.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rfind"
@@ -1032,15 +1104,17 @@ class StringRjust(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "width": (IO.INT, {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to align."}),
+                "width": (IO.INT, {"default": 10, "min": 0, "tooltip": "Total width of the resulting field."}),
             },
             "optional": {
-                "fillchar": (IO.STRING, {"default": " "}),
+                "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text right-aligned within the field width.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rjust"
@@ -1065,15 +1139,17 @@ class StringRsplitDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split."}),
             },
             "optional": {
-                "sep": (IO.STRING, {"default": ""}),
-                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits from the right (-1 = no limit)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings as a data list.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
@@ -1098,15 +1174,17 @@ class StringRsplitList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split."}),
             },
             "optional": {
-                "sep": (IO.STRING, {"default": ""}),
-                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits from the right (-1 = no limit)."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings as a Python LIST.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rsplit"
@@ -1129,14 +1207,16 @@ class StringRstrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to strip."}),
             },
             "optional": {
-                "chars": (IO.STRING, {"default": ""}),
+                "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from the end (whitespace when empty)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with trailing characters removed.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "rstrip"
@@ -1162,18 +1242,20 @@ class StringSplitDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split."}),
             },
             "optional": {
-                "sep": (IO.STRING, {"default": ""}),
-                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits (-1 = no limit)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
-    FUNCTION = "split"
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings as a data list.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "split"
     OUTPUT_IS_LIST = (True,)  # This indicates that the output is a data list
 
     def split(self, string, sep=None, maxsplit=-1):
@@ -1200,18 +1282,20 @@ class StringSplitList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split."}),
             },
             "optional": {
-                "sep": (IO.STRING, {"default": ""}),
-                "maxsplit": (IO.INT, {"default": -1, "min": -1}),
+                "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
+                "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits (-1 = no limit)."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
-    FUNCTION = "split"
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings as a Python LIST.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "split"
 
     def split(self, string, sep=None, maxsplit=-1):
         if sep == "":
@@ -1234,14 +1318,16 @@ class StringSplitlinesDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split into lines."}),
             },
             "optional": {
-                "keepends": (IO.BOOLEAN, {"default": False}),
+                "keepends": (IO.BOOLEAN, {"default": False, "tooltip": "Keep the line break characters in the resulting lines."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("lines",)
+    OUTPUT_TOOLTIPS = ("The lines as a data list.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "splitlines"
@@ -1264,14 +1350,16 @@ class StringSplitlinesList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to split into lines."}),
             },
             "optional": {
-                "keepends": (IO.BOOLEAN, {"default": False}),
+                "keepends": (IO.BOOLEAN, {"default": False, "tooltip": "Keep the line break characters in the resulting lines."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("lines",)
+    OUTPUT_TOOLTIPS = ("The lines as a Python LIST.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "splitlines"
@@ -1293,16 +1381,18 @@ class StringStartswith(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "prefix": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to test."}),
+                "prefix": (IO.STRING, {"default": "", "tooltip": "The prefix to look for."}),
             },
             "optional": {
-                "start": (IO.INT, {"default": 0, "min": 0}),
-                "end": (IO.INT, {"default": 0, "min": 0}),
+                "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the checked range."}),
+                "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the checked range (0 means the end)."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the text starts with the prefix.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "startswith"
@@ -1327,14 +1417,16 @@ class StringStrip(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to strip."}),
             },
             "optional": {
-                "chars": (IO.STRING, {"default": ""}),
+                "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from both ends (whitespace when empty)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with leading and trailing characters removed.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "strip"
@@ -1356,11 +1448,13 @@ class StringSwapcase(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text whose letter case is swapped."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text with each character's case inverted.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "swapcase"
@@ -1380,11 +1474,13 @@ class StringTitle(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to titlecase."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text in titlecase (each word starts with an uppercase letter).",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "title"
@@ -1403,11 +1499,13 @@ class StringUpper(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text converted to uppercase.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "upper"
@@ -1428,12 +1526,14 @@ class StringZfill(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {"default": ""}),
-                "width": (IO.INT, {"default": 10, "min": 0}),
+                "string": (IO.STRING, {"default": "", "tooltip": "The text to pad with zeros."}),
+                "width": (IO.INT, {"default": 10, "min": 0, "tooltip": "Total width of the resulting field."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The text zero-padded on the left to the given width.",)
     CATEGORY = "Basic/STRING"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "zfill"
