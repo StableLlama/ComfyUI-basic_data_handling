@@ -1005,12 +1005,135 @@ class PathSaveStringFile(ComfyNodeABC):
             return (False,)
 
 
+def compose_prompt_text(prompt: str, negative_prompt: str) -> str:
+    """
+    Build the generation-parameter text embedded into saved images.
+
+    Follows the Stable Diffusion WebUI convention: the (optional) positive
+    prompt is written first, followed by an optional ``Negative prompt:``
+    line::
+
+        <positive prompt>
+        Negative prompt: <negative prompt>
+
+    Returns an empty string when neither value is provided, in which case no
+    metadata is embedded into the file.
+    """
+    lines = []
+    if prompt.strip():
+        lines.append(prompt.strip())
+    if negative_prompt.strip():
+        lines.append(f"Negative prompt: {negative_prompt.strip()}")
+    return "\n".join(lines)
+
+
+def build_png_info(metadata_text: str):
+    """
+    Wrap ``metadata_text`` in a Pillow ``PngInfo`` container under the standard
+    ``parameters`` text-chunk key so it can be embedded in a PNG file.
+
+    Returns ``None`` when there is no text to embed (or Pillow's PNG metadata
+    support is unavailable), in which case the image should be saved without
+    extra metadata.
+    """
+    if not metadata_text:
+        return None
+    try:
+        from PIL import PngImagePlugin
+    except ModuleNotFoundError:
+        return None
+    pnginfo = PngImagePlugin.PngInfo()
+    pnginfo.add_text("parameters", metadata_text)
+    return pnginfo
+
+
+def build_image_exif(metadata_text: str, include_description: bool = True):
+    """
+    Build an EXIF block that stores ``metadata_text`` for formats without a
+    native text chunk (JPEG, WEBP, JXL).
+
+    The payload is written into the EXIF ``UserComment`` field (tag 0x9286) of
+    the Exif IFD as ``UNICODE\0`` + UTF-16-BE, which matches what Stable
+    Diffusion WebUI / piexif based readers expect. When ``include_description``
+    is true, the payload is also written as UTF-8 into the EXIF
+    ``ImageDescription`` field (tag 0x010E) of IFD0.
+
+    Returns the EXIF bytes (starting with the ``Exif\0\0`` marker), or ``None``
+    when there is no text to embed.
+    """
+    if not metadata_text:
+        return None
+    try:
+        from PIL import ExifTags
+    except ModuleNotFoundError:
+        return None
+    Image, _ = _require_pillow()
+    exif = Image.Exif()
+    if include_description:
+        exif[0x010E] = metadata_text.encode("utf-8")
+    exif.get_ifd(ExifTags.IFD.Exif)[0x9286] = b"UNICODE\x00" + metadata_text.encode("utf-16-be")
+    return exif.tobytes()
+
+
+def build_xmp_packet(metadata_text: str) -> bytes:
+    """
+    Build an XMP packet storing ``metadata_text`` in the Dublin Core
+    ``dc:description`` tag, as expected for JPEG XL ``xml `` boxes.
+    """
+    from xml.sax.saxutils import escape
+    body = escape(metadata_text)
+    packet = (
+        '<?xpacket begin="\ufeff" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
+        '<x:xmpmeta xmlns:x="adobe:ns:meta/">\n'
+        '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
+        '<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
+        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">' + body + '</rdf:li></rdf:Alt></dc:description>\n'
+        '</rdf:Description>\n'
+        '</rdf:RDF>\n'
+        '</x:xmpmeta>\n'
+        '<?xpacket end="w"?>'
+    )
+    return packet.encode("utf-8")
+
+
+def metadata_save_kwargs(metadata_text: str, fmt: str) -> dict:
+    """
+    Return the extra keyword arguments that embed ``metadata_text`` when saving
+    an image in the (lower-case) format ``fmt``.
+
+    Returns an empty dict when there is no text to embed or when the format
+    cannot carry text metadata.
+    """
+    if not metadata_text:
+        return {}
+    if fmt == "png":
+        return {"pnginfo": build_png_info(metadata_text)}
+    if fmt in ("jpg", "jpeg"):
+        exif = build_image_exif(metadata_text, include_description=True)
+        return {"exif": exif} if exif is not None else {}
+    if fmt in ("webp", "jxl"):
+        exif = build_image_exif(metadata_text, include_description=False)
+        kwargs = {"exif": exif} if exif is not None else {}
+        if fmt == "jxl":
+            # EXIF and XMP boxes are only available in the JXL container format
+            kwargs["use_container"] = True
+            kwargs["xmp"] = build_xmp_packet(metadata_text)
+        return kwargs
+    return {}
+
+
 class PathSaveImageRGB(ComfyNodeABC):
     """
     Saves an image to a file.
 
     This node takes an image tensor and saves it to the specified path.
     Supports various image formats like PNG, JPG, WEBP, JXL (if pillow-jxl is installed), etc.
+
+    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
+    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
+    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
+    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
+    ignore the prompts.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -1023,6 +1146,8 @@ class PathSaveImageRGB(ComfyNodeABC):
                 "format": (IO.STRING, {"default": "png"}),
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
                 "create_dirs": (IO.BOOLEAN, {"default": True}),
+                "prompt": (IO.STRING, {"default": ""}),
+                "negative_prompt": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -1033,7 +1158,8 @@ class PathSaveImageRGB(ComfyNodeABC):
     FUNCTION = "save_image"
     OUTPUT_NODE = True
 
-    def save_image(self, images, path: str, format: str = "png", quality: int = 95, create_dirs: bool = True):
+    def save_image(self, images, path: str, format: str = "png", quality: int = 95,
+                   create_dirs: bool = True, prompt: str = "", negative_prompt: str = ""):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1074,15 +1200,23 @@ class PathSaveImageRGB(ComfyNodeABC):
             # Create PIL image
             pil_img = Image.fromarray(img_np)
 
-            # Save the image
-            if format.lower() == "jpg" or format.lower() == "jpeg":
-                pil_img.save(path, format="JPEG", quality=quality)
-            elif format.lower() == "webp":
-                pil_img.save(path, format="WEBP", quality=quality)
-            elif format.lower() == "jxl" and has_jxl_support:
+            # Compose the prompt metadata to embed into the saved file
+            metadata_text = compose_prompt_text(prompt, negative_prompt)
+            fmt = format.lower()
+
+            # Save the image, embedding prompt metadata where the format supports it
+            if fmt == "jpg" or fmt == "jpeg":
+                pil_img.save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "webp":
+                pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "jxl" and has_jxl_support:
                 # JPEG XL specific options
-                pil_img.save(path, format="JXL", quality=quality)
+                pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "png":
+                pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt))
             else:
+                if metadata_text:
+                    print("Basic data handling: Prompt metadata is not supported for this format; skipping it.")
                 pil_img.save(path, format=format.upper())
 
             print(f"Basic data handling: Successfully saved image to {path}")
@@ -1099,6 +1233,12 @@ class PathSaveImageRGBA(ComfyNodeABC):
     This node takes an image tensor and a mask tensor and saves them to the
     specified path as an image with transparency, where the mask defines the
     alpha channel.
+
+    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
+    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
+    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
+    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
+    ignore the prompts.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -1113,6 +1253,8 @@ class PathSaveImageRGBA(ComfyNodeABC):
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
                 "invert_mask": (IO.BOOLEAN, {"default": False}),
                 "create_dirs": (IO.BOOLEAN, {"default": True}),
+                "prompt": (IO.STRING, {"default": ""}),
+                "negative_prompt": (IO.STRING, {"default": ""}),
             }
         }
 
@@ -1124,8 +1266,9 @@ class PathSaveImageRGBA(ComfyNodeABC):
     OUTPUT_NODE = True
 
     def save_image_with_mask(self, images, mask, path: str, format: str = "png",
-                            quality: int = 95, invert_mask: bool = False,
-                            create_dirs: bool = True):
+                             quality: int = 95, invert_mask: bool = False,
+                             create_dirs: bool = True, prompt: str = "",
+                             negative_prompt: str = ""):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1186,13 +1329,21 @@ class PathSaveImageRGBA(ComfyNodeABC):
             pil_img_rgba = pil_img.convert("RGBA")
             pil_img_rgba.putalpha(alpha_img)
 
-            # Save the image
-            if format.lower() == "webp":
-                pil_img_rgba.save(path, format="WEBP", quality=quality)
-            elif format.lower() == "jxl" and has_jxl_support:
+            # Compose the prompt metadata to embed into the saved file
+            metadata_text = compose_prompt_text(prompt, negative_prompt)
+            fmt = format.lower()
+
+            # Save the image, embedding prompt metadata where the format supports it
+            if fmt == "webp":
+                pil_img_rgba.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "jxl" and has_jxl_support:
                 # JPEG XL supports alpha channel
-                pil_img_rgba.save(path, format="JXL", quality=quality)
+                pil_img_rgba.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "png":
+                pil_img_rgba.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt))
             else:
+                if metadata_text:
+                    print("Basic data handling: Prompt metadata is not supported for this format; skipping it.")
                 pil_img_rgba.save(path, format=format.upper())
 
             print(f"Basic data handling: Successfully saved image with mask to {path}")
