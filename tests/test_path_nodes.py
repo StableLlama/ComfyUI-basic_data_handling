@@ -15,6 +15,17 @@ from src.basic_data_handling.path_nodes import (
 )
 
 
+def decode_user_comment(value):
+    """Decode an EXIF UserComment value like piexif/A1111 readers do."""
+    if isinstance(value, bytes):
+        if value.startswith(b"ASCII\x00\x00\x00"):
+            return value[8:].decode("utf-8", errors="ignore")
+        if value.startswith(b"UNICODE\x00"):
+            return value[8:].decode("utf-16-be", errors="ignore")
+        return value.decode("utf-8", errors="ignore")
+    return value
+
+
 def test_path_join():
     node = PathJoin()
     assert node.join_paths("folder", "file.txt") == (os.path.join("folder", "file.txt"),)
@@ -458,6 +469,124 @@ def test_path_load_save_image_rgb(tmp_path, monkeypatch):
     with pytest.raises(FileNotFoundError):
         load_node.load_image_rgb(str(tmp_path / "nonexistent.png"))
 
+
+def test_path_save_image_rgb_prompt_metadata(tmp_path):
+    save_node = PathSaveImageRGB()
+    img_size = (16, 16)
+    red_img = torch.zeros(1, img_size[1], img_size[0], 3)
+    red_img[0, :, :, 0] = 1.0  # Red channel set to 1
+
+    # No metadata when neither prompt nor negative prompt is provided
+    plain_path = str(tmp_path / "plain")
+    assert save_node.save_image(red_img, plain_path) == (True,)
+    with Image.open(plain_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") is None
+
+    # Both prompt and negative prompt provided
+    full_path = str(tmp_path / "full")
+    assert save_node.save_image(red_img, full_path, prompt="a red square",
+                                negative_prompt="blurry, low quality") == (True,)
+    with Image.open(full_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
+
+    # Only the prompt is provided
+    pos_path = str(tmp_path / "pos_only")
+    assert save_node.save_image(red_img, pos_path, prompt="only positive") == (True,)
+    with Image.open(pos_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") == "only positive"
+
+    # Only the negative prompt is provided
+    neg_path = str(tmp_path / "neg_only")
+    assert save_node.save_image(red_img, neg_path, negative_prompt="only negative") == (True,)
+    with Image.open(neg_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") == "Negative prompt: only negative"
+
+    # JPEG embeds the prompt into the EXIF UserComment and ImageDescription fields
+    jpg_path = str(tmp_path / "jpeg_meta")
+    assert save_node.save_image(red_img, jpg_path, format="jpg", prompt="a red square",
+                                negative_prompt="blurry, low quality") == (True,)
+    assert os.path.exists(jpg_path + ".jpg")
+    with Image.open(jpg_path + ".jpg") as img:
+        img.load()
+        exif = img.getexif()
+        expected = "a red square\nNegative prompt: blurry, low quality"
+        assert decode_user_comment(exif.get_ifd(0x8769).get(0x9286)) == expected
+        assert exif.get(0x010E) == expected
+
+    # WEBP embeds the prompt into the EXIF UserComment field (no ImageDescription)
+    webp_path = str(tmp_path / "webp_meta")
+    assert save_node.save_image(red_img, webp_path, format="webp", prompt="a red square",
+                                negative_prompt="blurry, low quality") == (True,)
+    with Image.open(webp_path + ".webp") as img:
+        img.load()
+        exif_bytes = img.info.get("exif", b"")
+        if exif_bytes.startswith(b"Exif\x00\x00"):
+            exif_bytes = exif_bytes[6:]
+        exif = Image.Exif()
+        exif.load(exif_bytes)
+        assert decode_user_comment(exif.get_ifd(0x8769).get(0x9286)) == expected
+        assert 0x010E not in exif
+
+
+def test_path_save_image_rgba_prompt_metadata(tmp_path):
+    save_node = PathSaveImageRGBA()
+    img_size = (16, 16)
+    red_img = torch.zeros(1, img_size[1], img_size[0], 3)
+    red_img[0, :, :, 0] = 1.0  # Red channel set to 1
+    mask = torch.zeros(1, img_size[1], img_size[0])
+
+    # No metadata when neither prompt nor negative prompt is provided
+    plain_path = str(tmp_path / "plain")
+    assert save_node.save_image_with_mask(red_img, mask, plain_path) == (True,)
+    with Image.open(plain_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") is None
+
+    # Both prompt and negative prompt provided
+    full_path = str(tmp_path / "full")
+    assert save_node.save_image_with_mask(red_img, mask, full_path,
+                                          prompt="a red square",
+                                          negative_prompt="blurry, low quality") == (True,)
+    with Image.open(full_path + ".png") as img:
+        img.load()
+        assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
+
+
+def test_path_save_image_jxl_prompt_metadata(tmp_path):
+    pytest.importorskip("pillow_jxl")
+    save_node = PathSaveImageRGB()
+    img_size = (16, 16)
+    red_img = torch.zeros(1, img_size[1], img_size[0], 3)
+    red_img[0, :, :, 0] = 1.0  # Red channel set to 1
+
+    prompt = "a red square <lora:x:1.0>"
+    negative_prompt = "blurry, low quality"
+    jxl_path = str(tmp_path / "jxl_meta")
+    assert save_node.save_image(red_img, jxl_path, format="jxl", prompt=prompt,
+                                negative_prompt=negative_prompt) == (True,)
+    assert os.path.exists(jxl_path + ".jxl")
+
+    # JXL embeds the prompt into the EXIF UserComment field
+    with Image.open(jxl_path + ".jxl") as img:
+        img.load()
+        exif_bytes = img.info.get("exif", b"")
+        if exif_bytes.startswith(b"Exif\x00\x00"):
+            exif_bytes = exif_bytes[6:]
+        exif = Image.Exif()
+        exif.load(exif_bytes)
+        expected = "a red square <lora:x:1.0>\nNegative prompt: blurry, low quality"
+        assert decode_user_comment(exif.get_ifd(0x8769).get(0x9286)) == expected
+
+    # JXL also embeds the prompt (XML-escaped) in an XMP xml box
+    raw = (tmp_path / "jxl_meta.jxl").read_bytes()
+    assert b"xml " in raw
+    assert b"<dc:description>" in raw
+    escaped = "a red square &lt;lora:x:1.0&gt;\nNegative prompt: blurry, low quality"
+    assert escaped.encode("utf-8") in raw
 
 
 def test_path_normalize():

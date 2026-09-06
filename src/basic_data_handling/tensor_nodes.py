@@ -30,11 +30,13 @@ class TensorCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {}),
+                "input": (IO.ANY, {"tooltip": "A number, list/tuple, or existing tensor to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The resulting PyTorch tensor.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -55,13 +57,15 @@ class TensorBinaryOp(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "a": (IO.ANY, {}),
-                "b": (IO.ANY, {}),
-                "operation": (["add", "subtract", "multiply", "divide", "power", "remainder", "floor_divide"], {"default": "add"}),
+                "a": (IO.ANY, {"tooltip": "Left operand: a tensor, number or list."}),
+                "b": (IO.ANY, {"tooltip": "Right operand: a tensor, number or list."}),
+                "operation": (["add", "subtract", "multiply", "divide", "power", "remainder", "floor_divide"], {"default": "add", "tooltip": "Element-wise operation to apply."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The tensor resulting from applying the operation element-wise.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "operate"
@@ -95,12 +99,14 @@ class TensorUnaryOp(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {}),
-                "operation": (["abs", "neg", "exp", "log", "sin", "cos", "sqrt", "sigmoid", "relu"], {"default": "abs"}),
+                "input": (IO.ANY, {"tooltip": "A tensor, number or list to transform."}),
+                "operation": (["abs", "neg", "exp", "log", "sin", "cos", "sqrt", "sigmoid", "relu"], {"default": "abs", "tooltip": "Element-wise unary operation to apply."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The tensor resulting from applying the operation element-wise.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "operate"
@@ -137,12 +143,14 @@ class TensorSlice(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "tensor": (IO.ANY, {}),
-                "slice_str": (IO.STRING, {"default": ":"}),
+                "tensor": (IO.ANY, {"tooltip": "The tensor to slice."}),
+                "slice_str": (IO.STRING, {"default": ":", "tooltip": "Python-style slice per dimension, comma-separated, e.g. ':, 0:10, 5'."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The sliced tensor.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice_tensor"
@@ -179,12 +187,14 @@ class TensorReshape(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "tensor": (IO.ANY, {}),
-                "shape": (IO.STRING, {"default": "-1"}),
+                "tensor": (IO.ANY, {"tooltip": "The tensor to reshape."}),
+                "shape": (IO.STRING, {"default": "-1", "tooltip": "Comma-separated target dimensions; -1 infers that dimension automatically, e.g. '2, -1'."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The reshaped tensor.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "reshape"
@@ -207,12 +217,14 @@ class TensorPermute(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "tensor": (IO.ANY, {}),
-                "dims": (IO.STRING, {"default": "0, 1"}),
+                "tensor": (IO.ANY, {"tooltip": "The tensor whose dimensions are reordered."}),
+                "dims": (IO.STRING, {"default": "0, 1", "tooltip": "New order of the dimensions as comma-separated indices, e.g. '0, 2, 1'."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The tensor with its dimensions permuted.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "permute"
@@ -235,14 +247,16 @@ class TensorJoin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "tensor1": (IO.ANY, {}),
-                "tensor2": (IO.ANY, {}),
-                "dim": (IO.INT, {"default": 0}),
-                "mode": (["concatenate", "stack"], {"default": "concatenate"}),
+                "tensor1": (IO.ANY, {"tooltip": "First tensor to join."}),
+                "tensor2": (IO.ANY, {"tooltip": "Second tensor to join."}),
+                "dim": (IO.INT, {"default": 0, "tooltip": "Dimension along which the tensors are joined."}),
+                "mode": (["concatenate", "stack"], {"default": "concatenate", "tooltip": "'concatenate' joins along an existing dimension; 'stack' inserts a new dimension."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("tensor",)
+    OUTPUT_TOOLTIPS = ("The joined tensor.",)
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join"
@@ -264,12 +278,13 @@ class TensorInfo(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "tensor": (IO.ANY, {}),
+                "tensor": (IO.ANY, {"tooltip": "The tensor to inspect."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.STRING, IO.STRING)
     RETURN_NAMES = ("shape", "dtype", "device")
+    OUTPUT_TOOLTIPS = ("Tensor shape as a list of dimension sizes.", "Data type of the tensor, e.g. torch.float32.", "Device the tensor lives on, e.g. cuda:0 or cpu.")
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_info"

@@ -30,11 +30,13 @@ class IntCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {"default": "0", "widgetType": "STRING"}),
+                "value": (IO.ANY, {"default": "0", "widgetType": "STRING", "tooltip": "Textual form of the integer to parse. Prefixes 0b/0o/0x select binary/octal/hexadecimal."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("int",)
+    OUTPUT_TOOLTIPS = ("The parsed INT value.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -54,12 +56,14 @@ class IntCreateWithBase(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.STRING, {"default": "0"}),
-                "base": (IO.INT, {"default": "10", "min": 2}),
+                "value": (IO.STRING, {"default": "0", "tooltip": "Textual form of the integer as written in the chosen base."}),
+                "base": (IO.INT, {"default": "10", "min": 2, "tooltip": "Numeric base to interpret the string in (>= 2), e.g. 2, 8, 10 or 16."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("int",)
+    OUTPUT_TOOLTIPS = ("The parsed INT value.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -78,12 +82,14 @@ class IntAdd(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 0}),
-                "int2": (IO.INT, {"default": 0}),
+                "int1": (IO.INT, {"default": 0, "tooltip": "First addend."}),
+                "int2": (IO.INT, {"default": 0, "tooltip": "Second addend."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The sum of the two integers.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -103,12 +109,14 @@ class IntSubtract(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 0}),
-                "int2": (IO.INT, {"default": 0}),
+                "int1": (IO.INT, {"default": 0, "tooltip": "Minuend (the value being subtracted from)."}),
+                "int2": (IO.INT, {"default": 0, "tooltip": "Subtrahend (the value to subtract)."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The difference int1 - int2.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "subtract"
@@ -127,12 +135,14 @@ class IntMultiply(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 1}),
-                "int2": (IO.INT, {"default": 1}),
+                "int1": (IO.INT, {"default": 1, "tooltip": "First factor."}),
+                "int2": (IO.INT, {"default": 1, "tooltip": "Second factor."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The product of the two integers.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "multiply"
@@ -152,12 +162,14 @@ class IntDivide(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 1}),
-                "int2": (IO.INT, {"default": 1}),
+                "int1": (IO.INT, {"default": 1, "tooltip": "Dividend (numerator)."}),
+                "int2": (IO.INT, {"default": 1, "tooltip": "Divisor (denominator); must not be 0."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The integer quotient int1 // int2 (fractional part discarded).",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -179,13 +191,15 @@ class IntDivideSafe(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 1}),
-                "int2": (IO.INT, {"default": 1}),
-                "infinity": (IO.INT, {"default": 9223372036854775807}), # 2**63 - 1
+                "int1": (IO.INT, {"default": 1, "tooltip": "Dividend (numerator)."}),
+                "int2": (IO.INT, {"default": 1, "tooltip": "Divisor; a value of 0 returns the infinity sentinel instead of an error."}),
+                "infinity": (IO.INT, {"default": 9223372036854775807, "tooltip": "Value returned as +infinity when dividing by zero (negated for negative results)."}), # 2**63 - 1
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The integer quotient int1 // int2, or the +/-infinity sentinel when the divisor is 0.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "divide"
@@ -206,11 +220,13 @@ class IntBitCount(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": (IO.INT, {"default": 0}),
+                "int_value": (IO.INT, {"default": 0, "tooltip": "The integer to examine."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("Number of 1 bits in the binary (two's complement) representation.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "bit_count"
@@ -231,11 +247,13 @@ class IntBitLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": (IO.INT, {"default": 0}),
+                "int_value": (IO.INT, {"default": 0, "tooltip": "The integer to examine."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("Number of bits required to represent the value (excluding the sign and leading zeros).",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "bit_length"
@@ -255,13 +273,15 @@ class IntFromBytes(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "bytes_value": ("BYTES", {}),
-                "byteorder": (["big", "little"], {"default": "big"}),
-                "signed": (["True", "False"], {"default": "False"}),
+                "bytes_value": ("BYTES", {"tooltip": "The bytes object to decode into an integer."}),
+                "byteorder": (["big", "little"], {"default": "big", "tooltip": "Byte order: 'big' (most significant byte first) or 'little'."}),
+                "signed": (["True", "False"], {"default": "False", "tooltip": "When True the bytes are read as a two's complement signed integer."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("int",)
+    OUTPUT_TOOLTIPS = ("The decoded INT value.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_bytes"
@@ -282,12 +302,14 @@ class IntModulus(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int1": (IO.INT, {"default": 0}),
-                "int2": (IO.INT, {"default": 1}),
+                "int1": (IO.INT, {"default": 0, "tooltip": "Dividend."}),
+                "int2": (IO.INT, {"default": 1, "tooltip": "Divisor; must not be 0."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The remainder of int1 divided by int2 (same sign as the divisor).",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "modulus"
@@ -309,12 +331,14 @@ class IntPower(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "base": (IO.INT, {"default": 1}),
-                "exponent": (IO.INT, {"default": 0}),
+                "base": (IO.INT, {"default": 1, "tooltip": "The base of the power."}),
+                "exponent": (IO.INT, {"default": 0, "tooltip": "The exponent to raise the base to."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The result of base ** exponent.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "power"
@@ -334,14 +358,16 @@ class IntToBytes(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "int_value": (IO.INT, {"default": 0}),
-                "length": (IO.INT, {"default": 4, "min": 1}),
-                "byteorder": (["big", "little"], {"default": "big"}),
-                "signed": (["True", "False"], {"default": "False"}),
+                "int_value": (IO.INT, {"default": 0, "tooltip": "The integer to convert."}),
+                "length": (IO.INT, {"default": 4, "min": 1, "tooltip": "Number of bytes in the result (must be large enough to hold the value)."}),
+                "byteorder": (["big", "little"], {"default": "big", "tooltip": "Byte order of the output: 'big' (most significant byte first) or 'little'."}),
+                "signed": (["True", "False"], {"default": "False", "tooltip": "When True the value is encoded as a two's complement signed integer."}),
             }
         }
 
     RETURN_TYPES = ("BYTES",)
+    RETURN_NAMES = ("bytes",)
+    OUTPUT_TOOLTIPS = ("The bytes object representation of the integer.",)
     CATEGORY = "Basic/INT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "to_bytes"

@@ -15,17 +15,22 @@ except:
 
 class CastToBoolean(ComfyNodeABC):
     """
-    Converts any input to a BOOLEAN. Follows standard Python truthy/falsy rules.
+    Converts any value to a BOOLEAN using Python truthiness.
+
+    Truthy values (non-zero numbers, non-empty strings/lists/dicts/sets) become True;
+    falsy values (``0``, ``""``, empty containers, ``None``) become False.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a BOOLEAN."})
             }
         }
 
     RETURN_TYPES = ("BOOLEAN",)
+    RETURN_NAMES = ("boolean",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a BOOLEAN.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_boolean"
@@ -36,17 +41,23 @@ class CastToBoolean(ComfyNodeABC):
 
 class CastToDict(ComfyNodeABC):
     """
-    Converts compatible inputs to a DICT. Input must be a mapping or a list of key-value pairs.
+    Converts a value into a DICT.
+
+    The input must already be a mapping, or an iterable of key-value pairs (for
+    example a LIST of two-element sequences such as ``[["a", 1], ["b", 2]]``).
+    Raises a ValueError for any other kind of input.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a DICT."})
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a DICT.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_dict"
@@ -60,17 +71,22 @@ class CastToDict(ComfyNodeABC):
 
 class CastToFloat(ComfyNodeABC):
     """
-    Converts any numeric input to a FLOAT. Non-numeric or invalid inputs raise a ValueError.
+    Converts a numeric value to a FLOAT.
+
+    Accepts INT, FLOAT and numeric strings such as ``"3.14"``. Values that cannot be
+    parsed as a number raise a ValueError.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a FLOAT."})
             }
         }
 
     RETURN_TYPES = ("FLOAT",)
+    RETURN_NAMES = ("float",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a FLOAT.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_float"
@@ -84,17 +100,22 @@ class CastToFloat(ComfyNodeABC):
 
 class CastToInt(ComfyNodeABC):
     """
-    Converts any numeric input to an INT. Non-numeric or invalid inputs raise a ValueError.
+    Converts a numeric value to an INT, truncating toward zero.
+
+    Accepts INT, FLOAT (fractional part is dropped, like ``int()``) and numeric strings
+    such as ``"42"``. Values that cannot be converted raise a ValueError.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to an INT."})
             }
         }
 
     RETURN_TYPES = (IO.INT,)
+    RETURN_NAMES = ("int",)
+    OUTPUT_TOOLTIPS = ("The input value converted to an INT.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_int"
@@ -108,18 +129,22 @@ class CastToInt(ComfyNodeABC):
 
 class CastToList(ComfyNodeABC):
     """
-    Converts any input to a LIST. Non-list inputs are wrapped in a list. If input is a ComfyUI data list,
-    it converts the individual items into a Python LIST.
+    Converts a value into a Python LIST.
+
+    Values that are already a list (including ComfyUI data lists) are returned as-is;
+    any other single value is wrapped into a one-element list.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a LIST."})
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a LIST.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_list"
@@ -132,18 +157,22 @@ class CastToList(ComfyNodeABC):
 
 class CastToSet(ComfyNodeABC):
     """
-    Converts any input to a SET. Non-set inputs are converted into a set. If input is a ComfyUI data list,
-    it casts the individual items into a SET.
+    Converts a value into a SET (an unordered collection of unique items).
+
+    Sets are returned unchanged; a list or ComfyUI data list becomes the set of its
+    items (duplicates removed); any other single value is wrapped into a one-element set.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a SET."})
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a SET.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_set"
@@ -156,17 +185,22 @@ class CastToSet(ComfyNodeABC):
 
 class CastToString(ComfyNodeABC):
     """
-    Converts any input to a STRING. Non-string values are converted using str().
+    Converts any value to a STRING using its textual representation.
+
+    Numbers, booleans, lists, dicts, sets and other values are rendered with ``str()``,
+    matching Python's default formatting.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input": (IO.ANY, {})
+                "input": (IO.ANY, {"tooltip": "The value to convert to a STRING."})
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("string",)
+    OUTPUT_TOOLTIPS = ("The input value converted to a STRING.",)
     CATEGORY = "Basic/cast"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert_to_string"

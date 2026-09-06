@@ -30,14 +30,15 @@ class IfElse(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "condition": (IO.BOOLEAN, {}),
-                "if_true": (IO.ANY, {"lazy": True}),
-                "if_false": (IO.ANY, {"lazy": True}),
+                "condition": (IO.BOOLEAN, {"tooltip": "Controls which branch is returned."}),
+                "if_true": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the condition is True."}),
+                "if_false": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the condition is False."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The value of the branch selected by the condition.",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -68,18 +69,19 @@ class IfElifElse(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "if": (IO.BOOLEAN, {"forceInput": True}),
-                "then": (IO.ANY, {"lazy": True}),
+                "if": (IO.BOOLEAN, {"forceInput": True, "tooltip": "Main condition; when True the 'then' value is returned."}),
+                "then": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the 'if' condition is True."}),
             },
             "optional": ContainsDynamicDict({
-                "elif_0": (IO.BOOLEAN, {"forceInput": True, "lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
-                "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0}),
-                "else": (IO.ANY, {"lazy": True}),
+                "elif_0": (IO.BOOLEAN, {"forceInput": True, "lazy": True, "_dynamic": "number", "_dynamicGroup": 0, "tooltip": "Optional else-if condition. Connect more to chain additional branches."}),
+                "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0, "tooltip": "Value returned when the matching elif_<n> condition is True."}),
+                "else": (IO.ANY, {"lazy": True, "tooltip": "Value returned when no condition is True."}),
             })
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The value of the first branch whose condition is True (or the else value).",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -157,16 +159,17 @@ class SwitchCase(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": ContainsDynamicDict({
-                "select": (IO.INT, {"default": 0, "min": 0}),
-                "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number"}),
+                "select": (IO.INT, {"default": 0, "min": 0, "tooltip": "Zero-based index of the case to select."}),
+                "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "tooltip": "Value returned when its index is selected. Connect more values to add cases."}),
             }),
             "optional": {
-                "default": (IO.ANY, {"lazy": True}),
+                "default": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the selected index is out of range."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The selected case value, or the default when the index is out of range.",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -225,16 +228,17 @@ class ContinueFlow(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
-                "select": (IO.BOOLEAN, {"default": True}),
+                "value": (IO.ANY, {"tooltip": "The value to pass through when the flow is enabled."}),
+                "select": (IO.BOOLEAN, {"default": True, "tooltip": "When True the value passes through; when False execution is blocked."}),
             },
             "optional": {
-                "message": (IO.STRING, {"default": ""}),
+                "message": (IO.STRING, {"default": "", "tooltip": "Optional message shown in a dialog when the flow is blocked. Leave empty for silent operation."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("value",)
+    OUTPUT_TOOLTIPS = ("The input value, or an execution blocker when the flow is disabled.",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -259,13 +263,14 @@ class FlowSelect(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
-                "select": (IO.BOOLEAN, {}),
+                "value": (IO.ANY, {"tooltip": "The value to route to one of the two outputs."}),
+                "select": (IO.BOOLEAN, {"tooltip": "When True the value is emitted on the 'true' output, otherwise on the 'false' output."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("true", "false")
+    OUTPUT_TOOLTIPS = ("Receives the value when select is True (otherwise blocked).", "Receives the value when select is False (otherwise blocked).")
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "select"
@@ -292,12 +297,13 @@ class ForceCalculation(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
+                "value": (IO.ANY, {"tooltip": "Any value; passed through unchanged while forcing recalculation."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("value",)
+    OUTPUT_TOOLTIPS = ("The unchanged input value.",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -326,13 +332,14 @@ class ExecutionOrder(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "E/O": ("E/O", {}),
-                "any node output": (IO.ANY, {}),
+                "E/O": ("E/O", {"tooltip": "Chain these sockets together to force execution order."}),
+                "any node output": (IO.ANY, {"tooltip": "Connect any output of the nodes whose execution order you want to force; it is passed through."}),
             }
         }
 
     RETURN_TYPES = ("E/O", IO.ANY)
     RETURN_NAMES = ("E/O", "passthrough")
+    OUTPUT_TOOLTIPS = ("Chain to the next execution-order node.", "The 'any node output' value passed through unchanged.")
     FUNCTION = "execution_order"
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -354,12 +361,13 @@ class IsConnected(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "input": (IO.ANY, {}),
+                "input": (IO.ANY, {"tooltip": "The input to test whether it is connected."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_connected",)
+    OUTPUT_TOOLTIPS = ("True when the input is connected to another node's output, otherwise False.",)
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"

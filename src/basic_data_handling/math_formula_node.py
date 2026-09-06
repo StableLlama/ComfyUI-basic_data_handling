@@ -44,14 +44,16 @@ class MathFormula(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "formula": (IO.STRING, {"default": "-pi() ** 2"}),
+                "formula": (IO.STRING, {"default": "-pi() ** 2", "tooltip": "Expression to evaluate using single-letter variables (a, b, c, ...), supported operators, parentheses and functions. Example: sqrt(a**2 + b**2)."}),
             },
             "optional": ContainsDynamicDict({
-                "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter"}),
+                "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter", "tooltip": "A numeric value bound to a single-letter variable in the formula. Connect more values to add the variables b, c, d, ..."}),
             }),
         }
 
     RETURN_TYPES = (IO.FLOAT,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The numerical result of evaluating the formula.",)
     CATEGORY = "Basic/maths"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "evaluate"

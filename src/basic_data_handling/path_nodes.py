@@ -138,12 +138,13 @@ class PathAbspath(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to resolve to an absolute path."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("absolute path",)
+    OUTPUT_TOOLTIPS = ("The absolute path with relative components and symlinks resolved.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_abspath"
@@ -163,12 +164,13 @@ class PathBasename(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose final filename component is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("basename",)
+    OUTPUT_TOOLTIPS = ("The final filename component of the path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_basename"
@@ -187,15 +189,16 @@ class PathCommonPrefix(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": (IO.STRING, {"default": ""}),
+                "path1": (IO.STRING, {"default": "", "tooltip": "First path."}),
             },
             "optional": {
-                "path2": (IO.STRING, {"default": ""}),
+                "path2": (IO.STRING, {"default": "", "tooltip": "Second path."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("common prefix",)
+    OUTPUT_TOOLTIPS = ("The longest common leading component of the given paths.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_common_prefix"
@@ -216,12 +219,13 @@ class PathDirname(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose directory component is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("dirname",)
+    OUTPUT_TOOLTIPS = ("The directory (parent) component of the path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_dirname"
@@ -241,12 +245,13 @@ class PathExists(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to check for existence."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("exists",)
+    OUTPUT_TOOLTIPS = ("True when the path exists as a file or directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_exists"
@@ -266,12 +271,13 @@ class PathExpandVars(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path that may contain environment variables (e.g. $HOME, %USERPROFILE%)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("expanded path",)
+    OUTPUT_TOOLTIPS = ("The path with environment variables expanded.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "expand_vars"
@@ -292,6 +298,7 @@ class PathGetCwd(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("current directory",)
+    OUTPUT_TOOLTIPS = ("The current working directory as an absolute path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_cwd"
@@ -311,12 +318,13 @@ class PathGetExtension(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose file extension is extracted."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("extension",)
+    OUTPUT_TOOLTIPS = ("The extension including the dot (e.g. '.txt'); empty when there is none.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_extension"
@@ -336,12 +344,13 @@ class PathGetSize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "File whose size in bytes is returned."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("size (bytes)",)
+    OUTPUT_TOOLTIPS = ("The file size in bytes.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_size"
@@ -369,15 +378,16 @@ class PathGlob(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "pattern": (IO.STRING, {"default": "*.txt"}),
+                "pattern": (IO.STRING, {"default": "*.txt", "tooltip": "Shell-style pattern to match, e.g. '*.txt'."}),
             },
             "optional": {
-                "recursive": (IO.BOOLEAN, {"default": False}),
+                "recursive": (IO.BOOLEAN, {"default": False, "tooltip": "When True, '**' also matches inside subdirectories."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("matching paths",)
+    OUTPUT_TOOLTIPS = ("All paths matching the pattern, as a data list.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "glob_paths"
@@ -427,12 +437,13 @@ class PathIsAbsolute(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is absolute",)
+    OUTPUT_TOOLTIPS = ("True when the path is absolute (starts at the root).",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_absolute"
@@ -452,12 +463,13 @@ class PathIsDir(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is dir",)
+    OUTPUT_TOOLTIPS = ("True when the path exists and is a directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_dir"
@@ -477,12 +489,13 @@ class PathIsFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to test."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is file",)
+    OUTPUT_TOOLTIPS = ("True when the path exists and is a regular file.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_is_file"
@@ -503,15 +516,16 @@ class PathJoin(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path1": (IO.STRING, {"default": ""}),
+                "path1": (IO.STRING, {"default": "", "tooltip": "First path component."}),
             },
             "optional": {
-                "path2": (IO.STRING, {"default": ""}),
+                "path2": (IO.STRING, {"default": "", "tooltip": "Second path component."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
+    OUTPUT_TOOLTIPS = ("The components joined into a single path.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "join_paths"
@@ -534,16 +548,17 @@ class PathListDir(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Directory to list."}),
             },
             "optional": {
-                "files_only": (IO.BOOLEAN, {"default": False}),
-                "dirs_only": (IO.BOOLEAN, {"default": False}),
+                "files_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only files are returned."}),
+                "dirs_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only directories are returned."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("entries",)
+    OUTPUT_TOOLTIPS = ("The names of the directory entries, as a data list.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "list_directory"
@@ -580,12 +595,13 @@ class PathNormalize(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to normalize."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("normalized path",)
+    OUTPUT_TOOLTIPS = ("The path with redundant separators and up-level references collapsed.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "normalize_path"
@@ -605,13 +621,14 @@ class PathSetExtension(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {}),
-                "extension": (IO.STRING, {"default": ".txt"}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path whose extension is replaced."}),
+                "extension": (IO.STRING, {"default": ".txt", "tooltip": "The new extension; a leading dot is added if missing."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("path",)
+    OUTPUT_TOOLTIPS = ("The path with its extension replaced.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set_extension"
@@ -636,15 +653,16 @@ class PathRelative(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to express relative to start."}),
             },
             "optional": {
-                "start": (IO.STRING, {"default": ""}),
+                "start": (IO.STRING, {"default": "", "tooltip": "Base path; the current working directory is used when empty."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("relative path",)
+    OUTPUT_TOOLTIPS = ("The path expressed relative to start.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_relative_path"
@@ -666,12 +684,13 @@ class PathSplit(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to split into directory and filename."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("directory", "filename")
+    OUTPUT_TOOLTIPS = ("The directory (head) component.", "The filename (tail) component.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_path"
@@ -691,12 +710,13 @@ class PathSplitExt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path to split into name and extension."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING, IO.STRING)
     RETURN_NAMES = ("path without ext", "extension")
+    OUTPUT_TOOLTIPS = ("The path without its extension.", "The extension including the dot (empty when none).")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split_ext"
@@ -714,12 +734,13 @@ class PathLoadStringFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the UTF-8 text file to read."}),
             },
         }
 
     RETURN_TYPES = (IO.STRING, IO.BOOLEAN)
     RETURN_NAMES = ("text", "exists")
+    OUTPUT_TOOLTIPS = ("The file content (empty when the file is missing or unreadable).", "True when the file exists and was read.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_text"
@@ -758,12 +779,13 @@ class PathLoadImageRGB(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image file to load."}),
             },
         }
 
     RETURN_TYPES = (IO.IMAGE, IO.BOOLEAN)
     RETURN_NAMES = ("image", "exists")
+    OUTPUT_TOOLTIPS = ("The RGB image as a tensor (a blank 1x1 image when the file is missing).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgb"
@@ -810,12 +832,13 @@ class PathLoadImageRGBA(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image file to load."}),
             },
         }
 
     RETURN_TYPES = (IO.IMAGE, IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("image", "mask", "exists")
+    OUTPUT_TOOLTIPS = ("The RGB image as a tensor.", "The alpha channel as a mask (blank when the image has none).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgba"
@@ -866,12 +889,13 @@ class PathLoadMaskFromAlpha(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image whose alpha channel is used."}),
             },
         }
 
     RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("mask", "exists")
+    OUTPUT_TOOLTIPS = ("The alpha channel as a mask (blank when the image has none or is missing).", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_alpha"
@@ -911,15 +935,16 @@ class PathLoadMaskFromGreyscale(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Path of the image to build the mask from."}),
             },
             "optional": {
-                "invert": (IO.BOOLEAN, {"default": False}),
+                "invert": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask (1.0 - mask) after extraction."}),
             },
         }
 
     RETURN_TYPES = (IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("mask", "exists")
+    OUTPUT_TOOLTIPS = ("The mask derived from the greyscale/red channel.", "True when the image was loaded.")
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_mask_from_greyscale"
@@ -965,18 +990,19 @@ class PathSaveStringFile(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": (IO.STRING, {"default": ""}),
-                "path": (IO.STRING, {"default": ""}),
+                "text": (IO.STRING, {"default": "", "tooltip": "The text to write."}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path."}),
             },
             "optional": {
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
-                "append": (IO.BOOLEAN, {"default": False}),
-                "encoding": (IO.STRING, {"default": "utf-8"}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "append": (IO.BOOLEAN, {"default": False, "tooltip": "Append to an existing file instead of overwriting it."}),
+                "encoding": (IO.STRING, {"default": "utf-8", "tooltip": "Text encoding to use when writing."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the file was written successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_text"
@@ -1005,35 +1031,162 @@ class PathSaveStringFile(ComfyNodeABC):
             return (False,)
 
 
+def compose_prompt_text(prompt: str, negative_prompt: str) -> str:
+    """
+    Build the generation-parameter text embedded into saved images.
+
+    Follows the Stable Diffusion WebUI convention: the (optional) positive
+    prompt is written first, followed by an optional ``Negative prompt:``
+    line::
+
+        <positive prompt>
+        Negative prompt: <negative prompt>
+
+    Returns an empty string when neither value is provided, in which case no
+    metadata is embedded into the file.
+    """
+    lines = []
+    if prompt.strip():
+        lines.append(prompt.strip())
+    if negative_prompt.strip():
+        lines.append(f"Negative prompt: {negative_prompt.strip()}")
+    return "\n".join(lines)
+
+
+def build_png_info(metadata_text: str):
+    """
+    Wrap ``metadata_text`` in a Pillow ``PngInfo`` container under the standard
+    ``parameters`` text-chunk key so it can be embedded in a PNG file.
+
+    Returns ``None`` when there is no text to embed (or Pillow's PNG metadata
+    support is unavailable), in which case the image should be saved without
+    extra metadata.
+    """
+    if not metadata_text:
+        return None
+    try:
+        from PIL import PngImagePlugin
+    except ModuleNotFoundError:
+        return None
+    pnginfo = PngImagePlugin.PngInfo()
+    pnginfo.add_text("parameters", metadata_text)
+    return pnginfo
+
+
+def build_image_exif(metadata_text: str, include_description: bool = True):
+    """
+    Build an EXIF block that stores ``metadata_text`` for formats without a
+    native text chunk (JPEG, WEBP, JXL).
+
+    The payload is written into the EXIF ``UserComment`` field (tag 0x9286) of
+    the Exif IFD as ``UNICODE\0`` + UTF-16-BE, which matches what Stable
+    Diffusion WebUI / piexif based readers expect. When ``include_description``
+    is true, the payload is also written as UTF-8 into the EXIF
+    ``ImageDescription`` field (tag 0x010E) of IFD0.
+
+    Returns the EXIF bytes (starting with the ``Exif\0\0`` marker), or ``None``
+    when there is no text to embed.
+    """
+    if not metadata_text:
+        return None
+    try:
+        from PIL import ExifTags
+    except ModuleNotFoundError:
+        return None
+    Image, _ = _require_pillow()
+    exif = Image.Exif()
+    if include_description:
+        exif[0x010E] = metadata_text.encode("utf-8")
+    exif.get_ifd(ExifTags.IFD.Exif)[0x9286] = b"UNICODE\x00" + metadata_text.encode("utf-16-be")
+    return exif.tobytes()
+
+
+def build_xmp_packet(metadata_text: str) -> bytes:
+    """
+    Build an XMP packet storing ``metadata_text`` in the Dublin Core
+    ``dc:description`` tag, as expected for JPEG XL ``xml `` boxes.
+    """
+    from xml.sax.saxutils import escape
+    body = escape(metadata_text)
+    packet = (
+        '<?xpacket begin="\ufeff" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
+        '<x:xmpmeta xmlns:x="adobe:ns:meta/">\n'
+        '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
+        '<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
+        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">' + body + '</rdf:li></rdf:Alt></dc:description>\n'
+        '</rdf:Description>\n'
+        '</rdf:RDF>\n'
+        '</x:xmpmeta>\n'
+        '<?xpacket end="w"?>'
+    )
+    return packet.encode("utf-8")
+
+
+def metadata_save_kwargs(metadata_text: str, fmt: str) -> dict:
+    """
+    Return the extra keyword arguments that embed ``metadata_text`` when saving
+    an image in the (lower-case) format ``fmt``.
+
+    Returns an empty dict when there is no text to embed or when the format
+    cannot carry text metadata.
+    """
+    if not metadata_text:
+        return {}
+    if fmt == "png":
+        return {"pnginfo": build_png_info(metadata_text)}
+    if fmt in ("jpg", "jpeg"):
+        exif = build_image_exif(metadata_text, include_description=True)
+        return {"exif": exif} if exif is not None else {}
+    if fmt in ("webp", "jxl"):
+        exif = build_image_exif(metadata_text, include_description=False)
+        kwargs = {"exif": exif} if exif is not None else {}
+        if fmt == "jxl":
+            # EXIF and XMP boxes are only available in the JXL container format
+            kwargs["use_container"] = True
+            kwargs["xmp"] = build_xmp_packet(metadata_text)
+        return kwargs
+    return {}
+
+
 class PathSaveImageRGB(ComfyNodeABC):
     """
     Saves an image to a file.
 
     This node takes an image tensor and saves it to the specified path.
     Supports various image formats like PNG, JPG, WEBP, JXL (if pillow-jxl is installed), etc.
+
+    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
+    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
+    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
+    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
+    ignore the prompts.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "images": (IO.IMAGE,),
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing)."}),
             },
             "optional": {
-                "format": (IO.STRING, {"default": "png"}),
-                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
+                "format": (IO.STRING, {"default": "png", "tooltip": "Image format: png, jpg, webp or jxl (jxl needs pillow-jxl installed)."}),
+                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (jpg/webp/jxl)."}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
+                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the image was saved successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image"
     OUTPUT_NODE = True
 
-    def save_image(self, images, path: str, format: str = "png", quality: int = 95, create_dirs: bool = True):
+    def save_image(self, images, path: str, format: str = "png", quality: int = 95,
+                   create_dirs: bool = True, prompt: str = "", negative_prompt: str = ""):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1074,15 +1227,23 @@ class PathSaveImageRGB(ComfyNodeABC):
             # Create PIL image
             pil_img = Image.fromarray(img_np)
 
-            # Save the image
-            if format.lower() == "jpg" or format.lower() == "jpeg":
-                pil_img.save(path, format="JPEG", quality=quality)
-            elif format.lower() == "webp":
-                pil_img.save(path, format="WEBP", quality=quality)
-            elif format.lower() == "jxl" and has_jxl_support:
+            # Compose the prompt metadata to embed into the saved file
+            metadata_text = compose_prompt_text(prompt, negative_prompt)
+            fmt = format.lower()
+
+            # Save the image, embedding prompt metadata where the format supports it
+            if fmt == "jpg" or fmt == "jpeg":
+                pil_img.save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "webp":
+                pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "jxl" and has_jxl_support:
                 # JPEG XL specific options
-                pil_img.save(path, format="JXL", quality=quality)
+                pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "png":
+                pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt))
             else:
+                if metadata_text:
+                    print("Basic data handling: Prompt metadata is not supported for this format; skipping it.")
                 pil_img.save(path, format=format.upper())
 
             print(f"Basic data handling: Successfully saved image to {path}")
@@ -1099,6 +1260,12 @@ class PathSaveImageRGBA(ComfyNodeABC):
     This node takes an image tensor and a mask tensor and saves them to the
     specified path as an image with transparency, where the mask defines the
     alpha channel.
+
+    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
+    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
+    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
+    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
+    ignore the prompts.
     """
     @classmethod
     def INPUT_TYPES(cls):
@@ -1106,26 +1273,30 @@ class PathSaveImageRGBA(ComfyNodeABC):
             "required": {
                 "images": (IO.IMAGE,),
                 "mask": (IO.MASK,),
-                "path": (IO.STRING, {"default": ""}),
+                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing)."}),
             },
             "optional": {
-                "format": (IO.STRING, {"default": "png"}),
-                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100}),
-                "invert_mask": (IO.BOOLEAN, {"default": False}),
-                "create_dirs": (IO.BOOLEAN, {"default": True}),
+                "format": (IO.STRING, {"default": "png", "tooltip": "Image format supporting alpha: png, webp or jxl; jpg is coerced to png."}),
+                "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (webp/jxl)."}),
+                "invert_mask": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask before using it as the alpha channel."}),
+                "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
+                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
+                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("success",)
+    OUTPUT_TOOLTIPS = ("True when the image with alpha was saved successfully.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image_with_mask"
     OUTPUT_NODE = True
 
     def save_image_with_mask(self, images, mask, path: str, format: str = "png",
-                            quality: int = 95, invert_mask: bool = False,
-                            create_dirs: bool = True):
+                             quality: int = 95, invert_mask: bool = False,
+                             create_dirs: bool = True, prompt: str = "",
+                             negative_prompt: str = ""):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1186,13 +1357,21 @@ class PathSaveImageRGBA(ComfyNodeABC):
             pil_img_rgba = pil_img.convert("RGBA")
             pil_img_rgba.putalpha(alpha_img)
 
-            # Save the image
-            if format.lower() == "webp":
-                pil_img_rgba.save(path, format="WEBP", quality=quality)
-            elif format.lower() == "jxl" and has_jxl_support:
+            # Compose the prompt metadata to embed into the saved file
+            metadata_text = compose_prompt_text(prompt, negative_prompt)
+            fmt = format.lower()
+
+            # Save the image, embedding prompt metadata where the format supports it
+            if fmt == "webp":
+                pil_img_rgba.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "jxl" and has_jxl_support:
                 # JPEG XL supports alpha channel
-                pil_img_rgba.save(path, format="JXL", quality=quality)
+                pil_img_rgba.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            elif fmt == "png":
+                pil_img_rgba.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt))
             else:
+                if metadata_text:
+                    print("Basic data handling: Prompt metadata is not supported for this format; skipping it.")
                 pil_img_rgba.save(path, format=format.upper())
 
             print(f"Basic data handling: Successfully saved image with mask to {path}")
@@ -1214,6 +1393,7 @@ class PathInputDir(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("input_path",)
+    OUTPUT_TOOLTIPS = ("Absolute path of ComfyUI's input directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"
@@ -1235,6 +1415,7 @@ class PathOutputDir(ComfyNodeABC):
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("output_path",)
+    OUTPUT_TOOLTIPS = ("Absolute path of ComfyUI's output directory.",)
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "execute"

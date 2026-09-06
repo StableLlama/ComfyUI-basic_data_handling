@@ -65,12 +65,14 @@ class DictCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
-                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
+                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Value paired with the key of the same index."}),
             })
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -96,12 +98,14 @@ class DictCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
-               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
+               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Boolean value paired with the key of the same index."}),
             })
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -127,12 +131,14 @@ class DictCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
-                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
+                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Float value paired with the key of the same index."}),
             })
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -158,12 +164,14 @@ class DictCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
-                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
+                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Integer value paired with the key of the same index."}),
             })
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -189,12 +197,14 @@ class DictCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
-                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING"}),
+                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
+                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "String value paired with the key of the same index."}),
             })
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create"
@@ -220,11 +230,13 @@ class DictCreateFromItemsDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "item": (IO.ANY, {}),
+                "item": (IO.ANY, {"tooltip": "A data list of (key, value) pairs to build the DICT from."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_from_items"
@@ -253,11 +265,13 @@ class DictCreateFromItemsList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "items": ("LIST", {}),
+                "items": ("LIST", {"tooltip": "A LIST of (key, value) pairs to build the DICT from."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The created DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_from_items"
@@ -286,12 +300,14 @@ class DictCreateFromLists(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "keys": ("LIST", {}),
-                "values": ("LIST", {}),
+                "keys": ("LIST", {"tooltip": "The keys of the DICT."}),
+                "values": ("LIST", {"tooltip": "The values paired with the keys by position."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The DICT created by pairing the two lists (up to the shorter length).",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_from_lists"
@@ -314,13 +330,14 @@ class DictCompare(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dict1": ("DICT", {}),
-                "dict2": ("DICT", {}),
+                "dict1": ("DICT", {"tooltip": "First DICT to compare."}),
+                "dict2": ("DICT", {"tooltip": "Second DICT to compare."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN, "LIST", "LIST", "LIST")
     RETURN_NAMES = ("are_equal", "only_in_dict1", "only_in_dict2", "different_values")
+    OUTPUT_TOOLTIPS = ("True when the two DICTs are equal.", "Keys present only in the first DICT.", "Keys present only in the second DICT.", "Shared keys whose values differ.")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -353,12 +370,14 @@ class DictContainsKey(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to search."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key to look for."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
+    RETURN_NAMES = ("contains",)
+    OUTPUT_TOOLTIPS = ("True when the key exists in the DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains_key"
@@ -378,12 +397,14 @@ class DictExcludeKeys(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "keys_to_exclude": ("LIST", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to copy from."}),
+                "keys_to_exclude": ("LIST", {"tooltip": "Keys to drop from the result."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("A new DICT without the excluded keys.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "exclude_keys"
@@ -427,12 +448,14 @@ class DictFilterByKeys(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "keys": ("LIST", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to filter."}),
+                "keys": ("LIST", {"tooltip": "Keys to keep in the result."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("A new DICT containing only the selected keys.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "filter_by_keys"
@@ -479,14 +502,16 @@ class DictFromKeys(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "keys": ("LIST", {}),
+                "keys": ("LIST", {"tooltip": "The keys of the new DICT."}),
             },
             "optional": {
-                "value": (IO.ANY, {}),
+                "value": (IO.ANY, {"tooltip": "Default value assigned to every key (None when not provided)."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("A DICT mapping each key to the given value.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "from_keys"
@@ -507,16 +532,17 @@ class DictGet(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read from."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key whose value is retrieved."}),
             },
             "optional": {
-                "default": (IO.ANY, {}),
+                "default": (IO.ANY, {"tooltip": "Value returned when the key is missing (None when not provided)."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
     RETURN_NAMES = ("value",)
+    OUTPUT_TOOLTIPS = ("The value for the key, or the default when the key is absent.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get"
@@ -536,12 +562,13 @@ class DictGetKeysValues(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to decompose."}),
             }
         }
 
     RETURN_TYPES = ("LIST", "LIST")
     RETURN_NAMES = ("keys", "values")
+    OUTPUT_TOOLTIPS = ("All keys of the DICT.", "All values of the DICT, in the same order as the keys.")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_keys_values"
@@ -564,16 +591,17 @@ class DictGetMultiple(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "keys": ("LIST", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read from."}),
+                "keys": ("LIST", {"tooltip": "The keys whose values are retrieved."}),
             },
             "optional": {
-                "default": (IO.ANY, {}),
+                "default": (IO.ANY, {"tooltip": "Value used for keys that are missing (None when not provided)."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
     RETURN_NAMES = ("values",)
+    OUTPUT_TOOLTIPS = ("The value for each requested key, using the default for missing keys.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_multiple"
@@ -598,12 +626,13 @@ class DictInvert(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT whose keys and values are swapped."}),
             }
         }
 
     RETURN_TYPES = ("DICT", IO.BOOLEAN)
     RETURN_NAMES = ("inverted_dict", "success")
+    OUTPUT_TOOLTIPS = ("The DICT with keys and values swapped.", "True when the inversion succeeded (values were hashable).")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "invert"
@@ -630,11 +659,13 @@ class DictItems(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("items",)
+    OUTPUT_TOOLTIPS = ("A LIST of (key, value) tuples, one per entry.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "items"
@@ -653,11 +684,13 @@ class DictKeys(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("keys",)
+    OUTPUT_TOOLTIPS = ("A LIST of all keys in the DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "keys"
@@ -676,12 +709,13 @@ class DictLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to measure."}),
             }
         }
 
     RETURN_TYPES = ("INT",)
     RETURN_NAMES = ("length",)
+    OUTPUT_TOOLTIPS = ("The number of key-value pairs in the DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
@@ -701,16 +735,18 @@ class DictMerge(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dict1": ("DICT", {}),
+                "dict1": ("DICT", {"tooltip": "First DICT to merge."}),
             },
             "optional": {
-                "dict2": ("DICT", {}),
-                "dict3": ("DICT", {}),
-                "dict4": ("DICT", {}),
+                "dict2": ("DICT", {"tooltip": "Optional DICT to merge; its values win over dict1."}),
+                "dict3": ("DICT", {"tooltip": "Optional DICT to merge; its values win over earlier ones."}),
+                "dict4": ("DICT", {"tooltip": "Optional DICT to merge; its values win over earlier ones."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The merged DICT; later inputs take precedence on duplicate keys.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "merge"
@@ -750,16 +786,17 @@ class DictPop(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to pop from."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key whose entry is removed."}),
             },
             "optional": {
-                "default_value": (IO.ANY, {}),
+                "default_value": (IO.ANY, {"tooltip": "Value returned when the key is absent (None when not provided)."}),
             }
         }
 
     RETURN_TYPES = ("DICT", IO.ANY)
     RETURN_NAMES = ("dict", "value")
+    OUTPUT_TOOLTIPS = ("The DICT with the key removed.", "The removed value (or the default when the key was absent).")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
@@ -794,12 +831,13 @@ class DictPopItem(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to pop an entry from."}),
             }
         }
 
     RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key", "value", "success")
+    OUTPUT_TOOLTIPS = ("The DICT with one entry removed.", "The removed key.", "The removed value.", "False when the DICT was empty or the operation failed.")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "popitem"
@@ -832,15 +870,16 @@ class DictPopRandom(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to pop a random entry from."}),
             },
             "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
             },
         }
 
     RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key", "value", "success")
+    OUTPUT_TOOLTIPS = ("The DICT with a random entry removed.", "The removed key.", "The removed value.", "False when the DICT was empty or the operation failed.")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random"
@@ -880,13 +919,14 @@ class DictRemove(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to remove from."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key to remove."}),
             }
         }
 
     RETURN_TYPES = ("DICT", IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key_removed")
+    OUTPUT_TOOLTIPS = ("The DICT with the key removed (unchanged when it was absent).", "True when the key existed and was removed.")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
@@ -913,13 +953,15 @@ class DictSet(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
-                "value": (IO.ANY, {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to modify."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key to add or update."}),
+                "value": (IO.ANY, {"tooltip": "The value to store under the key."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("A new DICT with the key set to the given value.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "set"
@@ -944,14 +986,15 @@ class DictSetDefault(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
-                "key": (IO.STRING, {"default": ""}),
-                "default_value": (IO.ANY, {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read or modify."}),
+                "key": (IO.STRING, {"default": "", "tooltip": "The key to look up."}),
+                "default_value": (IO.ANY, {"tooltip": "Value inserted and returned when the key is missing."}),
             }
         }
 
     RETURN_TYPES = ("DICT", IO.ANY)
     RETURN_NAMES = ("DICT", "value")
+    OUTPUT_TOOLTIPS = ("The DICT, with the default inserted when the key was missing.", "The value for the key (existing or the inserted default).")
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "setdefault"
@@ -976,12 +1019,14 @@ class DictUpdate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "dict1": ("DICT", {}),
-                "dict2": ("DICT", {}),
+                "dict1": ("DICT", {"tooltip": "Base DICT to update."}),
+                "dict2": ("DICT", {"tooltip": "DICT whose entries are added; it wins on duplicate keys."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The merged DICT with dict2's entries applied to dict1.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "update"
@@ -1007,11 +1052,13 @@ class DictValues(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_dict": ("DICT", {}),
+                "input_dict": ("DICT", {"tooltip": "The DICT to read."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("values",)
+    OUTPUT_TOOLTIPS = ("A LIST of all values in the DICT.",)
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "values"

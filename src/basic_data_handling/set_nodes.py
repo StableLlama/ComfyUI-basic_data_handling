@@ -27,11 +27,13 @@ class SetCreate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items to add to the SET. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The new SET containing the provided items (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_set"
@@ -52,11 +54,13 @@ class SetCreateFromBoolean(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the boolean items to add to the SET. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The new SET containing the provided boolean items (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_set"
@@ -77,11 +81,13 @@ class SetCreateFromFloat(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the float items to add to the SET. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The new SET containing the provided float items (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_set"
@@ -102,11 +108,13 @@ class SetCreateFromInt(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the integer items to add to the SET. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The new SET containing the provided integer items (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_set"
@@ -127,11 +135,13 @@ class SetCreateFromString(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING"}),
+                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the string items to add to the SET. Connect more values to add more items."}),
             })
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The new SET containing the provided string items (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "create_set"
@@ -152,12 +162,14 @@ class SetAdd(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
-                "item": (IO.ANY, {}),
+                "set": ("SET", {"tooltip": "The SET to add to."}),
+                "item": (IO.ANY, {"tooltip": "The item to add."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The SET with the item added (unchanged when the item was already present).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "add"
@@ -179,12 +191,13 @@ class SetAll(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to evaluate."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("all_true",)
+    OUTPUT_TOOLTIPS = ("True when every element is truthy (or the SET is empty).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_all"
@@ -204,12 +217,13 @@ class SetAny(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to evaluate."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("any_true",)
+    OUTPUT_TOOLTIPS = ("True when at least one element is truthy (False for an empty SET).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_any"
@@ -229,13 +243,14 @@ class SetContains(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
-                "value": (IO.ANY, {}),
+                "set": ("SET", {"tooltip": "The SET to search."}),
+                "value": (IO.ANY, {"tooltip": "The value to look for."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("contains",)
+    OUTPUT_TOOLTIPS = ("True when the value is present in the SET.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "contains"
@@ -255,12 +270,14 @@ class SetDifference(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "The SET to subtract from."}),
+                "set2": ("SET", {"tooltip": "The SET of elements to remove."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("Elements in set1 that are not in set2.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "difference"
@@ -282,12 +299,14 @@ class SetDiscard(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
-                "item": (IO.ANY, {}),
+                "set": ("SET", {"tooltip": "The SET to remove from."}),
+                "item": (IO.ANY, {"tooltip": "The item to remove if present."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("The SET with the item removed (unchanged when it was absent).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "discard"
@@ -313,14 +332,16 @@ class SetEnumerate(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to enumerate."}),
             },
             "optional": {
-                "start": ("INT", {"default": 0}),
+                "start": ("INT", {"default": 0, "tooltip": "Index value assigned to the first element."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("enumerated",)
+    OUTPUT_TOOLTIPS = ("List of (index, value) pairs. Order is arbitrary but stable within one operation.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "enumerate_set"
@@ -340,16 +361,18 @@ class SetIntersection(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "First SET."}),
+                "set2": ("SET", {"tooltip": "Second SET."}),
             },
             "optional": {
-                "set3": ("SET", {}),
-                "set4": ("SET", {}),
+                "set3": ("SET", {"tooltip": "Optional additional SET."}),
+                "set4": ("SET", {"tooltip": "Optional additional SET."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("Elements present in all of the input SETs.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "intersection"
@@ -377,13 +400,14 @@ class SetIsDisjoint(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "First SET."}),
+                "set2": ("SET", {"tooltip": "Second SET."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_disjoint",)
+    OUTPUT_TOOLTIPS = ("True when the two SETs share no elements.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "is_disjoint"
@@ -403,13 +427,14 @@ class SetIsSubset(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "Candidate subset."}),
+                "set2": ("SET", {"tooltip": "SET that may contain all of set1's elements."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_subset",)
+    OUTPUT_TOOLTIPS = ("True when every element of set1 is also in set2.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "is_subset"
@@ -429,13 +454,14 @@ class SetIsSuperset(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "Candidate superset."}),
+                "set2": ("SET", {"tooltip": "SET whose elements must all be in set1."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_superset",)
+    OUTPUT_TOOLTIPS = ("True when set1 contains every element of set2.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "is_superset"
@@ -454,12 +480,13 @@ class SetLength(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to measure."}),
             }
         }
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("length",)
+    OUTPUT_TOOLTIPS = ("The number of elements in the SET.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "length"
@@ -480,12 +507,13 @@ class SetPop(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to pop an item from."}),
             }
         }
 
     RETURN_TYPES = ("SET", IO.ANY)
     RETURN_NAMES = ("set", "item")
+    OUTPUT_TOOLTIPS = ("The SET with an arbitrary item removed.", "The removed item (None when the SET was empty).")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop"
@@ -511,15 +539,16 @@ class SetPopRandom(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to pop a random element from."}),
             },
             "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
             },
         }
 
     RETURN_TYPES = ("SET", IO.ANY)
     RETURN_NAMES = ("set", "item")
+    OUTPUT_TOOLTIPS = ("The SET with a random element removed.", "The removed element (None when the SET was empty).")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random_element"
@@ -554,13 +583,14 @@ class SetRemove(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
-                "item": (IO.ANY, {}),
+                "set": ("SET", {"tooltip": "The SET to remove from."}),
+                "item": (IO.ANY, {"tooltip": "The item to remove."}),
             }
         }
 
     RETURN_TYPES = ("SET", IO.BOOLEAN)
     RETURN_NAMES = ("set", "success")
+    OUTPUT_TOOLTIPS = ("The SET with the item removed.", "True when the item was present and removed.")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
@@ -589,15 +619,16 @@ class SetSum(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET of numbers to sum."}),
             },
             "optional": {
-                "start": ("INT", {"default": 0}),
+                "start": ("INT", {"default": 0, "tooltip": "Initial value added to the sum."}),
             }
         }
 
     RETURN_TYPES = ("INT", "FLOAT",)
     RETURN_NAMES = ("sum_int", "sum_float",)
+    OUTPUT_TOOLTIPS = ("The total as an integer.", "The total as a float.")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sum_set"
@@ -618,12 +649,14 @@ class SetSymmetricDifference(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "First SET."}),
+                "set2": ("SET", {"tooltip": "Second SET."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("Elements present in exactly one of the two SETs.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "symmetric_difference"
@@ -645,16 +678,18 @@ class SetUnion(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set1": ("SET", {}),
-                "set2": ("SET", {}),
+                "set1": ("SET", {"tooltip": "First SET."}),
+                "set2": ("SET", {"tooltip": "Second SET."}),
             },
             "optional": {
-                "set3": ("SET", {}),
-                "set4": ("SET", {}),
+                "set3": ("SET", {"tooltip": "Optional additional SET."}),
+                "set4": ("SET", {"tooltip": "Optional additional SET."}),
             }
         }
 
     RETURN_TYPES = ("SET",)
+    RETURN_NAMES = ("set",)
+    OUTPUT_TOOLTIPS = ("All elements from every input SET (duplicates removed).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "union"
@@ -684,11 +719,13 @@ class SetToDataList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to convert."}),
             }
         }
 
     RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("items",)
+    OUTPUT_TOOLTIPS = ("The SET's elements as a ComfyUI data list.",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"
@@ -710,11 +747,13 @@ class SetToList(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "set": ("SET", {}),
+                "set": ("SET", {"tooltip": "The SET to convert."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The SET's elements as a Python LIST (order is arbitrary).",)
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "convert"

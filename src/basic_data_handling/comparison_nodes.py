@@ -18,19 +18,21 @@ class Equal(ComfyNodeABC):
     Checks if two values are equal.
 
     This node takes two inputs of any type and returns True if they are equal,
-    and False otherwise. For complex objects, structural equality is tested.
+    and False otherwise. For complex objects (lists, dicts, sets), structural
+    equality is tested.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.ANY, {}),
-                "value2": (IO.ANY, {}),
+                "value1": (IO.ANY, {"tooltip": "First value to compare."}),
+                "value2": (IO.ANY, {"tooltip": "Second value to compare."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the two values are equal, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -44,19 +46,21 @@ class NotEqual(ComfyNodeABC):
     Checks if two values are not equal.
 
     This node takes two inputs of any type and returns True if they are not equal,
-    and False otherwise. For complex objects, structural inequality is tested.
+    and False otherwise. For complex objects (lists, dicts, sets), structural
+    inequality is tested.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.ANY, {}),
-                "value2": (IO.ANY, {}),
+                "value1": (IO.ANY, {"tooltip": "First value to compare."}),
+                "value2": (IO.ANY, {"tooltip": "Second value to compare."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the two values are not equal, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -74,19 +78,20 @@ class LessThan(ComfyNodeABC):
     Checks if the first value is less than the second.
 
     This node takes two numerical inputs and returns True if the first value
-    is less than the second value, and False otherwise.
+    is strictly less than the second value, and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Left-hand operand of the comparison."}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Right-hand operand of the comparison."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when value1 is strictly less than value2, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -106,13 +111,14 @@ class LessThanOrEqual(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Left-hand operand of the comparison."}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Right-hand operand of the comparison."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when value1 is less than or equal to value2, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -126,19 +132,20 @@ class GreaterThan(ComfyNodeABC):
     Checks if the first value is greater than the second.
 
     This node takes two numerical inputs and returns True if the first value
-    is greater than the second value, and False otherwise.
+    is strictly greater than the second value, and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Left-hand operand of the comparison."}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Right-hand operand of the comparison."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when value1 is strictly greater than value2, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -158,13 +165,14 @@ class GreaterThanOrEqual(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value1": (IO.NUMBER, {"widgetType": "FLOAT"}),
-                "value2": (IO.NUMBER, {"widgetType": "FLOAT"}),
+                "value1": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Left-hand operand of the comparison."}),
+                "value2": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "Right-hand operand of the comparison."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when value1 is greater than or equal to value2, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -177,19 +185,20 @@ class IsNull(ComfyNodeABC):
     """
     Checks if a value is None/null.
 
-    This node takes any input value and returns True if the value is None,
-    and False otherwise.
+    This node takes any input value and returns True if the value is None
+    (Python null), and False otherwise.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {}),
+                "value": (IO.ANY, {"tooltip": "The value to test for null."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("is_null",)
+    OUTPUT_TOOLTIPS = ("True when the input value is None, otherwise False.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_null"
@@ -202,26 +211,27 @@ class NumberInRange(ComfyNodeABC):
     """
     Checks if a number is within a specified range.
 
-    This node takes a number and range bounds, and returns True if the number
-    is within the specified range, and False otherwise. The user can specify
-    whether the bounds are inclusive or exclusive.
+    This node takes a number, a minimum and a maximum bound, and returns True if the
+    number lies within the range. The ``include_min`` and ``include_max`` options control
+    whether the boundaries themselves count as being inside the range.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"widgetType": "FLOAT"}),
-                "min_value": ("FLOAT", {"default": 0}),
-                "max_value": ("FLOAT", {"default": 100}),
+                "value": (IO.NUMBER, {"widgetType": "FLOAT", "tooltip": "The number to test."}),
+                "min_value": ("FLOAT", {"default": 0, "tooltip": "Lower bound of the range."}),
+                "max_value": ("FLOAT", {"default": 100, "tooltip": "Upper bound of the range."}),
             },
             "optional": {
-                "include_min": (IO.BOOLEAN, {"default": "True"}),
-                "include_max": (IO.BOOLEAN, {"default": "True"}),
+                "include_min": (IO.BOOLEAN, {"default": "True", "tooltip": "Treat the lower bound as inside the range (>=)."}),
+                "include_max": (IO.BOOLEAN, {"default": "True", "tooltip": "Treat the upper bound as inside the range (<=)."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("in_range",)
+    OUTPUT_TOOLTIPS = ("True when the number lies within the configured range.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_range"
@@ -236,23 +246,25 @@ class NumberInRange(ComfyNodeABC):
 
 class CompareLength(ComfyNodeABC):
     """
-    Compares the length of a container (string, list, etc) with a value.
+    Compares the length of a container (string, list, dict, set, ...) with a value.
 
-    This node takes a container and a comparison value, and returns a boolean
-    result based on the comparison of the container's length with the value.
+    This node measures ``len(container)`` and compares it with *length* using the
+    selected *operator*. Returns the boolean result and, as a convenience, the
+    actual measured length.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "container": (IO.ANY, {}),
-                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "=="}),
-                "length": (IO.INT, {"default": 0, "min": 0}),
+                "container": (IO.ANY, {"tooltip": "The object whose length is measured (string, list, dict, set, ...)."}),
+                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "==", "tooltip": "Comparison operator applied between the length and the given value."}),
+                "length": (IO.INT, {"default": 0, "min": 0, "tooltip": "The value the measured length is compared against."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN, IO.INT)
     RETURN_NAMES = ("result", "actual_length")
+    OUTPUT_TOOLTIPS = ("Result of evaluating length <operator> value.", "The measured length of the container (-1 when it has no length).")
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare_length"
@@ -284,22 +296,24 @@ class StringComparison(ComfyNodeABC):
     """
     Compares two strings using a selected comparison operator.
 
-    This node takes two string inputs and a comparison operator, and returns
-    a boolean result based on the selected comparison.
+    This node takes two string inputs and an operator, and returns True when the
+    comparison holds. Comparisons are lexicographic (dictionary order); enable
+    *case_sensitive* to treat uppercase and lowercase letters as distinct.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string1": ("STRING", {"default": ""}),
-                "string2": ("STRING", {"default": ""}),
-                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "=="}),
-                "case_sensitive": (IO.BOOLEAN, {"default": True}),
+                "string1": ("STRING", {"default": "", "tooltip": "First string to compare."}),
+                "string2": ("STRING", {"default": "", "tooltip": "Second string to compare."}),
+                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "==", "tooltip": "Comparison operator applied between the two strings."}),
+                "case_sensitive": (IO.BOOLEAN, {"default": True, "tooltip": "When enabled, letter case is respected (e.g. 'A' != 'a')."}),
             }
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
     RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("True when the selected comparison holds between the two strings.",)
     CATEGORY = "Basic/comparison"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"

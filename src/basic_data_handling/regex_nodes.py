@@ -15,18 +15,20 @@ except:
 
 class RegexFindallDataList(ComfyNodeABC):
     """
-    Returns all non-overlapping matches of a pattern in the string as a list of strings.
+    Returns all non-overlapping matches of a pattern in the string as a data list of strings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to search."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern to find."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("matches",)
+    OUTPUT_TOOLTIPS = ("Each non-overlapping match of the pattern, as a data list of strings.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "findall"
@@ -38,18 +40,20 @@ class RegexFindallDataList(ComfyNodeABC):
 
 class RegexFindallList(ComfyNodeABC):
     """
-    Returns all non-overlapping matches of a pattern in the string as a list of strings.
+    Returns all non-overlapping matches of a pattern in the string as a Python LIST.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to search."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern to find."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("matches",)
+    OUTPUT_TOOLTIPS = ("Each non-overlapping match of the pattern, as a Python LIST of strings.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "findall"
@@ -67,12 +71,14 @@ class RegexGroupDict(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to search."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern containing named groups, e.g. (?P<name>...)."}),
             }
         }
 
     RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("groups",)
+    OUTPUT_TOOLTIPS = ("Named capture groups mapped to their matched text (empty DICT when there is no match).",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "groupdict"
@@ -86,19 +92,21 @@ class RegexGroupDict(ComfyNodeABC):
 
 class RegexSearchGroupsDataList(ComfyNodeABC):
     """
-    Searches the string for a match to the pattern and returns a LIST of match groups.
-    If no match is found, it returns an empty LIST.
+    Searches the string for a match to the pattern and returns a data list of the captured groups.
+    If no match is found, it returns an empty data list.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to search."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern with capturing groups, e.g. (\\d+)-(\\d+)."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("groups",)
+    OUTPUT_TOOLTIPS = ("The captured groups of the first match, as a data list (empty when there is no match).",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "search_groups"
@@ -113,19 +121,21 @@ class RegexSearchGroupsDataList(ComfyNodeABC):
 
 class RegexSearchGroupsList(ComfyNodeABC):
     """
-    Searches the string for a match to the pattern and returns a data list of match groups.
-    If no match is found, it returns an empty data list.
+    Searches the string for a match to the pattern and returns a Python LIST of the captured groups.
+    If no match is found, it returns an empty LIST.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to search."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern with capturing groups, e.g. (\\d+)-(\\d+)."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("groups",)
+    OUTPUT_TOOLTIPS = ("The captured groups of the first match, as a Python LIST (empty when there is no match).",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "search_groups"
@@ -139,18 +149,20 @@ class RegexSearchGroupsList(ComfyNodeABC):
 
 class RegexSplitDataList(ComfyNodeABC):
     """
-    Splits the string at each match of the pattern and returns a list of substrings.
+    Splits the string at each match of the pattern and returns a data list of substrings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to split."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern used as the delimiter."}),
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings between matches, as a data list.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split"
@@ -162,18 +174,20 @@ class RegexSplitDataList(ComfyNodeABC):
 
 class RegexSplitList(ComfyNodeABC):
     """
-    Splits the string at each match of the pattern and returns a list of substrings.
+    Splits the string at each match of the pattern and returns a Python LIST of substrings.
     """
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to split."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern used as the delimiter."}),
             }
         }
 
     RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("parts",)
+    OUTPUT_TOOLTIPS = ("The substrings between matches, as a Python LIST.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "split"
@@ -190,14 +204,16 @@ class RegexSub(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
-                "repl": (IO.STRING, {}),
-                "count": ("INT", {"default": 0}),  # 0 means replace all occurrences
+                "string": (IO.STRING, {"tooltip": "The text to modify."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern whose matches are replaced."}),
+                "repl": (IO.STRING, {"tooltip": "Replacement text. Backreferences to groups are supported."}),
+                "count": ("INT", {"default": 0, "tooltip": "Maximum number of replacements; 0 replaces all occurrences."}),  # 0 means replace all occurrences
             }
         }
 
     RETURN_TYPES = (IO.STRING,)
+    RETURN_NAMES = ("result",)
+    OUTPUT_TOOLTIPS = ("The string with the matched parts replaced.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sub"
@@ -215,12 +231,14 @@ class RegexTest(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "string": (IO.STRING, {}),
-                "pattern": (IO.STRING, {}),
+                "string": (IO.STRING, {"tooltip": "The text to test."}),
+                "pattern": (IO.STRING, {"tooltip": "Regular expression pattern to search for."}),
             }
         }
 
     RETURN_TYPES = ("BOOLEAN",)
+    RETURN_NAMES = ("is_match",)
+    OUTPUT_TOOLTIPS = ("True when the pattern matches any part of the string, otherwise False.",)
     CATEGORY = "Basic/STRING/regex"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "test"
