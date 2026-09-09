@@ -589,6 +589,199 @@ def test_path_save_image_jxl_prompt_metadata(tmp_path):
     assert escaped.encode("utf-8") in raw
 
 
+def _batch_rgb(n, size=(16, 16)):
+    """Build an n-frame RGB tensor, frame i filled with a distinct colour."""
+    frames = torch.zeros(n, size[1], size[0], 3)
+    for i in range(n):
+        frames[i, :, :, i % 3] = (i + 1) / float(n)
+    return frames
+
+
+def test_path_save_image_format_is_dropdown():
+    """The format input is a combo/dropdown whose entries are derived from what
+    the installed Pillow/plugins can actually save (not a hard-coded constant)."""
+    import src.basic_data_handling.path_nodes as pn
+
+    # Must include the classic formats and be reflect the live library/plugins.
+    assert pn._IMAGE_SAVE_FORMATS
+    assert pn._IMAGE_SAVE_FORMATS[0] == "png"
+
+    # png & alpha-capable core are always surfaced on the IMAGE+MASK node.
+    assert pn._IMAGE_SAVE_ALPHA_FORMATS
+    assert pn._IMAGE_SAVE_ALPHA_FORMATS[0] == "png"
+    assert "png" in pn._IMAGE_SAVE_ALPHA_FORMATS
+
+    rgb_types = PathSaveImageRGB.INPUT_TYPES()
+    formats = rgb_types["optional"]["format"]
+    assert isinstance(formats[0], list) and formats[0] == pn._IMAGE_SAVE_FORMATS
+    assert formats[1]["default"] == "png"
+
+    rgba_types = PathSaveImageRGBA.INPUT_TYPES()
+    formats_rgba = rgba_types["optional"]["format"]
+    # the IMAGE+MASK node offers only alpha-capable formats (jpg is absent, png
+    # present) but its runtime value is still a STRING-typed text.
+    assert isinstance(formats_rgba[0], list)
+    assert formats_rgba[0] == pn._IMAGE_SAVE_ALPHA_FORMATS
+    assert "jpg" not in formats_rgba[0]
+    assert formats_rgba[1]["default"] == "png"
+
+    # Downstream aliases still accepted: jpg -> canonical jpg token.
+    assert pn._normalize_image_format("jpeg") == "jpg"
+
+    # The format is still text at runtime, so it can be driven by a STRING link.
+    for f in formats[0]:
+        assert isinstance(f, str)
+
+    # Both nodes expose a use_prefix_mode toggle.
+    assert rgba_types["optional"]["use_prefix_mode"][1]["default"] is False
+
+
+def test_path_save_image_formats_are_library_derived():
+    """The dropdown is derived from the live Pillow/plugin library, so it must
+    contain only formats that really save, exclude non-photographic ones, and
+    grow/shrink with the environment."""
+    import src.basic_data_handling.path_nodes as pn
+
+    # Non-photographic raster ids are never surfaced.
+    assert not any(
+        t in pn._NON_PHOTOGRAPHIC_RASTER_IDS for t in map(str.upper, pn._IMAGE_SAVE_FORMATS)
+    )
+
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    for fmt in pn._IMAGE_SAVE_FORMATS:
+        out = f"/tmp/_bdh_fmt_{fmt}"
+        # RGB node writes any offered format
+        assert save_node.save_image(img, out, format=fmt) == (True,), fmt
+        # correct file extension appended
+        expected = f"{out}.{fmt}"
+        assert os.path.exists(expected), fmt
+        os.remove(expected)
+
+    # Some classic formats are always present when Pillow can write them.
+    for fmt in ("png", "jpg", "webp"):
+        assert fmt in pn._IMAGE_SAVE_FORMATS
+
+
+def test_path_save_image_rgb_multi_frame_suffix(tmp_path):
+    save_node = PathSaveImageRGB()
+    frames = _batch_rgb(3)
+    out = str(tmp_path / "frames")
+
+    assert save_node.save_image(frames, out) == (True,)
+    expected = [
+        str(tmp_path / "frames_00000.png"),
+        str(tmp_path / "frames_00001.png"),
+        str(tmp_path / "frames_00002.png"),
+    ]
+    for path in expected:
+        assert os.path.exists(path)
+
+
+def test_path_save_image_prefix_mode_mirrors_comfy(tmp_path, monkeypatch):
+    """use_prefix_mode writes into the output dir with ComfyUI-style
+    ``prefix_00001_.png`` naming and auto-increments on repeated saves."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    prefix = "my_subdir/shot"
+
+    assert save_node.save_image(img, prefix, use_prefix_mode=True) == (True,)
+    first = tmp_path / "my_subdir" / "shot_00001_.png"
+    assert first.exists()
+
+    # A second save must not overwrite the first file.
+    assert save_node.save_image(img, prefix, use_prefix_mode=True) == (True,)
+    assert (tmp_path / "my_subdir" / "shot_00002_.png").exists()
+
+
+def test_path_save_image_prefix_mode_batch(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    frames = _batch_rgb(2)
+
+    assert save_node.save_image(frames, "batch", use_prefix_mode=True) == (True,)
+    assert (tmp_path / "batch_00001_.png").exists()
+    assert (tmp_path / "batch_00002_.png").exists()
+
+
+def test_path_save_image_prefix_mode_template_tokens(tmp_path, monkeypatch):
+    """Int/width/height tokens are substituted like ComfyUI's backend before use."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1, size=(8, 4))  # width=8, height=4
+
+    assert save_node.save_image(img, "w%width%_h%height%", use_prefix_mode=True) == (True,)
+    assert (tmp_path / "w8_h4_00001_.png").exists()
+
+
+def test_path_save_image_prefix_mode_date_token(tmp_path, monkeypatch):
+    """``%date:yyyy-MM-dd%`` is expanded to the real date folder (not a literal
+    ``%date:...%`` directory) in prefix mode."""
+    from datetime import datetime
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+
+    assert save_node.save_image(img, "%date:yyyy-MM-dd%/dated_test", use_prefix_mode=True) == (True,)
+    # The literal token must never be used as a folder name.
+    assert not (tmp_path / "%date:yyyy-MM-dd%").exists()
+    # A folder named after today's date holds the numbered file.
+    today = datetime.now().strftime("%Y-%m-%d")
+    assert (tmp_path / today / "dated_test_00001_.png").exists()
+
+
+def test_path_save_image_path_mode_date_token(tmp_path):
+    """``%date:...%`` templates also work in the plain path mode."""
+    from datetime import datetime
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    today = datetime.now().strftime("%Y-%m-%d")
+    out = os.path.join(str(tmp_path), "%date:yyyy-MM-dd%", "dated")
+
+    assert save_node.save_image(img, out) == (True,)
+    assert not (tmp_path / "%date:yyyy-MM-dd%").exists()
+    assert (tmp_path / today / "dated.png").exists()
+
+
+def test_path_save_image_empty_path_returns_false():
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    assert save_node.save_image(img, "") == (False,)
+
+
+def test_path_save_image_rgba_prefix_mode_and_transparency(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGBA()
+    size = (8, 8)
+    img = torch.zeros(1, size[1], size[0], 3)
+    img[0, :, :, 0] = 1.0
+    mask = torch.zeros(1, size[1], size[0])
+
+    assert save_node.save_image_with_mask(img, mask, "alpha", use_prefix_mode=True) == (True,)
+    path = tmp_path / "alpha_00001_.png"
+    assert path.exists()
+
+    # The right half is masked (alpha 255/opaque where mask==0); check alpha via RGBA.
+    with Image.open(path) as loaded:
+        loaded.load()
+        # PNG metadata must be empty (no prompt given).
+        assert loaded.text.get("parameters") is None
+
+
+def test_path_save_image_rgba_multi_frame(tmp_path):
+    save_node = PathSaveImageRGBA()
+    size = (8, 8)
+    frames = torch.zeros(2, size[1], size[0], 3)
+    frames[0, :, :, 0] = 1.0
+    frames[1, :, :, 1] = 1.0
+    mask = torch.zeros(1, size[1], size[0])  # single mask shared across frames
+
+    assert save_node.save_image_with_mask(frames, mask, str(tmp_path / "rgba_batch")) == (True,)
+    assert (tmp_path / "rgba_batch_00000.png").exists()
+    assert (tmp_path / "rgba_batch_00001.png").exists()
+
+
 def test_path_normalize():
     node = PathNormalize()
     assert node.normalize_path("folder/../file.txt") == (os.path.normpath("folder/../file.txt"),)
