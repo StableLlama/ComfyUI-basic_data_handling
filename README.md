@@ -71,7 +71,7 @@ ComfyUI list manipulation nodes (for processing individual items):
 
 Dictionary manipulation nodes:
 
-- **Creation**: create (generic and type-specific), create from items, create from lists, fromkeys
+- **Creation**: create (generic and type-specific), create from JSON string, create from items, create from lists, fromkeys
 - **Access**: get, get_multiple, keys, values, items
 - **Modification**: set, update, setdefault, merge
 - **Removal**: pop, popitem, pop random, remove
@@ -102,7 +102,7 @@ Integer operation nodes:
 
 Python list manipulation nodes (as a single variable):
 
-- **Creation**: create LIST (generic and type-specific versions)
+- **Creation**: create LIST (generic and type-specific versions), create LIST from JSON string
 - **Modification**: append, extend, insert, remove, pop, pop random, set_item, shuffle
 - **Access**: get_item, first, last, slice, index, contains
 - **Information**: length, count

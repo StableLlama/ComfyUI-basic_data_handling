@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Add "create DICT from JSON string" and "create LIST from JSON string" nodes to
+  parse a multiline JSON object/array into a DICT/LIST
+
 ## [1.8.1] - 2026-09-06
 
 - Add optional additional input for image saving to also save the prompt when provided

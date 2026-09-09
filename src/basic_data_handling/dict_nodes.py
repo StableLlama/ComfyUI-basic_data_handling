@@ -4,6 +4,7 @@ from typing import (
 )
 
 from inspect import cleandoc
+import json
 import random
 
 try:
@@ -1067,12 +1068,49 @@ class DictValues(ComfyNodeABC):
         return (list(input_dict.values()),)
 
 
+class DictCreateFromJSONString(ComfyNodeABC):
+    """
+    Creates a DICT from a JSON object string.
+
+    This node takes a STRING that must contain a valid JSON object and
+    parses it into a DICT. The input must be a JSON object (enclosed in curly
+    braces); otherwise a clear error is raised.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "json_string": (IO.STRING, {"default": "{}", "widgetType": "STRING", "tooltip": "STRING containing a JSON object to parse, e.g. {\"a\": 1}."}),
+            }
+        }
+
+    RETURN_TYPES = ("DICT",)
+    RETURN_NAMES = ("dict",)
+    OUTPUT_TOOLTIPS = ("The DICT parsed from the JSON object string.",)
+    CATEGORY = "Basic/DICT"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_from_json"
+
+    def create_from_json(self, json_string: str) -> tuple[dict]:
+        try:
+            result = json.loads(json_string)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in input string: {e}")
+        if not isinstance(result, dict):
+            raise ValueError(
+                "The JSON string must be a JSON object (enclosed in curly braces), "
+                f"not {type(result).__name__}."
+            )
+        return (result,)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: DictCreate": DictCreate,
     "Basic data handling: DictCreateFromBoolean": DictCreateFromBoolean,
     "Basic data handling: DictCreateFromFloat": DictCreateFromFloat,
     "Basic data handling: DictCreateFromInt": DictCreateFromInt,
     "Basic data handling: DictCreateFromString": DictCreateFromString,
+    "Basic data handling: DictCreateFromJSONString": DictCreateFromJSONString,
     "Basic data handling: DictCreateFromItemsDataList": DictCreateFromItemsDataList,
     "Basic data handling: DictCreateFromItemsList": DictCreateFromItemsList,
     "Basic data handling: DictCreateFromLists": DictCreateFromLists,
@@ -1105,6 +1143,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DictCreateFromFloat": "create DICT from FLOATs",
     "Basic data handling: DictCreateFromInt": "create DICT from INTs",
     "Basic data handling: DictCreateFromString": "create DICT from STRINGs",
+    "Basic data handling: DictCreateFromJSONString": "create DICT from JSON string",
     "Basic data handling: DictCreateFromItemsDataList": "create from items (data list)",
     "Basic data handling: DictCreateFromItemsList": "create from items (LIST)",
     "Basic data handling: DictCreateFromLists": "create from LISTs",

@@ -11,6 +11,7 @@ from src.basic_data_handling.dict_nodes import (
     DictCreateFromItemsList,
     DictCreateFromLists,
     DictCreateFromString,
+    DictCreateFromJSONString,
     DictExcludeKeys,
     DictFilterByKeys,
     DictFromKeys,
@@ -110,6 +111,20 @@ def test_dict_create_from_string():
     assert result == (_dict_x2,)
     # Test with empty inputs
     assert node.create() == ({},)
+
+
+def test_dict_create_from_json_string():
+    node = DictCreateFromJSONString()
+    # Single-line JSON object
+    assert node.create_from_json('{\n  "key1": "value1",\n  "key2": 2\n}') == ({"key1": "value1", "key2": 2},)
+    # Empty object
+    assert node.create_from_json("{}") == ({},)
+    # JSON array is not a valid object -> error
+    with pytest.raises(ValueError, match="JSON object"):
+        node.create_from_json("[1, 2, 3]")
+    # Malformed JSON -> error
+    with pytest.raises(ValueError):
+        node.create_from_json("{not json}")
 
 
 def test_dict_create_from_items_datalist():

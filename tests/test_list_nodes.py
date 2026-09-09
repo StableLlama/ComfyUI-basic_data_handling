@@ -10,6 +10,7 @@ from src.basic_data_handling.list_nodes import (
     ListCreateFromFloat,
     ListCreateFromInt,
     ListCreateFromString,
+    ListCreateFromJSONString,
     ListEnumerate,
     ListExtend,
     ListFirst,
@@ -255,6 +256,22 @@ def test_list_create_from_string():
     assert node.create_list(item_0="a", item_1="b", item_2="c", item_3="") == (["a", "b", "c"],)
     assert node.create_list(item_0="test", item_1="") == (["test"],)
     assert node.create_list() == ([],)
+
+
+def test_list_create_from_json_string():
+    node = ListCreateFromJSONString()
+    # Multiline JSON array
+    assert node.create_from_json('[\n  1,\n  2,\n  3\n]') == ([1, 2, 3],)
+    # Empty array
+    assert node.create_from_json("[]") == ([],)
+    # Mix of JSON types
+    assert node.create_from_json('["a", 1, true, null]') == (["a", 1, True, None],)
+    # JSON object is not a valid array -> error
+    with pytest.raises(ValueError, match="JSON array"):
+        node.create_from_json('{"a": 1}')
+    # Malformed JSON -> error
+    with pytest.raises(ValueError):
+        node.create_from_json("[1, 2,")
 
 
 def test_list_to_data_list():

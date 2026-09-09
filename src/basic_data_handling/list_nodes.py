@@ -1,5 +1,6 @@
 from typing import Any
 from inspect import cleandoc
+import json
 
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
@@ -972,12 +973,49 @@ class ListToSet(ComfyNodeABC):
         return (set(list),)
 
 
+class ListCreateFromJSONString(ComfyNodeABC):
+    """
+    Creates a LIST from a JSON array string.
+
+    This node takes a STRING that must contain a valid JSON array and
+    parses it into a LIST. The input must be a JSON array (enclosed in square
+    brackets); otherwise a clear error is raised.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "json_string": (IO.STRING, {"default": "[]", "widgetType": "STRING", "tooltip": "STRING containing a JSON array to parse, e.g. [1, 2, 3]."}),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The LIST parsed from the JSON array string.",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_from_json"
+
+    def create_from_json(self, json_string: str) -> tuple[list[Any]]:
+        try:
+            result = json.loads(json_string)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in input string: {e}")
+        if not isinstance(result, list):
+            raise ValueError(
+                "The JSON string must be a JSON array (enclosed in square brackets), "
+                f"not {type(result).__name__}."
+            )
+        return (result,)
+
+
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListCreate": ListCreate,
     "Basic data handling: ListCreateFromBoolean": ListCreateFromBoolean,
     "Basic data handling: ListCreateFromFloat": ListCreateFromFloat,
     "Basic data handling: ListCreateFromInt": ListCreateFromInt,
     "Basic data handling: ListCreateFromString": ListCreateFromString,
+    "Basic data handling: ListCreateFromJSONString": ListCreateFromJSONString,
     "Basic data handling: ListAll": ListAll,
     "Basic data handling: ListAny": ListAny,
     "Basic data handling: ListAppend": ListAppend,
@@ -1013,6 +1051,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListCreateFromFloat": "create LIST from FLOATs",
     "Basic data handling: ListCreateFromInt": "create LIST from INTs",
     "Basic data handling: ListCreateFromString": "create LIST from STRINGs",
+    "Basic data handling: ListCreateFromJSONString": "create LIST from JSON string",
     "Basic data handling: ListAll": "all",
     "Basic data handling: ListAny": "any",
     "Basic data handling: ListAppend": "append",
