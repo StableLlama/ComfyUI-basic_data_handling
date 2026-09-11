@@ -4,6 +4,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,7 +12,9 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class CastToBoolean(ComfyNodeABC):
     """
@@ -20,13 +23,10 @@ class CastToBoolean(ComfyNodeABC):
     Truthy values (non-zero numbers, non-empty strings/lists/dicts/sets) become True;
     falsy values (``0``, ``""``, empty containers, ``None``) become False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a BOOLEAN."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a BOOLEAN."})}}
 
     RETURN_TYPES = ("BOOLEAN",)
     RETURN_NAMES = ("boolean",)
@@ -47,13 +47,10 @@ class CastToDict(ComfyNodeABC):
     example a LIST of two-element sequences such as ``[["a", 1], ["b", 2]]``).
     Raises a ValueError for any other kind of input.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a DICT."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a DICT."})}}
 
     RETURN_TYPES = ("DICT",)
     RETURN_NAMES = ("dict",)
@@ -76,13 +73,10 @@ class CastToFloat(ComfyNodeABC):
     Accepts INT, FLOAT and numeric strings such as ``"3.14"``. Values that cannot be
     parsed as a number raise a ValueError.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a FLOAT."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a FLOAT."})}}
 
     RETURN_TYPES = ("FLOAT",)
     RETURN_NAMES = ("float",)
@@ -105,13 +99,10 @@ class CastToInt(ComfyNodeABC):
     Accepts INT, FLOAT (fractional part is dropped, like ``int()``) and numeric strings
     such as ``"42"``. Values that cannot be converted raise a ValueError.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to an INT."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to an INT."})}}
 
     RETURN_TYPES = (IO.INT,)
     RETURN_NAMES = ("int",)
@@ -134,13 +125,10 @@ class CastToList(ComfyNodeABC):
     Values that are already a list (including ComfyUI data lists) are returned as-is;
     any other single value is wrapped into a one-element list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a LIST."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a LIST."})}}
 
     RETURN_TYPES = ("LIST",)
     RETURN_NAMES = ("list",)
@@ -162,13 +150,10 @@ class CastToSet(ComfyNodeABC):
     Sets are returned unchanged; a list or ComfyUI data list becomes the set of its
     items (duplicates removed); any other single value is wrapped into a one-element set.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a SET."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a SET."})}}
 
     RETURN_TYPES = ("SET",)
     RETURN_NAMES = ("set",)
@@ -180,7 +165,13 @@ class CastToSet(ComfyNodeABC):
     def convert_to_set(self, input: Any) -> tuple[set]:
         if isinstance(input, set):
             return (input,)
-        return ({input,} if not isinstance(input, list) else set(input),)
+        return (
+            {
+                input,
+            }
+            if not isinstance(input, list)
+            else set(input),
+        )
 
 
 class CastToString(ComfyNodeABC):
@@ -190,13 +181,10 @@ class CastToString(ComfyNodeABC):
     Numbers, booleans, lists, dicts, sets and other values are rendered with ``str()``,
     matching Python's default formatting.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "input": (IO.ANY, {"tooltip": "The value to convert to a STRING."})
-            }
-        }
+        return {"required": {"input": (IO.ANY, {"tooltip": "The value to convert to a STRING."})}}
 
     RETURN_TYPES = (IO.STRING,)
     RETURN_NAMES = ("string",)

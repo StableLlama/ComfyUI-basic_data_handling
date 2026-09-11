@@ -3,6 +3,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -10,6 +11,7 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 
@@ -20,11 +22,19 @@ class FloatCreate(ComfyNodeABC):
     The input string must be a valid floating-point number and will be
     directly converted to a FLOAT without any further processing.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {"default": "0.0", "widgetType": "STRING", "tooltip": "Textual form of the number to parse, e.g. \"3.14\". Must be a valid float."}),
+                "value": (
+                    IO.ANY,
+                    {
+                        "default": "0.0",
+                        "widgetType": "STRING",
+                        "tooltip": 'Textual form of the number to parse, e.g. "3.14". Must be a valid float.',
+                    },
+                ),
             }
         }
 
@@ -45,6 +55,7 @@ class FloatAdd(ComfyNodeABC):
 
     This node takes two floats as input and returns their sum.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -72,6 +83,7 @@ class FloatSubtract(ComfyNodeABC):
     This node takes two floats as input and returns the result of subtracting
     the second float from the first.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -98,6 +110,7 @@ class FloatMultiply(ComfyNodeABC):
 
     This node takes two floats as input and returns their product.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -125,6 +138,7 @@ class FloatDivide(ComfyNodeABC):
     This node takes two floats as input and returns the result of division.
     It raises a ValueError if the divisor is 0.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -154,6 +168,7 @@ class FloatDivideSafe(ComfyNodeABC):
     This node takes two floats as input and returns the result of the division.
     It returns positive or negative infinity if the divisor is 0 (assumed to be +0.0).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -173,8 +188,8 @@ class FloatDivideSafe(ComfyNodeABC):
     def divide(self, float1: float, float2: float) -> tuple[float]:
         if float2 == 0.0:
             if float1 == 0.0:
-                return (float('nan'),)
-            return (float('inf') if float1 > 0 else float('-inf'),)
+                return (float("nan"),)
+            return (float("inf") if float1 > 0 else float("-inf"),)
         return (float1 / float2,)
 
 
@@ -185,6 +200,7 @@ class FloatAsIntegerRatio(ComfyNodeABC):
     This node takes a floating-point number and returns two integers,
     which represent the ratio as numerator and denominator.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -212,11 +228,15 @@ class FloatFromHex(ComfyNodeABC):
 
     This node takes a hexadecimal float string as input and returns the float.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "hex_value": (IO.STRING, {"default": "0x0.0p+0", "tooltip": "Hexadecimal float string as produced by the \"to hex\" node, e.g. 0x1.8p+1."}),
+                "hex_value": (
+                    IO.STRING,
+                    {"default": "0x0.0p+0", "tooltip": 'Hexadecimal float string as produced by the "to hex" node, e.g. 0x1.8p+1.'},
+                ),
             }
         }
 
@@ -237,6 +257,7 @@ class FloatHex(ComfyNodeABC):
 
     This node takes a float as input and returns its hexadecimal string representation.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -263,6 +284,7 @@ class FloatIsInteger(ComfyNodeABC):
     This node takes a floating-point number as input and returns True if the number
     is an integer, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -289,6 +311,7 @@ class FloatPower(ComfyNodeABC):
     This node takes two floats as input and returns the result of raising
     the first float to the power of the second.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -306,7 +329,7 @@ class FloatPower(ComfyNodeABC):
     FUNCTION = "power"
 
     def power(self, base: float, exponent: float) -> tuple[float]:
-        return (base ** exponent,)
+        return (base**exponent,)
 
 
 class FloatRound(ComfyNodeABC):
@@ -316,12 +339,16 @@ class FloatRound(ComfyNodeABC):
     This node takes a float and an integer for decimal places as inputs,
     and returns the rounded result.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "float_value": (IO.FLOAT, {"default": 0.0, "tooltip": "The float to round."}),
-                "decimal_places": (IO.INT, {"default": 2, "min": 0, "tooltip": "Number of decimal places to keep (0 rounds to a whole number)."}),
+                "decimal_places": (
+                    IO.INT,
+                    {"default": 2, "min": 0, "tooltip": "Number of decimal places to keep (0 rounds to a whole number)."},
+                ),
             }
         }
 

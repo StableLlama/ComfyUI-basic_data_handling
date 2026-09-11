@@ -3,6 +3,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -10,10 +11,13 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class StringCapitalize(ComfyNodeABC):
     """Converts the first character of the input string to uppercase and all other characters to lowercase."""
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -41,6 +45,7 @@ class StringCasefold(ComfyNodeABC):
     Unlike standard lowercase, this handles special cases like converting the German 'ß' to "ss".
     Use this node when you need the most accurate case-insensitive text matching.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -68,6 +73,7 @@ class StringCenter(ComfyNodeABC):
     By default, it uses spaces as padding characters, but you can specify any
     single character to use as padding.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -77,7 +83,7 @@ class StringCenter(ComfyNodeABC):
             },
             "optional": {
                 "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -99,6 +105,7 @@ class StringCenter(ComfyNodeABC):
 
 class StringConcat(ComfyNodeABC):
     """Combines two text strings together, joining them end-to-end."""
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -126,6 +133,7 @@ class StringCount(ComfyNodeABC):
     This node returns the number of times the specified substring appears in the input string.
     You can optionally specify start and end positions to limit the search range.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -136,7 +144,7 @@ class StringCount(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
                 "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -162,12 +170,19 @@ class StringDecode(ComfyNodeABC):
     and converts it back to a regular text string using the specified encoding.
     Useful for processing encoded data received from files or network sources.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "bytes_string": (IO.STRING, {"default": "b''", "tooltip": "String representation of bytes, e.g. b'text', as produced by the encode node."}),
-                "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"], {"tooltip": "Character encoding to decode with."}),
+                "bytes_string": (
+                    IO.STRING,
+                    {"default": "b''", "tooltip": "String representation of bytes, e.g. b'text', as produced by the encode node."},
+                ),
+                "encoding": (
+                    ["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"],
+                    {"tooltip": "Character encoding to decode with."},
+                ),
                 "errors": (["strict", "ignore", "replace", "backslashreplace"], {"tooltip": "How to handle decoding errors."}),
             }
         }
@@ -194,7 +209,7 @@ class StringDecode(ComfyNodeABC):
                     return (f"Invalid bytes string format: {bytes_string}",)
 
                 # Handle escape sequences
-                content = content.encode('utf-8').decode('unicode_escape').encode('latin-1')
+                content = content.encode("utf-8").decode("unicode_escape").encode("latin-1")
 
                 # Decode using the specified encoding
                 result = content.decode(encoding, errors)
@@ -213,13 +228,17 @@ class StringEncode(ComfyNodeABC):
     ASCII, or others. It's useful for preparing text for file saving or
     network transmission in specific formats.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "string": (IO.STRING, {"default": "", "tooltip": "The text to encode."}),
                 "encoding": (["utf-8", "ascii", "latin-1", "utf-16", "utf-32", "cp1252"], {"tooltip": "Character encoding to use."}),
-                "errors": (["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"], {"tooltip": "How to handle characters that cannot be encoded."}),
+                "errors": (
+                    ["strict", "ignore", "replace", "xmlcharrefreplace", "backslashreplace"],
+                    {"tooltip": "How to handle characters that cannot be encoded."},
+                ),
             }
         }
 
@@ -251,6 +270,7 @@ class StringEndswith(ComfyNodeABC):
     Returns True if the string ends with the specified suffix, otherwise False.
     Optional start and end parameters allow you to check only a specific portion of the string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -261,7 +281,7 @@ class StringEndswith(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the checked range."}),
                 "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the checked range (0 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -287,6 +307,7 @@ class StringExpandtabs(ComfyNodeABC):
     The tab size (number of spaces per tab) can be adjusted,
     with a default value of 8 characters.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -295,7 +316,7 @@ class StringExpandtabs(ComfyNodeABC):
             },
             "optional": {
                 "tabsize": (IO.INT, {"default": 8, "min": 1, "max": 100, "tooltip": "Number of spaces each tab expands to."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -317,6 +338,7 @@ class StringFind(ComfyNodeABC):
     Returns the lowest index where the substring is found. If the substring is not found, it returns -1.
     Optional start and end parameters allow you to limit the search to a specific portion of the string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -327,7 +349,7 @@ class StringFind(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
                 "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -354,11 +376,15 @@ class StringFormatMap(ComfyNodeABC):
     mapping keys to values. For example, the string "Hello, {name}" with a dictionary {"name": "World"}
     would produce "Hello, World".
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "template": (IO.STRING, {"default": "Hello, {key}", "tooltip": "Format string with {placeholder} fields referencing mapping keys."}),
+                "template": (
+                    IO.STRING,
+                    {"default": "Hello, {key}", "tooltip": "Format string with {placeholder} fields referencing mapping keys."},
+                ),
                 "mapping": ("DICT", {"default": {}, "tooltip": "Dictionary providing the values for the placeholders."}),
             }
         }
@@ -389,6 +415,7 @@ class StringIn(ComfyNodeABC):
     exists within the input string. Returns True if the substring is found,
     otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -416,6 +443,7 @@ class StringIsAlnum(ComfyNodeABC):
     This node returns True if all characters in the string are alphanumeric
     (letters or numbers) and there is at least one character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -442,6 +470,7 @@ class StringIsAlpha(ComfyNodeABC):
     This node returns True if all characters in the string are alphabetic
     (letters) and there is at least one character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -468,6 +497,7 @@ class StringIsAscii(ComfyNodeABC):
     This node returns True if all characters in the string are in the ASCII character
     set and there is at least one character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -496,6 +526,7 @@ class StringIsDecimal(ComfyNodeABC):
     Decimal characters include digit characters and characters that can be
     used to form decimal numbers in various locales.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -522,6 +553,7 @@ class StringIsDigit(ComfyNodeABC):
     This node returns True if all characters in the string are digits
     and there is at least one character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -549,6 +581,7 @@ class StringIsIdentifier(ComfyNodeABC):
     otherwise False. A valid identifier must start with a letter or underscore
     and can only contain letters, digits, or underscores.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -575,6 +608,7 @@ class StringIsLower(ComfyNodeABC):
     This node returns True if all cased characters in the string are lowercase
     and there is at least one cased character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -602,6 +636,7 @@ class StringIsNumeric(ComfyNodeABC):
     and there is at least one character, otherwise False. Numeric characters include
     digit characters and characters that have the Unicode numeric value property.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -628,6 +663,7 @@ class StringIsPrintable(ComfyNodeABC):
     This node returns True if all characters in the string are printable or the string is empty,
     otherwise False. Printable characters are those which are not control characters.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -654,6 +690,7 @@ class StringIsSpace(ComfyNodeABC):
     This node returns True if all characters in the string are whitespace
     and there is at least one character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -681,6 +718,7 @@ class StringIsTitle(ComfyNodeABC):
     character, otherwise False. A titlecased string has all words start with an
     uppercase character and continue with lowercase.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -707,6 +745,7 @@ class StringIsUpper(ComfyNodeABC):
     This node returns True if all cased characters in the string are uppercase
     and there is at least one cased character, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -733,6 +772,7 @@ class StringLength(ComfyNodeABC):
     This node calculates and returns the number of characters in the input string.
     It works the same way as Python's built-in len() function for strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -760,6 +800,7 @@ class StringDataListJoin(ComfyNodeABC):
     separator string between each element. The separator is inserted between the strings,
     not at the beginning or end of the result.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -778,7 +819,7 @@ class StringDataListJoin(ComfyNodeABC):
     INPUT_IS_LIST = True  # The "strings" input accepts a data list
 
     def join(self, sep, strings):
-        separator = sep[0]    # everything comes as a list, so sep is list[str]
+        separator = sep[0]  # everything comes as a list, so sep is list[str]
         strings = strings if strings is not None else []
         return (separator.join(strings),)
 
@@ -791,6 +832,7 @@ class StringListJoin(ComfyNodeABC):
     separator string between each element. The separator is inserted between the strings,
     not at the beginning or end of the result.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -819,6 +861,7 @@ class StringLjust(ComfyNodeABC):
     This node returns a string left-aligned in a field of the specified width.
     If fillchar is provided, it is used as the padding character instead of a space.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -828,7 +871,7 @@ class StringLjust(ComfyNodeABC):
             },
             "optional": {
                 "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -851,6 +894,7 @@ class StringLower(ComfyNodeABC):
 
     This node returns a copy of the string with all uppercase characters converted to lowercase.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -878,6 +922,7 @@ class StringLstrip(ComfyNodeABC):
     If chars is provided, it specifies the set of characters to be removed.
     If chars is not provided, whitespace characters are removed.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -886,7 +931,7 @@ class StringLstrip(ComfyNodeABC):
             },
             "optional": {
                 "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from the start (whitespace when empty)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -909,6 +954,7 @@ class StringRemoveprefix(ComfyNodeABC):
     This node returns a copy of the string with the specified prefix removed
     if the string starts with that prefix, otherwise returns the original string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -936,6 +982,7 @@ class StringRemovesuffix(ComfyNodeABC):
     This node returns a copy of the string with the specified suffix removed
     if the string ends with that suffix, otherwise returns the original string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -964,6 +1011,7 @@ class StringUnescape(ComfyNodeABC):
     '\t' to tabs, '\\' to backslashes, etc. Useful for processing strings where escape sequences
     are represented literally rather than interpreted.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -982,13 +1030,12 @@ class StringUnescape(ComfyNodeABC):
     def unescape(self, string):
         # Decode escaped sequences only for control characters
         result = (
-            string
-            .replace(r'\\', '\u0000')
-            .replace(r'\n', '\n')
-            .replace(r'\t', '\t')
-            .replace(r'\"', '"')
-            .replace(r'\'', "'")
-            .replace('\u0000', '\\')
+            string.replace(r"\\", "\u0000")
+            .replace(r"\n", "\n")
+            .replace(r"\t", "\t")
+            .replace(r"\"", '"')
+            .replace(r"\'", "'")
+            .replace("\u0000", "\\")
         )
         return (result,)
 
@@ -1001,6 +1048,7 @@ class StringEscape(ComfyNodeABC):
     representation (like '\n', '\t', '\"', '\\'). Useful when you need to prepare strings
     for formats that require escaped sequences instead of literal special characters.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1017,14 +1065,7 @@ class StringEscape(ComfyNodeABC):
     FUNCTION = "escape"
 
     def escape(self, string):
-        result = (
-            string
-            .replace('\\', r'\\')
-            .replace('\n', r'\n')
-            .replace('\t', r'\t')
-            .replace('"', r'\"')
-            .replace("'", r"\'")
-        )
+        result = string.replace("\\", r"\\").replace("\n", r"\n").replace("\t", r"\t").replace('"', r"\"").replace("'", r"\'")
         return (result,)
 
 
@@ -1036,6 +1077,7 @@ class StringReplace(ComfyNodeABC):
     old replaced by new. If the optional argument count is given, only the
     first count occurrences are replaced.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1046,7 +1088,7 @@ class StringReplace(ComfyNodeABC):
             },
             "optional": {
                 "count": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of replacements (-1 replaces all)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1068,6 +1110,7 @@ class StringRfind(ComfyNodeABC):
     Returns the highest index where the substring is found. If the substring is not found, it returns -1.
     Optional start and end parameters allow you to limit the search to a specific portion of the string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1078,7 +1121,7 @@ class StringRfind(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the search range."}),
                 "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the search range (0 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -1103,6 +1146,7 @@ class StringRjust(ComfyNodeABC):
     This node returns a string right-aligned in a field of the specified width.
     If fillchar is provided, it is used as the padding character instead of a space.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1112,7 +1156,7 @@ class StringRjust(ComfyNodeABC):
             },
             "optional": {
                 "fillchar": (IO.STRING, {"default": " ", "tooltip": "Padding character (only its first character is used)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1138,6 +1182,7 @@ class StringRsplitDataList(ComfyNodeABC):
     If the separator is not specified or is None, any whitespace string is a separator.
     Creates a data list of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1147,7 +1192,7 @@ class StringRsplitDataList(ComfyNodeABC):
             "optional": {
                 "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
                 "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits from the right (-1 = no limit)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1173,6 +1218,7 @@ class StringRsplitList(ComfyNodeABC):
     If the separator is not specified or is None, any whitespace string is a separator.
     Creates a LIST of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1182,7 +1228,7 @@ class StringRsplitList(ComfyNodeABC):
             "optional": {
                 "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
                 "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits from the right (-1 = no limit)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -1206,6 +1252,7 @@ class StringRstrip(ComfyNodeABC):
     If chars is provided, it specifies the set of characters to be removed.
     If chars is not provided, whitespace characters are removed.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1214,7 +1261,7 @@ class StringRstrip(ComfyNodeABC):
             },
             "optional": {
                 "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from the end (whitespace when empty)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1241,6 +1288,7 @@ class StringSplitDataList(ComfyNodeABC):
     If the separator is not specified or is None, any whitespace string is a separator.
     Creates a data list of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1250,7 +1298,7 @@ class StringSplitDataList(ComfyNodeABC):
             "optional": {
                 "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
                 "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits (-1 = no limit)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1281,6 +1329,7 @@ class StringSplitList(ComfyNodeABC):
     If the separator is not specified or is None, any whitespace string is a separator.
     Creates a LIST of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1290,7 +1339,7 @@ class StringSplitList(ComfyNodeABC):
             "optional": {
                 "sep": (IO.STRING, {"default": "", "tooltip": "Separator to split on (whitespace when empty)."}),
                 "maxsplit": (IO.INT, {"default": -1, "min": -1, "tooltip": "Maximum number of splits (-1 = no limit)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -1317,6 +1366,7 @@ class StringSplitlinesDataList(ComfyNodeABC):
     If keepends is True, line breaks are included in the resulting list.
     Creates a data list of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1325,7 +1375,7 @@ class StringSplitlinesDataList(ComfyNodeABC):
             },
             "optional": {
                 "keepends": (IO.BOOLEAN, {"default": False, "tooltip": "Keep the line break characters in the resulting lines."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1349,6 +1399,7 @@ class StringSplitlinesList(ComfyNodeABC):
     If keepends is True, line breaks are included in the resulting list.
     Creates a LIST of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1357,7 +1408,7 @@ class StringSplitlinesList(ComfyNodeABC):
             },
             "optional": {
                 "keepends": (IO.BOOLEAN, {"default": False, "tooltip": "Keep the line break characters in the resulting lines."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -1380,6 +1431,7 @@ class StringStartswith(ComfyNodeABC):
     Returns True if the string starts with the specified prefix, otherwise False.
     Optional start and end parameters allow you to check only a specific portion of the string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1390,7 +1442,7 @@ class StringStartswith(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "min": 0, "tooltip": "Start position of the checked range."}),
                 "end": (IO.INT, {"default": 0, "min": 0, "tooltip": "End position of the checked range (0 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -1416,6 +1468,7 @@ class StringStrip(ComfyNodeABC):
     If chars is provided, it specifies the set of characters to be removed.
     If chars is not provided, whitespace characters are removed.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1424,7 +1477,7 @@ class StringStrip(ComfyNodeABC):
             },
             "optional": {
                 "chars": (IO.STRING, {"default": "", "tooltip": "Set of characters to remove from both ends (whitespace when empty)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -1447,6 +1500,7 @@ class StringSwapcase(ComfyNodeABC):
     This node returns a copy of the string with uppercase characters converted to lowercase
     and lowercase characters converted to uppercase.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1473,6 +1527,7 @@ class StringTitle(ComfyNodeABC):
     This node returns a titlecased version of the string where words start with an uppercase
     character and the remaining characters are lowercase.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1498,6 +1553,7 @@ class StringUpper(ComfyNodeABC):
 
     This node returns a copy of the string with all lowercase characters converted to uppercase.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1525,6 +1581,7 @@ class StringZfill(ComfyNodeABC):
     of length width. A leading sign prefix ('+'/'-') is handled by inserting the padding
     after the sign character rather than before.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {

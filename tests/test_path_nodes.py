@@ -6,12 +6,36 @@ import torch
 from PIL import Image
 
 from src.basic_data_handling.path_nodes import (
-    PathJoin, PathAbspath, PathExists, PathIsFile, PathIsDir, PathGetSize,
-    PathSplit, PathSplitExt, PathBasename, PathDirname, PathGetExtension,
-    PathSetExtension, PathNormalize, PathRelative, PathGlob, PathExpandVars, PathGetCwd,
-    PathListDir, PathIsAbsolute, PathCommonPrefix, PathLoadStringFile, PathSaveStringFile,
-    PathLoadImageRGB, PathSaveImageRGB, PathLoadImageRGBA, PathSaveImageRGBA,
-    PathLoadMaskFromAlpha, PathLoadMaskFromGreyscale, PathInputDir, PathOutputDir,
+    PathJoin,
+    PathAbspath,
+    PathExists,
+    PathIsFile,
+    PathIsDir,
+    PathGetSize,
+    PathSplit,
+    PathSplitExt,
+    PathBasename,
+    PathDirname,
+    PathGetExtension,
+    PathSetExtension,
+    PathNormalize,
+    PathRelative,
+    PathGlob,
+    PathExpandVars,
+    PathGetCwd,
+    PathListDir,
+    PathIsAbsolute,
+    PathCommonPrefix,
+    PathLoadStringFile,
+    PathSaveStringFile,
+    PathLoadImageRGB,
+    PathSaveImageRGB,
+    PathLoadImageRGBA,
+    PathSaveImageRGBA,
+    PathLoadMaskFromAlpha,
+    PathLoadMaskFromGreyscale,
+    PathInputDir,
+    PathOutputDir,
 )
 
 
@@ -36,6 +60,7 @@ def test_path_join():
     # Test with multiple path components
     nested_path = os.path.join("folder", "subfolder", "file.txt")
     assert node.join_paths("folder", os.path.join("subfolder", "file.txt")) == (nested_path,)
+
 
 def test_path_load_save_string_file(tmp_path):
     # Test saving a string to a file
@@ -67,6 +92,7 @@ def test_path_load_save_string_file(tmp_path):
 
     # Test error handling
     assert load_node.load_text(str(tmp_path / "nonexistent.txt")) == ("", False)
+
 
 def test_path_save_string_file_append(tmp_path):
     # Test appending to an existing file
@@ -130,7 +156,7 @@ def test_path_is_file(tmp_path):
     # Test with special paths
     assert node.check_is_file(".") == (False,)
     # Test with symlink to file if platform supports
-    if hasattr(os, 'symlink'):
+    if hasattr(os, "symlink"):
         try:
             symlink = tmp_path / "symlink.txt"
             os.symlink(str(file), str(symlink))
@@ -158,7 +184,7 @@ def test_path_is_dir(tmp_path):
     nested_dir.mkdir()
     assert node.check_is_dir(str(nested_dir)) == (True,)
     # Test with symlink to directory if platform supports
-    if hasattr(os, 'symlink'):
+    if hasattr(os, "symlink"):
         try:
             symlink = tmp_path / "symlink_dir"
             os.symlink(str(directory), str(symlink), target_is_directory=True)
@@ -265,6 +291,7 @@ def test_path_get_extension():
     # Test with empty string
     assert node.get_extension("") == ("",)
 
+
 def test_path_set_extension():
     node = PathSetExtension()
     # Test basic extension replacement
@@ -288,12 +315,12 @@ def test_path_load_mask_nodes(tmp_path, monkeypatch):
     img_size = (64, 64)
 
     # Image with alpha channel
-    rgba_img = Image.new('RGBA', img_size, color=(255, 0, 0, 128))  # Semi-transparent red
+    rgba_img = Image.new("RGBA", img_size, color=(255, 0, 0, 128))  # Semi-transparent red
     rgba_path = str(tmp_path / "alpha_mask.png")
     rgba_img.save(rgba_path)
 
     # Grayscale image
-    gray_img = Image.new('L', img_size)
+    gray_img = Image.new("L", img_size)
     # Create a gradient from black to white
     for y in range(img_size[1]):
         for x in range(img_size[0]):
@@ -308,17 +335,17 @@ def test_path_load_mask_nodes(tmp_path, monkeypatch):
         return Image.open(path)
 
     def mock_extract_mask_from_alpha(img):
-        if 'A' in img.getbands():
-            alpha = np.array(img.getchannel('A')).astype(np.float32) / 255.0
+        if "A" in img.getbands():
+            alpha = np.array(img.getchannel("A")).astype(np.float32) / 255.0
             mask_tensor = 1.0 - torch.from_numpy(alpha)
             return mask_tensor.unsqueeze(0)
         return torch.zeros((1, img.height, img.width), dtype=torch.float32)
 
     def mock_extract_mask_from_greyscale(img):
-        if img.mode == 'L':
+        if img.mode == "L":
             gray = np.array(img).astype(np.float32) / 255.0
         else:
-            gray = np.array(img.getchannel('R')).astype(np.float32) / 255.0
+            gray = np.array(img.getchannel("R")).astype(np.float32) / 255.0
         mask_tensor = 1.0 - torch.from_numpy(gray)
         return mask_tensor.unsqueeze(0)
 
@@ -358,7 +385,7 @@ def test_path_load_mask_nodes(tmp_path, monkeypatch):
 def test_path_load_save_image_rgba(tmp_path, monkeypatch):
     # Create a test image with transparency
     img_size = (64, 64)
-    test_img = Image.new('RGBA', img_size, color=(255, 0, 0, 128))  # Semi-transparent red
+    test_img = Image.new("RGBA", img_size, color=(255, 0, 0, 128))  # Semi-transparent red
     img_path = str(tmp_path / "test_rgba.png")
     test_img.save(img_path)
 
@@ -369,8 +396,8 @@ def test_path_load_save_image_rgba(tmp_path, monkeypatch):
         return Image.open(path)
 
     def mock_extract_mask_from_alpha(img):
-        if 'A' in img.getbands():
-            alpha = np.array(img.getchannel('A')).astype(np.float32) / 255.0
+        if "A" in img.getbands():
+            alpha = np.array(img.getchannel("A")).astype(np.float32) / 255.0
             mask_tensor = 1.0 - torch.from_numpy(alpha)
             return mask_tensor.unsqueeze(0)
         return torch.zeros((1, img.height, img.width), dtype=torch.float32)
@@ -386,7 +413,7 @@ def test_path_load_save_image_rgba(tmp_path, monkeypatch):
     assert isinstance(loaded_img, torch.Tensor)
     assert isinstance(loaded_mask, torch.Tensor)
     assert loaded_img.shape == (1, img_size[1], img_size[0], 3)  # (batch, height, width, channels)
-    assert loaded_mask.shape == (1, img_size[1], img_size[0])    # (batch, height, width)
+    assert loaded_mask.shape == (1, img_size[1], img_size[0])  # (batch, height, width)
 
     # Test saving an image with mask
     save_node = PathSaveImageRGBA()
@@ -420,7 +447,7 @@ def test_path_load_save_image_rgba(tmp_path, monkeypatch):
 def test_path_load_save_image_rgb(tmp_path, monkeypatch):
     # Create a test image
     img_size = (64, 64)
-    test_img = Image.new('RGB', img_size, color='red')
+    test_img = Image.new("RGB", img_size, color="red")
     img_path = str(tmp_path / "test_rgb.png")
     test_img.save(img_path)
 
@@ -485,8 +512,7 @@ def test_path_save_image_rgb_prompt_metadata(tmp_path):
 
     # Both prompt and negative prompt provided
     full_path = str(tmp_path / "full")
-    assert save_node.save_image(red_img, full_path, prompt="a red square",
-                                negative_prompt="blurry, low quality") == (True,)
+    assert save_node.save_image(red_img, full_path, prompt="a red square", negative_prompt="blurry, low quality") == (True,)
     with Image.open(full_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
@@ -507,8 +533,7 @@ def test_path_save_image_rgb_prompt_metadata(tmp_path):
 
     # JPEG embeds the prompt into the EXIF UserComment and ImageDescription fields
     jpg_path = str(tmp_path / "jpeg_meta")
-    assert save_node.save_image(red_img, jpg_path, format="jpg", prompt="a red square",
-                                negative_prompt="blurry, low quality") == (True,)
+    assert save_node.save_image(red_img, jpg_path, format="jpg", prompt="a red square", negative_prompt="blurry, low quality") == (True,)
     assert os.path.exists(jpg_path + ".jpg")
     with Image.open(jpg_path + ".jpg") as img:
         img.load()
@@ -519,8 +544,7 @@ def test_path_save_image_rgb_prompt_metadata(tmp_path):
 
     # WEBP embeds the prompt into the EXIF UserComment field (no ImageDescription)
     webp_path = str(tmp_path / "webp_meta")
-    assert save_node.save_image(red_img, webp_path, format="webp", prompt="a red square",
-                                negative_prompt="blurry, low quality") == (True,)
+    assert save_node.save_image(red_img, webp_path, format="webp", prompt="a red square", negative_prompt="blurry, low quality") == (True,)
     with Image.open(webp_path + ".webp") as img:
         img.load()
         exif_bytes = img.info.get("exif", b"")
@@ -548,9 +572,7 @@ def test_path_save_image_rgba_prompt_metadata(tmp_path):
 
     # Both prompt and negative prompt provided
     full_path = str(tmp_path / "full")
-    assert save_node.save_image_with_mask(red_img, mask, full_path,
-                                          prompt="a red square",
-                                          negative_prompt="blurry, low quality") == (True,)
+    assert save_node.save_image_with_mask(red_img, mask, full_path, prompt="a red square", negative_prompt="blurry, low quality") == (True,)
     with Image.open(full_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
@@ -566,8 +588,7 @@ def test_path_save_image_jxl_prompt_metadata(tmp_path):
     prompt = "a red square <lora:x:1.0>"
     negative_prompt = "blurry, low quality"
     jxl_path = str(tmp_path / "jxl_meta")
-    assert save_node.save_image(red_img, jxl_path, format="jxl", prompt=prompt,
-                                negative_prompt=negative_prompt) == (True,)
+    assert save_node.save_image(red_img, jxl_path, format="jxl", prompt=prompt, negative_prompt=negative_prompt) == (True,)
     assert os.path.exists(jxl_path + ".jxl")
 
     # JXL embeds the prompt into the EXIF UserComment field
@@ -643,9 +664,7 @@ def test_path_save_image_formats_are_library_derived():
     import src.basic_data_handling.path_nodes as pn
 
     # Non-photographic raster ids are never surfaced.
-    assert not any(
-        t in pn._NON_PHOTOGRAPHIC_RASTER_IDS for t in map(str.upper, pn._IMAGE_SAVE_FORMATS)
-    )
+    assert not any(t in pn._NON_PHOTOGRAPHIC_RASTER_IDS for t in map(str.upper, pn._IMAGE_SAVE_FORMATS))
 
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1)
@@ -719,6 +738,7 @@ def test_path_save_image_prefix_mode_date_token(tmp_path, monkeypatch):
     """``%date:yyyy-MM-dd%`` is expanded to the real date folder (not a literal
     ``%date:...%`` directory) in prefix mode."""
     from datetime import datetime
+
     monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1)
@@ -734,6 +754,7 @@ def test_path_save_image_prefix_mode_date_token(tmp_path, monkeypatch):
 def test_path_save_image_path_mode_date_token(tmp_path):
     """``%date:...%`` templates also work in the plain path mode."""
     from datetime import datetime
+
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1)
     today = datetime.now().strftime("%Y-%m-%d")
@@ -848,11 +869,9 @@ def test_path_glob(tmp_path):
 
     # Test recursive globbing
     recursive_result = node.glob_paths(str(tmp_path / "**/*.txt"), recursive=True)
-    recursive_expected = sorted([
-        str(tmp_path / f"file{i}.txt") for i in range(1, 4)
-    ] + [
-        str(subdir / f"subfile{i}.txt") for i in range(1, 3)
-    ])
+    recursive_expected = sorted(
+        [str(tmp_path / f"file{i}.txt") for i in range(1, 4)] + [str(subdir / f"subfile{i}.txt") for i in range(1, 3)]
+    )
     assert sorted(recursive_result[0]) == recursive_expected
 
     # Test with no matches
@@ -876,7 +895,6 @@ def test_path_input_output_dir(monkeypatch):
 
     assert PathInputDir().execute() == ("./",)
     assert PathOutputDir().execute() == ("./",)
-
 
 
 def test_path_expand_vars(monkeypatch):

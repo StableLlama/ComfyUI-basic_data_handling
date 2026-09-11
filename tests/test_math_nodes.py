@@ -1,9 +1,26 @@
 import pytest
 import math
 from src.basic_data_handling.math_nodes import (
-    MathSin, MathCos, MathTan, MathAsin, MathAcos, MathAtan, MathAtan2,
-    MathSqrt, MathExp, MathLog, MathLog10, MathDegrees, MathRadians,
-    MathFloor, MathCeil, MathAbs, MathPi, MathE, MathMin, MathMax,
+    MathSin,
+    MathCos,
+    MathTan,
+    MathAsin,
+    MathAcos,
+    MathAtan,
+    MathAtan2,
+    MathSqrt,
+    MathExp,
+    MathLog,
+    MathLog10,
+    MathDegrees,
+    MathRadians,
+    MathFloor,
+    MathCeil,
+    MathAbs,
+    MathPi,
+    MathE,
+    MathMin,
+    MathMax,
 )
 
 
@@ -41,7 +58,7 @@ def test_math_tan():
     with pytest.raises(ValueError):  # Undefined tangent
         node.calculate(90, "degrees")
     with pytest.raises(ValueError):  # Undefined tangent
-        node.calculate(math.pi/2, "radians")
+        node.calculate(math.pi / 2, "radians")
 
 
 def test_math_asin():

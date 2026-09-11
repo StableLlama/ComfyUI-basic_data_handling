@@ -4,6 +4,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,6 +12,7 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
@@ -28,12 +30,22 @@ class SetCreate(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items to add to the SET. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the items to add to the SET. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("SET",)
@@ -55,12 +67,22 @@ class SetCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the boolean items to add to the SET. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.BOOLEAN,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the boolean items to add to the SET. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("SET",)
@@ -82,12 +104,22 @@ class SetCreateFromFloat(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the float items to add to the SET. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.FLOAT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the float items to add to the SET. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("SET",)
@@ -109,12 +141,22 @@ class SetCreateFromInt(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the integer items to add to the SET. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.INT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the integer items to add to the SET. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("SET",)
@@ -136,12 +178,22 @@ class SetCreateFromString(ComfyNodeABC):
     This node creates and returns a SET. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the string items to add to the SET. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the string items to add to the SET. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("SET",)
@@ -163,6 +215,7 @@ class SetAdd(ComfyNodeABC):
     This node takes a SET and any item as inputs, then returns a new SET
     with the item added. If the item is already present, the SET remains unchanged.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -193,6 +246,7 @@ class SetAll(ComfyNodeABC):
     This node takes a SET as input and returns True if all elements in the SET
     evaluate to True (or if the SET is empty), and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -220,6 +274,7 @@ class SetAny(ComfyNodeABC):
     This node takes a SET as input and returns True if at least one element
     in the SET evaluates to True, and False otherwise (including if the SET is empty).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -247,6 +302,7 @@ class SetContains(ComfyNodeABC):
     This node takes a SET and a value as inputs, then returns True if the value
     is present in the SET, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -275,6 +331,7 @@ class SetDifference(ComfyNodeABC):
     This node takes two SETs as input and returns a new SET containing
     elements in the first SET but not in the second SET.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -306,6 +363,7 @@ class SetDiscard(ComfyNodeABC):
     This node takes a SET and any item as inputs, then returns a new SET
     with the item removed. Unlike remove, no error is raised if the item is not present.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -340,6 +398,7 @@ class SetEnumerate(ComfyNodeABC):
     Note: Since SETs are unordered, the enumeration order is arbitrary but consistent
     within a single operation.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -348,7 +407,7 @@ class SetEnumerate(ComfyNodeABC):
             },
             "optional": {
                 "start": ("INT", {"default": 0, "tooltip": "Index value assigned to the first element."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -370,6 +429,7 @@ class SetIntersection(ComfyNodeABC):
     This node takes multiple SETs as input and returns a new SET containing
     only elements present in all input SETs.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -380,7 +440,7 @@ class SetIntersection(ComfyNodeABC):
             "optional": {
                 "set3": ("SET", {"tooltip": "Optional additional SET."}),
                 "set4": ("SET", {"tooltip": "Optional additional SET."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("SET",)
@@ -411,6 +471,7 @@ class SetIsDisjoint(ComfyNodeABC):
 
     This node takes two SETs as input and returns True if they have no elements in common.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -440,6 +501,7 @@ class SetIsSubset(ComfyNodeABC):
     This node takes two SETs as input and returns True if set1 is a subset of set2
     (all elements in set1 are also in set2).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -469,6 +531,7 @@ class SetIsSuperset(ComfyNodeABC):
     This node takes two SETs as input and returns True if set1 is a superset of set2
     (set1 contains all elements in set2).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -497,6 +560,7 @@ class SetLength(ComfyNodeABC):
 
     This node takes a SET as input and returns its length (number of elements) as an integer.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -525,6 +589,7 @@ class SetPop(ComfyNodeABC):
     with an arbitrary item removed and the removed item.
     When the SET is empty, the item is None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -558,6 +623,7 @@ class SetPopRandom(ComfyNodeABC):
     and the removed element itself. If the SET is empty, it returns None for the element.
     An optional seed can be provided for reproducible selection.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -565,7 +631,16 @@ class SetPopRandom(ComfyNodeABC):
                 "set": ("SET", {"tooltip": "The SET to pop a random element from."}),
             },
             "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
+                "seed": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "control_after_generate": True,
+                        "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run.",
+                    },
+                ),
             },
         }
 
@@ -585,6 +660,7 @@ class SetPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, set: set[Any], seed=None) -> tuple[set[Any], Any]:
         import random
+
         set = set if set is not None else _empty_set()
         rng = random.Random(seed) if seed is not None else random
         result = set.copy()
@@ -603,6 +679,7 @@ class SetRemove(ComfyNodeABC):
     with the item removed and a success indicator. If the item is not present,
     the original SET is returned with success set to False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -640,6 +717,7 @@ class SetSum(ComfyNodeABC):
     compatible with addition. If the SET contains mixed or incompatible types,
     it may raise an error.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -648,11 +726,17 @@ class SetSum(ComfyNodeABC):
             },
             "optional": {
                 "start": ("INT", {"default": 0, "tooltip": "Initial value added to the sum."}),
-            }
+            },
         }
 
-    RETURN_TYPES = ("INT", "FLOAT",)
-    RETURN_NAMES = ("sum_int", "sum_float",)
+    RETURN_TYPES = (
+        "INT",
+        "FLOAT",
+    )
+    RETURN_NAMES = (
+        "sum_int",
+        "sum_float",
+    )
     OUTPUT_TOOLTIPS = ("The total as an integer.", "The total as a float.")
     CATEGORY = "Basic/SET"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -671,6 +755,7 @@ class SetSymmetricDifference(ComfyNodeABC):
     This node takes two SETs as input and returns a new SET containing
     elements in either SET but not in both.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -702,6 +787,7 @@ class SetUnion(ComfyNodeABC):
     This node takes multiple SETs as input and returns a new SET containing
     all elements from all the input SETs.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -712,7 +798,7 @@ class SetUnion(ComfyNodeABC):
             "optional": {
                 "set3": ("SET", {"tooltip": "Optional additional SET."}),
                 "set4": ("SET", {"tooltip": "Optional additional SET."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("SET",)
@@ -745,6 +831,7 @@ class SetToDataList(ComfyNodeABC):
     converts it to a ComfyUI data list, allowing its items to be processed
     individually by nodes that accept data lists.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -774,6 +861,7 @@ class SetToList(ComfyNodeABC):
     from the SET. Note that the order of elements in the resulting LIST is arbitrary
     since SETs are unordered collections.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {

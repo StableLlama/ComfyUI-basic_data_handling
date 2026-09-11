@@ -5,6 +5,7 @@ try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
     from comfy_execution.graph import ExecutionBlocker
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -12,6 +13,7 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
     class ExecutionBlocker:
@@ -21,8 +23,10 @@ except:
         the message, but its class name shows up in the default ``repr`` exactly
         like the real one, so callers/tests can still detect a blocker.
         """
+
         def __init__(self, message):
             self.message = message
+
 
 from ._dynamic_input import ContainsDynamicDict
 
@@ -35,6 +39,7 @@ class IfElse(ComfyNodeABC):
     evaluates to True, the first value is returned; otherwise, the second value
     is returned. This allows conditional data flow in ComfyUI workflows.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -74,6 +79,7 @@ class IfElifElse(ComfyNodeABC):
     When none is true, the value of the else is returned.
     This allows conditional data flow in ComfyUI workflows.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -81,11 +87,30 @@ class IfElifElse(ComfyNodeABC):
                 "if": (IO.BOOLEAN, {"forceInput": True, "tooltip": "Main condition; when True the 'then' value is returned."}),
                 "then": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the 'if' condition is True."}),
             },
-            "optional": ContainsDynamicDict({
-                "elif_0": (IO.BOOLEAN, {"forceInput": True, "lazy": True, "_dynamic": "number", "_dynamicGroup": 0, "tooltip": "Optional else-if condition. Connect more to chain additional branches."}),
-                "then_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "_dynamicGroup": 0, "tooltip": "Value returned when the matching elif_<n> condition is True."}),
-                "else": (IO.ANY, {"lazy": True, "tooltip": "Value returned when no condition is True."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "elif_0": (
+                        IO.BOOLEAN,
+                        {
+                            "forceInput": True,
+                            "lazy": True,
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "tooltip": "Optional else-if condition. Connect more to chain additional branches.",
+                        },
+                    ),
+                    "then_0": (
+                        IO.ANY,
+                        {
+                            "lazy": True,
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "tooltip": "Value returned when the matching elif_<n> condition is True.",
+                        },
+                    ),
+                    "else": (IO.ANY, {"lazy": True, "tooltip": "Value returned when no condition is True."}),
+                }
+            ),
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -167,13 +192,22 @@ class SwitchCase(ComfyNodeABC):
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "required": ContainsDynamicDict({
-                "select": (IO.INT, {"default": 0, "min": 0, "tooltip": "Zero-based index of the case to select."}),
-                "case_0": (IO.ANY, {"lazy": True, "_dynamic": "number", "tooltip": "Value returned when its index is selected. Connect more values to add cases."}),
-            }),
+            "required": ContainsDynamicDict(
+                {
+                    "select": (IO.INT, {"default": 0, "min": 0, "tooltip": "Zero-based index of the case to select."}),
+                    "case_0": (
+                        IO.ANY,
+                        {
+                            "lazy": True,
+                            "_dynamic": "number",
+                            "tooltip": "Value returned when its index is selected. Connect more values to add cases.",
+                        },
+                    ),
+                }
+            ),
             "optional": {
                 "default": (IO.ANY, {"lazy": True, "tooltip": "Value returned when the selected index is out of range."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -241,6 +275,7 @@ class ContinueIfNotEmpty(ComfyNodeABC):
     By default the block is silent; set ``message`` to show a dialog (like
     "continue flow") when the execution is blocked.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -248,8 +283,11 @@ class ContinueIfNotEmpty(ComfyNodeABC):
                 "value": (IO.ANY, {"tooltip": "The value to guard; execution is blocked when the value is empty."}),
             },
             "optional": {
-                "message": (IO.STRING, {"default": "", "tooltip": "Optional message shown when the flow is blocked. Leave empty for silent operation."}),
-            }
+                "message": (
+                    IO.STRING,
+                    {"default": "", "tooltip": "Optional message shown when the flow is blocked. Leave empty for silent operation."},
+                ),
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -270,9 +308,9 @@ class ContinueIfNotEmpty(ComfyNodeABC):
             value = []
         msg = message[0] if isinstance(message, (list, tuple)) and message else (message or "")
         if isinstance(value, list):
-            empty = (len(value) == 0)
+            empty = len(value) == 0
         else:
-            empty = (not value)
+            empty = not value
         if empty:
             return (ExecutionBlocker(msg if msg else None),)
         # OUTPUT_IS_LIST expects a list, so wrap a single non-list value.
@@ -292,16 +330,26 @@ class ContinueFlow(ComfyNodeABC):
     When a `message` is provided ComfyUI will display it in a dialog.
     Leave it empty for silent operation.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "value": (IO.ANY, {"tooltip": "The value to pass through when the flow is enabled."}),
-                "select": (IO.BOOLEAN, {"default": True, "tooltip": "When True the value passes through; when False execution is blocked."}),
+                "select": (
+                    IO.BOOLEAN,
+                    {"default": True, "tooltip": "When True the value passes through; when False execution is blocked."},
+                ),
             },
             "optional": {
-                "message": (IO.STRING, {"default": "", "tooltip": "Optional message shown in a dialog when the flow is blocked. Leave empty for silent operation."}),
-            }
+                "message": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": "Optional message shown in a dialog when the flow is blocked. Leave empty for silent operation.",
+                    },
+                ),
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -327,23 +375,30 @@ class FlowSelect(ComfyNodeABC):
     Note: for dynamic switching in a Data Flow you might want to use
     "filter select" instead.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "value": (IO.ANY, {"tooltip": "The value to route to one of the two outputs."}),
-                "select": (IO.BOOLEAN, {"tooltip": "When True the value is emitted on the 'true' output, otherwise on the 'false' output."}),
+                "select": (
+                    IO.BOOLEAN,
+                    {"tooltip": "When True the value is emitted on the 'true' output, otherwise on the 'false' output."},
+                ),
             }
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
     RETURN_NAMES = ("true", "false")
-    OUTPUT_TOOLTIPS = ("Receives the value when select is True (otherwise blocked).", "Receives the value when select is False (otherwise blocked).")
+    OUTPUT_TOOLTIPS = (
+        "Receives the value when select is True (otherwise blocked).",
+        "Receives the value when select is False (otherwise blocked).",
+    )
     CATEGORY = "Basic/flow control"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "select"
 
-    def select(self, value, select = True) -> tuple[Any, Any]:
+    def select(self, value, select=True) -> tuple[Any, Any]:
         if select:
             return value, ExecutionBlocker(None)
         else:
@@ -378,7 +433,7 @@ class ForceCalculation(ComfyNodeABC):
 
     @classmethod
     def IS_CHANGED(s, value: Any):
-        return float("NaN") # not equal to anything -> trigger recalculation
+        return float("NaN")  # not equal to anything -> trigger recalculation
 
     def execute(self, value: Any) -> tuple[Any, int]:
         return (value,)
@@ -396,12 +451,16 @@ class ExecutionOrder(ComfyNodeABC):
     This node also passes through any input connected to "any node output" as
     its second output.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "optional": {
                 "E/O": ("E/O", {"tooltip": "Chain these sockets together to force execution order."}),
-                "any node output": (IO.ANY, {"tooltip": "Connect any output of the nodes whose execution order you want to force; it is passed through."}),
+                "any node output": (
+                    IO.ANY,
+                    {"tooltip": "Connect any output of the nodes whose execution order you want to force; it is passed through."},
+                ),
             }
         }
 
@@ -414,7 +473,7 @@ class ExecutionOrder(ComfyNodeABC):
     FUNCTION = "execute"
 
     def execute(self, **kwargs: list[Any]) -> tuple[None, Any]:
-        any_node_output = kwargs.get('any node output', [])
+        any_node_output = kwargs.get("any node output", [])
         return (None, any_node_output)
 
 
@@ -425,6 +484,7 @@ class IsConnected(ComfyNodeABC):
     This node returns True if the 'input' is connected to another node's output,
     and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {

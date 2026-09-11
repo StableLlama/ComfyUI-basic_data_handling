@@ -1,4 +1,4 @@
-#import pytest
+# import pytest
 from src.basic_data_handling.regex_nodes import (
     RegexSearchGroupsDataList,
     RegexGroupDict,
@@ -8,8 +8,9 @@ from src.basic_data_handling.regex_nodes import (
     RegexTest,
     RegexFindallList,
     RegexSearchGroupsList,
-    RegexSplitList
+    RegexSplitList,
 )
+
 
 def test_regex_search_groups():
     node = RegexSearchGroupsDataList()

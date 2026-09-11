@@ -12,6 +12,7 @@ from typing import Any
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -19,13 +20,16 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class TensorCreate(ComfyNodeABC):
     """
     Creates a PyTorch tensor from various input types.
     Can accept numbers, lists, or existing tensors.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -49,17 +53,22 @@ class TensorCreate(ComfyNodeABC):
         except Exception as e:
             raise ValueError(f"Failed to create tensor from {type(input)}: {str(e)}")
 
+
 class TensorBinaryOp(ComfyNodeABC):
     """
     Performs binary operations between two tensors or a tensor and a scalar.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "a": (IO.ANY, {"tooltip": "Left operand: a tensor, number or list."}),
                 "b": (IO.ANY, {"tooltip": "Right operand: a tensor, number or list."}),
-                "operation": (["add", "subtract", "multiply", "divide", "power", "remainder", "floor_divide"], {"default": "add", "tooltip": "Element-wise operation to apply."}),
+                "operation": (
+                    ["add", "subtract", "multiply", "divide", "power", "remainder", "floor_divide"],
+                    {"default": "add", "tooltip": "Element-wise operation to apply."},
+                ),
             }
         }
 
@@ -91,16 +100,21 @@ class TensorBinaryOp(ComfyNodeABC):
         else:
             raise ValueError(f"Unknown operation: {operation}")
 
+
 class TensorUnaryOp(ComfyNodeABC):
     """
     Performs unary operations on a tensor.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "input": (IO.ANY, {"tooltip": "A tensor, number or list to transform."}),
-                "operation": (["abs", "neg", "exp", "log", "sin", "cos", "sqrt", "sigmoid", "relu"], {"default": "abs", "tooltip": "Element-wise unary operation to apply."}),
+                "operation": (
+                    ["abs", "neg", "exp", "log", "sin", "cos", "sqrt", "sigmoid", "relu"],
+                    {"default": "abs", "tooltip": "Element-wise unary operation to apply."},
+                ),
             }
         }
 
@@ -135,16 +149,21 @@ class TensorUnaryOp(ComfyNodeABC):
         else:
             raise ValueError(f"Unknown operation: {operation}")
 
+
 class TensorSlice(ComfyNodeABC):
     """
     Slices a tensor using a slice string (e.g., ':, 0:10, 5').
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "tensor": (IO.ANY, {"tooltip": "The tensor to slice."}),
-                "slice_str": (IO.STRING, {"default": ":", "tooltip": "Python-style slice per dimension, comma-separated, e.g. ':, 0:10, 5'."}),
+                "slice_str": (
+                    IO.STRING,
+                    {"default": ":", "tooltip": "Python-style slice per dimension, comma-separated, e.g. ':, 0:10, 5'."},
+                ),
             }
         }
 
@@ -164,14 +183,14 @@ class TensorSlice(ComfyNodeABC):
         # We'll use eval in a restricted way or manual parsing.
         # Manual parsing is safer.
         def parse_slice(s):
-            parts = s.split(':')
+            parts = s.split(":")
             if len(parts) == 1:
                 return int(parts[0])
             return slice(*(int(p) if p.strip() else None for p in parts))
 
         try:
-            dims = [d.strip() for d in slice_str.split(',')]
-            indices = tuple(parse_slice(d) if ':' in d or d.isdigit() or (d.startswith('-') and d[1:].isdigit()) else d for d in dims)
+            dims = [d.strip() for d in slice_str.split(",")]
+            indices = tuple(parse_slice(d) if ":" in d or d.isdigit() or (d.startswith("-") and d[1:].isdigit()) else d for d in dims)
             # Re-index with parsed slices
             # Note: this is a simplification. torch supports more complex indexing.
             # But for basic usage, this covers most cases.
@@ -179,16 +198,24 @@ class TensorSlice(ComfyNodeABC):
         except Exception as e:
             raise ValueError(f"Failed to slice tensor with '{slice_str}': {str(e)}")
 
+
 class TensorReshape(ComfyNodeABC):
     """
     Reshapes a tensor.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "tensor": (IO.ANY, {"tooltip": "The tensor to reshape."}),
-                "shape": (IO.STRING, {"default": "-1", "tooltip": "Comma-separated target dimensions; -1 infers that dimension automatically, e.g. '2, -1'."}),
+                "shape": (
+                    IO.STRING,
+                    {
+                        "default": "-1",
+                        "tooltip": "Comma-separated target dimensions; -1 infers that dimension automatically, e.g. '2, -1'.",
+                    },
+                ),
             }
         }
 
@@ -204,21 +231,26 @@ class TensorReshape(ComfyNodeABC):
             tensor = torch.tensor(tensor)
 
         try:
-            shape_tuple = tuple(int(s.strip()) for s in shape.split(','))
+            shape_tuple = tuple(int(s.strip()) for s in shape.split(","))
             return (tensor.reshape(shape_tuple),)
         except Exception as e:
             raise ValueError(f"Failed to reshape tensor to {shape}: {str(e)}")
+
 
 class TensorPermute(ComfyNodeABC):
     """
     Permutes tensor dimensions.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "tensor": (IO.ANY, {"tooltip": "The tensor whose dimensions are reordered."}),
-                "dims": (IO.STRING, {"default": "0, 1", "tooltip": "New order of the dimensions as comma-separated indices, e.g. '0, 2, 1'."}),
+                "dims": (
+                    IO.STRING,
+                    {"default": "0, 1", "tooltip": "New order of the dimensions as comma-separated indices, e.g. '0, 2, 1'."},
+                ),
             }
         }
 
@@ -234,15 +266,17 @@ class TensorPermute(ComfyNodeABC):
             tensor = torch.tensor(tensor)
 
         try:
-            dims_tuple = tuple(int(d.strip()) for d in dims.split(','))
+            dims_tuple = tuple(int(d.strip()) for d in dims.split(","))
             return (tensor.permute(dims_tuple),)
         except Exception as e:
             raise ValueError(f"Failed to permute tensor with dims {dims}: {str(e)}")
+
 
 class TensorJoin(ComfyNodeABC):
     """
     Joins multiple tensors (concatenate or stack).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -250,7 +284,13 @@ class TensorJoin(ComfyNodeABC):
                 "tensor1": (IO.ANY, {"tooltip": "First tensor to join."}),
                 "tensor2": (IO.ANY, {"tooltip": "Second tensor to join."}),
                 "dim": (IO.INT, {"default": 0, "tooltip": "Dimension along which the tensors are joined."}),
-                "mode": (["concatenate", "stack"], {"default": "concatenate", "tooltip": "'concatenate' joins along an existing dimension; 'stack' inserts a new dimension."}),
+                "mode": (
+                    ["concatenate", "stack"],
+                    {
+                        "default": "concatenate",
+                        "tooltip": "'concatenate' joins along an existing dimension; 'stack' inserts a new dimension.",
+                    },
+                ),
             }
         }
 
@@ -270,10 +310,12 @@ class TensorJoin(ComfyNodeABC):
         else:
             return (torch.stack([t1, t2], dim=dim),)
 
+
 class TensorInfo(ComfyNodeABC):
     """
     Returns information about a tensor.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -284,7 +326,11 @@ class TensorInfo(ComfyNodeABC):
 
     RETURN_TYPES = (IO.ANY, IO.STRING, IO.STRING)
     RETURN_NAMES = ("shape", "dtype", "device")
-    OUTPUT_TOOLTIPS = ("Tensor shape as a list of dimension sizes.", "Data type of the tensor, e.g. torch.float32.", "Device the tensor lives on, e.g. cuda:0 or cpu.")
+    OUTPUT_TOOLTIPS = (
+        "Tensor shape as a list of dimension sizes.",
+        "Data type of the tensor, e.g. torch.float32.",
+        "Device the tensor lives on, e.g. cuda:0 or cpu.",
+    )
     CATEGORY = "Basic/tensor"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_info"
@@ -294,6 +340,7 @@ class TensorInfo(ComfyNodeABC):
             tensor = torch.tensor(tensor)
 
         return (list(tensor.shape), str(tensor.dtype), str(tensor.device))
+
 
 NODE_CLASS_MAPPINGS = {
     "TensorCreate": TensorCreate,

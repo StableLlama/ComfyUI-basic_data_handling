@@ -5,6 +5,7 @@ import glob
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -14,11 +15,13 @@ except:
         IMAGE = "IMAGE"
         MASK = "MASK"
         ANY = "*"
+
     ComfyNodeABC = object
 
 try:
     from folder_paths import get_input_directory, get_output_directory
 except:
+
     def get_input_directory():
         return "./"
 
@@ -38,6 +41,7 @@ except Exception:
 def _require_numpy():
     try:
         import numpy as np
+
         return np
     except ModuleNotFoundError as e:
         raise ModuleNotFoundError(
@@ -49,6 +53,7 @@ def _require_numpy():
 def _require_torch():
     try:
         import torch
+
         return torch
     except ModuleNotFoundError as e:
         raise ModuleNotFoundError(
@@ -60,6 +65,7 @@ def _require_torch():
 def _require_pillow():
     try:
         from PIL import Image, ImageOps
+
         return Image, ImageOps
     except ModuleNotFoundError as e:
         raise ModuleNotFoundError(
@@ -69,6 +75,7 @@ def _require_pillow():
 
 
 # helper functions:
+
 
 def load_image_helper(path: str):
     """Helper function to load an image from a path"""
@@ -95,11 +102,11 @@ def extract_mask_from_alpha(img):
     np = _require_numpy()
     torch = _require_torch()
 
-    if 'A' in img.getbands():
-        alpha = np.array(img.getchannel('A')).astype(np.float32) / 255.0
+    if "A" in img.getbands():
+        alpha = np.array(img.getchannel("A")).astype(np.float32) / 255.0
         mask_tensor = 1.0 - torch.from_numpy(alpha)
-    elif img.mode == 'P' and 'transparency' in img.info:
-        alpha = np.array(img.convert('RGBA').getchannel('A')).astype(np.float32) / 255.0
+    elif img.mode == "P" and "transparency" in img.info:
+        alpha = np.array(img.convert("RGBA").getchannel("A")).astype(np.float32) / 255.0
         mask_tensor = 1.0 - torch.from_numpy(alpha)
     else:
         # Create a blank mask if no alpha channel
@@ -116,15 +123,15 @@ def extract_mask_from_greyscale(img):
     np = _require_numpy()
     torch = _require_torch()
 
-    if img.mode == 'L':
+    if img.mode == "L":
         # Image is already greyscale
         gray = np.array(img).astype(np.float32) / 255.0
-    elif img.mode == 'RGB' or img.mode == 'RGBA':
+    elif img.mode == "RGB" or img.mode == "RGBA":
         # Use the red channel of RGB or RGBA
-        gray = np.array(img.getchannel('R')).astype(np.float32) / 255.0
+        gray = np.array(img.getchannel("R")).astype(np.float32) / 255.0
     else:
         # Convert to greyscale if it's another format
-        gray_img = img.convert('L')
+        gray_img = img.convert("L")
         gray = np.array(gray_img).astype(np.float32) / 255.0
 
     # Convert to tensor and invert (white pixels in image = transparent in mask)
@@ -135,7 +142,9 @@ def extract_mask_from_greyscale(img):
 
     return mask_tensor
 
+
 # the nodes:
+
 
 class PathAbspath(ComfyNodeABC):
     """
@@ -144,6 +153,7 @@ class PathAbspath(ComfyNodeABC):
     This node takes a path and returns its absolute (full) path
     by resolving any relative path components and symbolic links.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -170,6 +180,7 @@ class PathBasename(ComfyNodeABC):
     This node extracts the filename component from a path,
     removing any directory information.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -195,6 +206,7 @@ class PathCommonPrefix(ComfyNodeABC):
 
     This node returns the longest common leading component of the given paths.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -203,7 +215,7 @@ class PathCommonPrefix(ComfyNodeABC):
             },
             "optional": {
                 "path2": (IO.STRING, {"default": "", "tooltip": "Second path."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -225,6 +237,7 @@ class PathDirname(ComfyNodeABC):
     This node extracts the directory component from a path,
     removing the filename.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -251,6 +264,7 @@ class PathExists(ComfyNodeABC):
     This node returns True if the path exists (either as a file or a directory),
     and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -277,6 +291,7 @@ class PathExpandVars(ComfyNodeABC):
     This node replaces environment variables in a path with their values.
     For example, $HOME or ${HOME} on Unix, or %USERPROFILE% on Windows.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -302,6 +317,7 @@ class PathGetCwd(ComfyNodeABC):
 
     This node returns the current working directory as an absolute path.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {}}
@@ -324,6 +340,7 @@ class PathGetExtension(ComfyNodeABC):
     This node extracts the file extension from a path,
     including the dot (e.g., '.txt').
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -350,6 +367,7 @@ class PathGetSize(ComfyNodeABC):
     This node returns the size in bytes of the file at the given path.
     Raises an error if the path doesn't exist or isn't a file.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -384,6 +402,7 @@ class PathGlob(ComfyNodeABC):
     [seq] - matches any character in seq
     [!seq] - matches any character not in seq
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -392,7 +411,7 @@ class PathGlob(ComfyNodeABC):
             },
             "optional": {
                 "recursive": (IO.BOOLEAN, {"default": False, "tooltip": "When True, '**' also matches inside subdirectories."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -428,6 +447,7 @@ class PathGlob(ComfyNodeABC):
 
         # No changes, return a consistent value
         import hashlib
+
         m = hashlib.md5()
         m.update(str(current_paths).encode())
         return m.hexdigest()
@@ -443,6 +463,7 @@ class PathIsAbsolute(ComfyNodeABC):
     This node returns True if the path is absolute (begins at the root directory),
     and False if it's relative.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -469,6 +490,7 @@ class PathIsDir(ComfyNodeABC):
     This node returns True if the path exists and is a directory,
     and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -495,6 +517,7 @@ class PathIsFile(ComfyNodeABC):
     This node returns True if the path exists and is a regular file,
     and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -522,6 +545,7 @@ class PathJoin(ComfyNodeABC):
     to form a single path. It handles directory separators correctly
     for the operating system.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -530,7 +554,7 @@ class PathJoin(ComfyNodeABC):
             },
             "optional": {
                 "path2": (IO.STRING, {"default": "", "tooltip": "Second path component."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -554,6 +578,7 @@ class PathListDir(ComfyNodeABC):
     If 'dirs_only' is True, it only returns directories.
     If both are False, it returns all contents.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -563,7 +588,7 @@ class PathListDir(ComfyNodeABC):
             "optional": {
                 "files_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only files are returned."}),
                 "dirs_only": (IO.BOOLEAN, {"default": False, "tooltip": "When True, only directories are returned."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -601,6 +626,7 @@ class PathNormalize(ComfyNodeABC):
     resolving up-level references, and converting to the correct
     separator for the operating system.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -627,6 +653,7 @@ class PathSetExtension(ComfyNodeABC):
     This node replaces the current extension in a path with a new one.
     The extension should include the dot (e.g., '.jpg').
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -645,8 +672,8 @@ class PathSetExtension(ComfyNodeABC):
 
     def set_extension(self, path: str, extension: str) -> tuple[str]:
         # Make sure extension starts with a dot
-        if not extension.startswith('.') and extension:
-            extension = '.' + extension
+        if not extension.startswith(".") and extension:
+            extension = "." + extension
 
         root, _ = os.path.splitext(path)
         return (root + extension,)
@@ -659,6 +686,7 @@ class PathRelative(ComfyNodeABC):
     This node computes a relative path from the 'start' path to the 'path'.
     If 'start' is not provided, the current working directory is used.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -667,7 +695,7 @@ class PathRelative(ComfyNodeABC):
             },
             "optional": {
                 "start": (IO.STRING, {"default": "", "tooltip": "Base path; the current working directory is used when empty."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -690,6 +718,7 @@ class PathSplit(ComfyNodeABC):
     This node takes a path and returns a tuple containing the directory path
     and the filename.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -716,6 +745,7 @@ class PathSplitExt(ComfyNodeABC):
     This node takes a path and returns a tuple containing the path without
     the extension and the extension (including the dot).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -740,6 +770,7 @@ class PathLoadStringFile(ComfyNodeABC):
     Loads a text file in UTF-8 encoding and returns its content as a STRING
     without any further processing.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -785,6 +816,7 @@ class PathLoadImageRGB(ComfyNodeABC):
     This node loads an image from the specified path and processes it to
     return only the RGB channels as a tensor, ignoring any alpha channel.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -838,6 +870,7 @@ class PathLoadImageRGBA(ComfyNodeABC):
     return the RGB channels as a tensor and the Alpha channel as a mask tensor.
     If the image has no alpha channel, a blank mask is returned.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -848,7 +881,11 @@ class PathLoadImageRGBA(ComfyNodeABC):
 
     RETURN_TYPES = (IO.IMAGE, IO.MASK, IO.BOOLEAN)
     RETURN_NAMES = ("image", "mask", "exists")
-    OUTPUT_TOOLTIPS = ("The RGB image as a tensor.", "The alpha channel as a mask (blank when the image has none).", "True when the image was loaded.")
+    OUTPUT_TOOLTIPS = (
+        "The RGB image as a tensor.",
+        "The alpha channel as a mask (blank when the image has none).",
+        "True when the image was loaded.",
+    )
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "load_image_rgba"
@@ -895,6 +932,7 @@ class PathLoadMaskFromAlpha(ComfyNodeABC):
     channel to use as a mask. If the image has no alpha channel, a blank mask
     is returned.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -941,6 +979,7 @@ class PathLoadMaskFromGreyscale(ComfyNodeABC):
     If the image is greyscale, the intensity is used directly.
     If the image is RGB, the red channel is used.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -996,6 +1035,7 @@ class PathSaveStringFile(ComfyNodeABC):
     If 'append' is True, the text is appended to an existing file instead of
     overwriting it.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1007,7 +1047,7 @@ class PathSaveStringFile(ComfyNodeABC):
                 "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories."}),
                 "append": (IO.BOOLEAN, {"default": False, "tooltip": "Append to an existing file instead of overwriting it."}),
                 "encoding": (IO.STRING, {"default": "utf-8", "tooltip": "Text encoding to use when writing."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -1117,16 +1157,17 @@ def build_xmp_packet(metadata_text: str) -> bytes:
     ``dc:description`` tag, as expected for JPEG XL ``xml `` boxes.
     """
     from xml.sax.saxutils import escape
+
     body = escape(metadata_text)
     packet = (
         '<?xpacket begin="\ufeff" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
         '<x:xmpmeta xmlns:x="adobe:ns:meta/">\n'
         '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
         '<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/">\n'
-        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">' + body + '</rdf:li></rdf:Alt></dc:description>\n'
-        '</rdf:Description>\n'
-        '</rdf:RDF>\n'
-        '</x:xmpmeta>\n'
+        '<dc:description><rdf:Alt><rdf:li xml:lang="x-default">' + body + "</rdf:li></rdf:Alt></dc:description>\n"
+        "</rdf:Description>\n"
+        "</rdf:RDF>\n"
+        "</x:xmpmeta>\n"
         '<?xpacket end="w"?>'
     )
     return packet.encode("utf-8")
@@ -1173,12 +1214,12 @@ def metadata_save_kwargs(metadata_text: str, fmt: str) -> dict:
 _PIL_FORMAT_BY_TOKEN: dict[str, str] = {
     "png": "PNG",
     "jpg": "JPEG",
-    "jpeg": "JPEG",   # alias; normalised to "jpg"
+    "jpeg": "JPEG",  # alias; normalised to "jpg"
     "webp": "WEBP",
     "jxl": "JXL",
     "bmp": "BMP",
     "tif": "TIFF",
-    "tiff": "TIFF",   # alias; normalised to "tif"
+    "tiff": "TIFF",  # alias; normalised to "tif"
     "gif": "GIF",
     "jp2": "JPEG2000",
     "jpeg2000": "JPEG2000",  # alias; normalised to "jp2"
@@ -1197,8 +1238,22 @@ _IMAGE_SAVE_ORDER = ["png", "jpg", "webp", "jxl", "bmp", "tif", "gif", "jp2", "p
 # save node (icons/cursors, GPU textures, vector/postscript, single-multi-image
 # containers, scientific dumps). Never offered even if Pillow can write them.
 _NON_PHOTOGRAPHIC_RASTER_IDS = {
-    "ICO", "CUR", "ICNS", "DDS", "DIB", "EPS", "IM", "MPO", "SGI",
-    "PDF", "WMF", "EMF", "BUFR", "GRIB", "HDF5", "FITS",
+    "ICO",
+    "CUR",
+    "ICNS",
+    "DDS",
+    "DIB",
+    "EPS",
+    "IM",
+    "MPO",
+    "SGI",
+    "PDF",
+    "WMF",
+    "EMF",
+    "BUFR",
+    "GRIB",
+    "HDF5",
+    "FITS",
 }
 
 # canonical token for a couple of common user-spelled aliases
@@ -1221,6 +1276,7 @@ def _writable_pillow_formats(mode: str) -> set[str]:
     """
     import io as _io
     from PIL import Image as _PIL
+
     _load_image_plugins()
     ids = set(_PIL.SAVE.keys())
     ids.update(str(v).upper() for v in _PIL.registered_extensions().values())
@@ -1247,10 +1303,7 @@ def _discover_save_formats() -> tuple[list[str], list[str]]:
     writable_rgba = _writable_pillow_formats("RGBA")
 
     # 1) tokens we already know about and that are actually writable
-    offered = [
-        t for t in _IMAGE_SAVE_ORDER
-        if _PIL_FORMAT_BY_TOKEN[t] in writable_rgb
-    ]
+    offered = [t for t in _IMAGE_SAVE_ORDER if _PIL_FORMAT_BY_TOKEN[t] in writable_rgb]
     known_ids = {_PIL_FORMAT_BY_TOKEN[t] for t in offered}
 
     # 2) any additional writable photographic format in the library/plugins
@@ -1313,6 +1366,7 @@ def _comfy_format_date(fmt_text: str, when) -> str:
     unpadded, doubled letters are zero-padded.
     """
     import re
+
     parts = {
         "d": when.day,
         "M": when.month,
@@ -1367,7 +1421,6 @@ def _expand_filename_tokens(text: str, width: int = 0, height: int = 0) -> str:
     return text
 
 
-
 def _official_save_image_path(filename_prefix, output_dir, image_width=0, image_height=0):
     """
     Resolve ``filename_prefix`` to concrete output folder/filename/counter using
@@ -1384,6 +1437,7 @@ def _official_save_image_path(filename_prefix, output_dir, image_width=0, image_
     # --- fallback (only reached outside ComfyUI) -------------------------
     def expand(text, w, h):
         import time
+
         now = time.localtime()
         text = text.replace("%width%", str(w)).replace("%height%", str(h))
         text = text.replace("%year%", str(now.tm_year))
@@ -1404,8 +1458,8 @@ def _official_save_image_path(filename_prefix, output_dir, image_width=0, image_
     try:
         for entry in os.listdir(full_output_folder):
             stem, _, _ = entry.rpartition(".")
-            if stem.startswith(filename + "_") and stem[len(filename) + 1:].rstrip("_").isdigit():
-                digits = stem[len(filename) + 1:].rstrip("_")
+            if stem.startswith(filename + "_") and stem[len(filename) + 1 :].rstrip("_").isdigit():
+                digits = stem[len(filename) + 1 :].rstrip("_")
                 if digits.isdigit():
                     highest = max(highest, int(digits))
     except FileNotFoundError:
@@ -1413,8 +1467,7 @@ def _official_save_image_path(filename_prefix, output_dir, image_width=0, image_
     return full_output_folder, filename, highest + 1, subfolder, filename_prefix
 
 
-def _plan_save_paths(path: str, format: str, use_prefix_mode: bool,
-                     frame_count: int, width: int, height: int) -> tuple[list[str], bool]:
+def _plan_save_paths(path: str, format: str, use_prefix_mode: bool, frame_count: int, width: int, height: int) -> tuple[list[str], bool]:
     """
     Compute the absolute destination path(s) for ``frame_count`` images.
 
@@ -1432,9 +1485,7 @@ def _plan_save_paths(path: str, format: str, use_prefix_mode: bool,
     path = _expand_filename_tokens(path, width, height)
 
     if use_prefix_mode:
-        full_output_folder, filename, counter, _, _ = _official_save_image_path(
-            path, get_output_directory(), width, height
-        )
+        full_output_folder, filename, counter, _, _ = _official_save_image_path(path, get_output_directory(), width, height)
         paths = []
         for _ in range(frame_count):
             name = f"{filename}_{counter:05}_.{fmt}"
@@ -1466,6 +1517,7 @@ def _has_jxl_support() -> bool:
     """Return True when the pillow-jxl plugin is importable."""
     try:
         import pillow_jxl  # noqa: F401 - imported but unused, kept for JPEG XL support
+
         return True
     except ModuleNotFoundError:
         return False
@@ -1518,15 +1570,28 @@ class PathSaveImageRGB(ComfyNodeABC):
     the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
     ignore the prompts.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "images": (IO.IMAGE,),
-                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing), or a ComfyUI filename_prefix under the output folder when \"use prefix mode\" is enabled."}),
+                "path": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Destination file path (an extension is added from the format when missing), or a ComfyUI filename_prefix under the output folder when "use prefix mode" is enabled.',
+                    },
+                ),
             },
             "optional": {
-                "format": (_IMAGE_SAVE_FORMATS, {"default": "png", "tooltip": "Image save format (png, jpg, webp, bmp, ...). The list is derived from what the installed Pillow/plugins can write. Drag a STRING onto this to override it."}),
+                "format": (
+                    _IMAGE_SAVE_FORMATS,
+                    {
+                        "default": "png",
+                        "tooltip": "Image save format (png, jpg, webp, bmp, ...). The list is derived from what the installed Pillow/plugins can write. Drag a STRING onto this to override it.",
+                    },
+                ),
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (jpg/webp/jxl)."}),
                 "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories (plain path mode only)."}),
                 "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
@@ -1534,8 +1599,14 @@ class PathSaveImageRGB(ComfyNodeABC):
                 # Appended last on purpose: the node stores widget values
                 # positionally, so adding before the existing widgets would shift
                 # old workflows and mis-assign their saved values.
-                "use_prefix_mode": (IO.BOOLEAN, {"default": False, "tooltip": "When True, 'path' is treated as a ComfyUI filename_prefix under the output folder and files are named/auto-numbered exactly like ComfyUI's \"Save Image\" node."}),
-            }
+                "use_prefix_mode": (
+                    IO.BOOLEAN,
+                    {
+                        "default": False,
+                        "tooltip": "When True, 'path' is treated as a ComfyUI filename_prefix under the output folder and files are named/auto-numbered exactly like ComfyUI's \"Save Image\" node.",
+                    },
+                ),
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -1546,9 +1617,17 @@ class PathSaveImageRGB(ComfyNodeABC):
     FUNCTION = "save_image"
     OUTPUT_NODE = True
 
-    def save_image(self, images, path: str = "", use_prefix_mode: bool = False, format: str = "png",
-                   quality: int = 95, create_dirs: bool = True,
-                   prompt: str = "", negative_prompt: str = ""):
+    def save_image(
+        self,
+        images,
+        path: str = "",
+        use_prefix_mode: bool = False,
+        format: str = "png",
+        quality: int = 95,
+        create_dirs: bool = True,
+        prompt: str = "",
+        negative_prompt: str = "",
+    ):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1558,8 +1637,10 @@ class PathSaveImageRGB(ComfyNodeABC):
 
         fmt = _normalize_image_format(format)
         if fmt == "jxl" and not _has_jxl_support():
-            print("Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
-                  "Please install it with 'pip install pillow-jxl-plugin'.")
+            print(
+                "Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
+                "Please install it with 'pip install pillow-jxl-plugin'."
+            )
             return (False,)
 
         batch = len(images)
@@ -1604,16 +1685,29 @@ class PathSaveImageRGBA(ComfyNodeABC):
     the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
     ignore the prompts.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "images": (IO.IMAGE,),
                 "mask": (IO.MASK,),
-                "path": (IO.STRING, {"default": "", "tooltip": "Destination file path (an extension is added from the format when missing), or a ComfyUI filename_prefix under the output folder when \"use prefix mode\" is enabled."}),
+                "path": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Destination file path (an extension is added from the format when missing), or a ComfyUI filename_prefix under the output folder when "use prefix mode" is enabled.',
+                    },
+                ),
             },
             "optional": {
-                "format": (_IMAGE_SAVE_ALPHA_FORMATS, {"default": "png", "tooltip": "Image save format that can hold an alpha channel (png, webp, ...; jpg is coerced to png). Derived from what the installed Pillow/plugins can write. Drag a STRING onto this to override it."}),
+                "format": (
+                    _IMAGE_SAVE_ALPHA_FORMATS,
+                    {
+                        "default": "png",
+                        "tooltip": "Image save format that can hold an alpha channel (png, webp, ...; jpg is coerced to png). Derived from what the installed Pillow/plugins can write. Drag a STRING onto this to override it.",
+                    },
+                ),
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (webp/jxl)."}),
                 "invert_mask": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask before using it as the alpha channel."}),
                 "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories (plain path mode only)."}),
@@ -1622,8 +1716,14 @@ class PathSaveImageRGBA(ComfyNodeABC):
                 # Appended last on purpose: the node stores widget values
                 # positionally, so adding before the existing widgets would shift
                 # old workflows and mis-assign their saved values.
-                "use_prefix_mode": (IO.BOOLEAN, {"default": False, "tooltip": "When True, 'path' is treated as a ComfyUI filename_prefix under the output folder and files are named/auto-numbered exactly like ComfyUI's \"Save Image\" node."}),
-            }
+                "use_prefix_mode": (
+                    IO.BOOLEAN,
+                    {
+                        "default": False,
+                        "tooltip": "When True, 'path' is treated as a ComfyUI filename_prefix under the output folder and files are named/auto-numbered exactly like ComfyUI's \"Save Image\" node.",
+                    },
+                ),
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -1634,10 +1734,19 @@ class PathSaveImageRGBA(ComfyNodeABC):
     FUNCTION = "save_image_with_mask"
     OUTPUT_NODE = True
 
-    def save_image_with_mask(self, images, mask, path: str = "", use_prefix_mode: bool = False,
-                             format: str = "png", quality: int = 95,
-                             invert_mask: bool = False, create_dirs: bool = True,
-                             prompt: str = "", negative_prompt: str = ""):
+    def save_image_with_mask(
+        self,
+        images,
+        mask,
+        path: str = "",
+        use_prefix_mode: bool = False,
+        format: str = "png",
+        quality: int = 95,
+        invert_mask: bool = False,
+        create_dirs: bool = True,
+        prompt: str = "",
+        negative_prompt: str = "",
+    ):
         if not path:
             print("Basic data handling: Save failed - no path specified")
             return (False,)
@@ -1651,8 +1760,10 @@ class PathSaveImageRGBA(ComfyNodeABC):
             print("Basic data handling: JPEG format doesn't support transparency. Using PNG instead.")
             fmt = "png"
         if fmt == "jxl" and not _has_jxl_support():
-            print("Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
-                  "Please install it with 'pip install pillow-jxl-plugin'.")
+            print(
+                "Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
+                "Please install it with 'pip install pillow-jxl-plugin'."
+            )
             return (False,)
 
         batch = len(images)
@@ -1705,6 +1816,7 @@ class PathInputDir(ComfyNodeABC):
 
     This is where input images are usually stored when using ComfyUI
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {}
@@ -1727,6 +1839,7 @@ class PathOutputDir(ComfyNodeABC):
 
     This is where output images are usually stored when using ComfyUI
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {}

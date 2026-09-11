@@ -261,7 +261,7 @@ def test_list_create_from_string():
 def test_list_create_from_json_string():
     node = ListCreateFromJSONString()
     # Multiline JSON array
-    assert node.create_from_json('[\n  1,\n  2,\n  3\n]') == ([1, 2, 3],)
+    assert node.create_from_json("[\n  1,\n  2,\n  3\n]") == ([1, 2, 3],)
     # Empty array
     assert node.create_from_json("[]") == ([],)
     # Mix of JSON types

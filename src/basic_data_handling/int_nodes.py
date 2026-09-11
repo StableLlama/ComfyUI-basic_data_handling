@@ -4,6 +4,7 @@ from typing import Literal
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,6 +12,7 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 
@@ -26,11 +28,19 @@ class IntCreate(ComfyNodeABC):
 
     Note: This doesn't handle ones' complement as the data size is unknown.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.ANY, {"default": "0", "widgetType": "STRING", "tooltip": "Textual form of the integer to parse. Prefixes 0b/0o/0x select binary/octal/hexadecimal."}),
+                "value": (
+                    IO.ANY,
+                    {
+                        "default": "0",
+                        "widgetType": "STRING",
+                        "tooltip": "Textual form of the integer to parse. Prefixes 0b/0o/0x select binary/octal/hexadecimal.",
+                    },
+                ),
             }
         }
 
@@ -52,12 +62,16 @@ class IntCreateWithBase(ComfyNodeABC):
     The input string must be a valid integer number and will be
     directly converted to an INT without any further processing.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "value": (IO.STRING, {"default": "0", "tooltip": "Textual form of the integer as written in the chosen base."}),
-                "base": (IO.INT, {"default": "10", "min": 2, "tooltip": "Numeric base to interpret the string in (>= 2), e.g. 2, 8, 10 or 16."}),
+                "base": (
+                    IO.INT,
+                    {"default": "10", "min": 2, "tooltip": "Numeric base to interpret the string in (>= 2), e.g. 2, 8, 10 or 16."},
+                ),
             }
         }
 
@@ -78,6 +92,7 @@ class IntAdd(ComfyNodeABC):
 
     This node takes two integers as input and returns their sum.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -105,6 +120,7 @@ class IntSubtract(ComfyNodeABC):
     This node takes two integers as input and returns the result of subtracting
     the second integer from the first.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -131,6 +147,7 @@ class IntMultiply(ComfyNodeABC):
 
     This node takes two integers as input and returns their product.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -158,6 +175,7 @@ class IntDivide(ComfyNodeABC):
     This node takes two integers as input and returns the result of integer
     division. It raises a ValueError if the divisor is 0.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -187,13 +205,20 @@ class IntDivideSafe(ComfyNodeABC):
     This node takes two integers as input and returns the result of the integer
     division. It returns the positive or negative infinity value if the divisor is 0.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "int1": (IO.INT, {"default": 1, "tooltip": "Dividend (numerator)."}),
                 "int2": (IO.INT, {"default": 1, "tooltip": "Divisor; a value of 0 returns the infinity sentinel instead of an error."}),
-                "infinity": (IO.INT, {"default": 9223372036854775807, "tooltip": "Value returned as +infinity when dividing by zero (negated for negative results)."}), # 2**63 - 1
+                "infinity": (
+                    IO.INT,
+                    {
+                        "default": 9223372036854775807,
+                        "tooltip": "Value returned as +infinity when dividing by zero (negated for negative results).",
+                    },
+                ),  # 2**63 - 1
             }
         }
 
@@ -216,6 +241,7 @@ class IntBitCount(ComfyNodeABC):
 
     This node takes an integer as input and returns the count of set bits.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -243,6 +269,7 @@ class IntBitLength(ComfyNodeABC):
     This node takes an integer as input and returns the number of bits needed
     to represent it, excluding the sign and leading zeros.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -269,13 +296,20 @@ class IntFromBytes(ComfyNodeABC):
     This class method takes bytes, byte order, and signed flag as inputs and
     returns an integer.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "bytes_value": ("BYTES", {"tooltip": "The bytes object to decode into an integer."}),
-                "byteorder": (["big", "little"], {"default": "big", "tooltip": "Byte order: 'big' (most significant byte first) or 'little'."}),
-                "signed": (["True", "False"], {"default": "False", "tooltip": "When True the bytes are read as a two's complement signed integer."}),
+                "byteorder": (
+                    ["big", "little"],
+                    {"default": "big", "tooltip": "Byte order: 'big' (most significant byte first) or 'little'."},
+                ),
+                "signed": (
+                    ["True", "False"],
+                    {"default": "False", "tooltip": "When True the bytes are read as a two's complement signed integer."},
+                ),
             }
         }
 
@@ -287,7 +321,7 @@ class IntFromBytes(ComfyNodeABC):
     FUNCTION = "from_bytes"
 
     def from_bytes(self, bytes_value, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[int]:
-        signed_bool = (signed == "True")
+        signed_bool = signed == "True"
         return (int.from_bytes(bytes_value, byteorder=byteorder, signed=signed_bool),)
 
 
@@ -298,6 +332,7 @@ class IntModulus(ComfyNodeABC):
     This node takes two integers as input and returns the remainder when the
     first integer is divided by the second.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -327,6 +362,7 @@ class IntPower(ComfyNodeABC):
     This node takes two integers as input and returns the result of raising
     the first integer to the power of the second.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -354,14 +390,24 @@ class IntToBytes(ComfyNodeABC):
     This node takes an integer, byte length, and byte order as inputs and
     returns the bytes object representation of the integer.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "int_value": (IO.INT, {"default": 0, "tooltip": "The integer to convert."}),
-                "length": (IO.INT, {"default": 4, "min": 1, "tooltip": "Number of bytes in the result (must be large enough to hold the value)."}),
-                "byteorder": (["big", "little"], {"default": "big", "tooltip": "Byte order of the output: 'big' (most significant byte first) or 'little'."}),
-                "signed": (["True", "False"], {"default": "False", "tooltip": "When True the value is encoded as a two's complement signed integer."}),
+                "length": (
+                    IO.INT,
+                    {"default": 4, "min": 1, "tooltip": "Number of bytes in the result (must be large enough to hold the value)."},
+                ),
+                "byteorder": (
+                    ["big", "little"],
+                    {"default": "big", "tooltip": "Byte order of the output: 'big' (most significant byte first) or 'little'."},
+                ),
+                "signed": (
+                    ["True", "False"],
+                    {"default": "False", "tooltip": "When True the value is encoded as a two's complement signed integer."},
+                ),
             }
         }
 
@@ -373,7 +419,7 @@ class IntToBytes(ComfyNodeABC):
     FUNCTION = "to_bytes"
 
     def to_bytes(self, int_value: int, length: int, byteorder: Literal["big", "little"], signed: Literal["True", "False"]) -> tuple[bytes]:
-        signed_bool = (signed == "True")
+        signed_bool = signed == "True"
         return (int_value.to_bytes(length, byteorder=byteorder, signed=signed_bool),)
 
 
@@ -408,4 +454,3 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IntPower": "power",
     "Basic data handling: IntToBytes": "to bytes",
 }
-

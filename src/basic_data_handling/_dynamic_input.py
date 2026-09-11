@@ -17,15 +17,14 @@ class ContainsDynamicDict(dict):
 
     def __contains__(self, key):
         # Check if key matches a dynamically handled prefix or exists normally
-        return (
-            any(key.startswith(prefix) and key[len(prefix):].isdigit() for prefix in self._dynamic_prefixes)
-            or super().__contains__(key)
+        return any(key.startswith(prefix) and key[len(prefix) :].isdigit() for prefix in self._dynamic_prefixes) or super().__contains__(
+            key
         )
 
     def __getitem__(self, key):
         # Dynamically return the value for keys matching a `prefix<number>` pattern
         for prefix, value in self._dynamic_prefixes.items():
-            if key.startswith(prefix) and key[len(prefix):].isdigit():
+            if key.startswith(prefix) and key[len(prefix) :].isdigit():
                 return value
         # Fallback to normal dictionary behavior for other keys
         return super().__getitem__(key)

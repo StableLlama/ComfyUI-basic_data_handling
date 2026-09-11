@@ -4,6 +4,7 @@ from typing import Any
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,6 +12,7 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
@@ -23,6 +25,7 @@ class BooleanAnd(ComfyNodeABC):
     Outputs True only when both inputs are True. This matches the behaviour of the
     Python ``and`` operator applied to the two operands.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -49,6 +52,7 @@ class BooleanNand(ComfyNodeABC):
 
     Outputs False only when both inputs are True; it is the negation of AND.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -75,6 +79,7 @@ class BooleanNor(ComfyNodeABC):
 
     Outputs True only when both inputs are False; it is the negation of OR.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -101,6 +106,7 @@ class BooleanNot(ComfyNodeABC):
 
     Outputs True when the input is False and False when the input is True.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -127,6 +133,7 @@ class BooleanOr(ComfyNodeABC):
     Outputs True when at least one input is True. This matches the behaviour of the
     Python ``or`` operator applied to the two operands.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -153,6 +160,7 @@ class BooleanXor(ComfyNodeABC):
 
     Outputs True when the inputs differ from one another and False when they are equal.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -181,15 +189,25 @@ class GenericOr(ComfyNodeABC):
     Python truthiness is used, values such as ``0``, ``""``, ``[]``, ``{}`` and ``None``
     count as False. When *invert* is enabled the result is negated (NOR).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "invert": (IO.BOOLEAN, {"default": False, "tooltip": "When enabled, negates the result (turns OR into NOR)."}),
             },
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the values to combine. Connect more values to add operands."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the values to combine. Connect more values to add operands.",
+                        },
+                    ),
+                }
+            ),
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -211,15 +229,26 @@ class GenericAnd(ComfyNodeABC):
     Python truthiness is used, values such as ``0``, ``""``, ``[]``, ``{}`` and ``None``
     count as False. When *invert* is enabled the result is negated (NAND).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "invert": (IO.BOOLEAN, {"default": False, "tooltip": "When enabled, negates the result (turns AND into NAND)."}),
             },
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "default": "True", "tooltip": "One of the values to combine. Connect more values to add operands."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "default": "True",
+                            "tooltip": "One of the values to combine. Connect more values to add operands.",
+                        },
+                    ),
+                }
+            ),
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)

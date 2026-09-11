@@ -1,7 +1,4 @@
-from typing import (
-    Any, Dict, List, Mapping, Tuple, Type, TypeVar,
-    Union as _U, Optional as _O
-)
+from typing import Any, Dict, List, Mapping, Tuple, Type, TypeVar, Union as _U, Optional as _O
 
 from inspect import cleandoc
 import json
@@ -10,6 +7,7 @@ import random
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -17,22 +15,23 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
 
 
-T = TypeVar('T')  # Any type.
+T = TypeVar("T")  # Any type.
 
-KT = TypeVar('KT')  # Key type.
-KT2 = TypeVar('KT2')
-KT3 = TypeVar('KT3')
-KT4 = TypeVar('KT4')
+KT = TypeVar("KT")  # Key type.
+KT2 = TypeVar("KT2")
+KT3 = TypeVar("KT3")
+KT4 = TypeVar("KT4")
 
-VT = TypeVar('VT')  # Value type.
-VT2 = TypeVar('VT2')
-VT3 = TypeVar('VT3')
-VT4 = TypeVar('VT4')
+VT = TypeVar("VT")  # Value type.
+VT2 = TypeVar("VT2")
+VT3 = TypeVar("VT3")
+VT4 = TypeVar("VT4")
 
 
 def _output_dict_preserving_type(result: Dict[KT, VT], in_type: Type[Mapping]) -> _U[Dict[KT, VT], Mapping[KT, VT]]:
@@ -62,13 +61,32 @@ class DictCreate(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
-                "value_0": (IO.ANY, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Value paired with the key of the same index."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "key_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Key for a key-value pair. Connect more keys to add more pairs.",
+                        },
+                    ),
+                    "value_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Value paired with the key of the same index.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("DICT",)
@@ -95,13 +113,32 @@ class DictCreateFromBoolean(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
-               "value_0": (IO.BOOLEAN, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Boolean value paired with the key of the same index."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "key_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Key for a key-value pair. Connect more keys to add more pairs.",
+                        },
+                    ),
+                    "value_0": (
+                        IO.BOOLEAN,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Boolean value paired with the key of the same index.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("DICT",)
@@ -128,13 +165,32 @@ class DictCreateFromFloat(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
-                "value_0": (IO.FLOAT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Float value paired with the key of the same index."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "key_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Key for a key-value pair. Connect more keys to add more pairs.",
+                        },
+                    ),
+                    "value_0": (
+                        IO.FLOAT,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Float value paired with the key of the same index.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("DICT",)
@@ -161,13 +217,32 @@ class DictCreateFromInt(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
-                "value_0": (IO.INT, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Integer value paired with the key of the same index."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "key_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Key for a key-value pair. Connect more keys to add more pairs.",
+                        },
+                    ),
+                    "value_0": (
+                        IO.INT,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Integer value paired with the key of the same index.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("DICT",)
@@ -194,13 +269,32 @@ class DictCreateFromString(ComfyNodeABC):
 
     This node creates and returns a new empty dictionary object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "key_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "Key for a key-value pair. Connect more keys to add more pairs."}),
-                "value_0": (IO.STRING, {"_dynamic": "number", "_dynamicGroup": 0, "widgetType": "STRING", "tooltip": "String value paired with the key of the same index."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "key_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "Key for a key-value pair. Connect more keys to add more pairs.",
+                        },
+                    ),
+                    "value_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "_dynamicGroup": 0,
+                            "widgetType": "STRING",
+                            "tooltip": "String value paired with the key of the same index.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("DICT",)
@@ -227,6 +321,7 @@ class DictCreateFromItemsDataList(ComfyNodeABC):
 
     This node takes a list of key-value pairs (tuples) and builds a dictionary from them.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -246,7 +341,7 @@ class DictCreateFromItemsDataList(ComfyNodeABC):
     def create_from_items(self, **kwargs: list[Any]) -> tuple[dict]:
         try:
             # Check if items are valid (key-value pairs)
-            items = kwargs.get('item') or []
+            items = kwargs.get("item") or []
             for item in items:
                 if not isinstance(item, tuple) and len(item) != 2:
                     raise ValueError("Each item must be a (key, value) pair")
@@ -262,6 +357,7 @@ class DictCreateFromItemsList(ComfyNodeABC):
 
     This node takes a list of key-value pairs (tuples) and builds a dictionary from them.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -298,6 +394,7 @@ class DictCreateFromLists(ComfyNodeABC):
     by pairing corresponding elements from each list. If the lists are of different
     lengths, only pairs up to the length of the shorter list are used.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -330,6 +427,7 @@ class DictCompare(ComfyNodeABC):
     their equality, any keys that exist in only one dictionary, and any keys with
     different values.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -341,7 +439,12 @@ class DictCompare(ComfyNodeABC):
 
     RETURN_TYPES = (IO.BOOLEAN, "LIST", "LIST", "LIST")
     RETURN_NAMES = ("are_equal", "only_in_dict1", "only_in_dict2", "different_values")
-    OUTPUT_TOOLTIPS = ("True when the two DICTs are equal.", "Keys present only in the first DICT.", "Keys present only in the second DICT.", "Shared keys whose values differ.")
+    OUTPUT_TOOLTIPS = (
+        "True when the two DICTs are equal.",
+        "Keys present only in the first DICT.",
+        "Keys present only in the second DICT.",
+        "Shared keys whose values differ.",
+    )
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "compare"
@@ -350,7 +453,7 @@ class DictCompare(ComfyNodeABC):
         dict1 = dict1 or {}
         dict2 = dict2 or {}
 
-        are_equal = (dict1 == dict2)
+        are_equal = dict1 == dict2
 
         keys1 = set(dict1.keys())
         keys2 = set(dict2.keys())
@@ -373,6 +476,7 @@ class DictContainsKey(ComfyNodeABC):
     This node takes a dictionary and a key as inputs, then returns True if the key
     exists in the dictionary, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -401,6 +505,7 @@ class DictExcludeKeys(ComfyNodeABC):
     This node takes a dictionary and a list of keys, then returns a new dictionary
     containing all key-value pairs except those with keys in the provided list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -421,7 +526,7 @@ class DictExcludeKeys(ComfyNodeABC):
         input_dict = input_dict if input_dict is not None else {}
         keys_to_exclude = keys_to_exclude or []
 
-        if not(input_dict and keys_to_exclude):
+        if not (input_dict and keys_to_exclude):
             return (input_dict,)
 
         # `in` check is faster with sets + remove duplicates:
@@ -429,10 +534,7 @@ class DictExcludeKeys(ComfyNodeABC):
 
         if len(input_dict) <= len(keys_to_exclude_set):
             # It's faster to rebuild the dict with filter.
-            result = {
-                k: v for k, v in input_dict.items()
-                if k not in keys_to_exclude_set
-            }
+            result = {k: v for k, v in input_dict.items() if k not in keys_to_exclude_set}
         else:
             # It's faster to duplicate the dict, then pop all the exclusions one-by-one.
             result = dict(input_dict)
@@ -455,6 +557,7 @@ class DictFilterByKeys(ComfyNodeABC):
     This node takes a dictionary and a list of keys, then returns a new dictionary
     containing only the key-value pairs for the keys that exist in the original dictionary.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -485,16 +588,10 @@ class DictFilterByKeys(ComfyNodeABC):
 
         if len(keys_set) <= len(input_dict):
             # It's faster to iterate over preserved keys
-            result = {
-                k: input_dict[k] for k in keys_set
-                if k in input_dict
-            }
+            result = {k: input_dict[k] for k in keys_set if k in input_dict}
         else:
             # It's faster to iterate over the input dict items
-            result = {
-                k: v for k, v in input_dict.items()
-                if k in keys_set
-            }
+            result = {k: v for k, v in input_dict.items() if k in keys_set}
 
         if len(result) == len(input_dict):
             # No changes made
@@ -512,6 +609,7 @@ class DictFromKeys(ComfyNodeABC):
     dictionary where each key is associated with the value. If no value is
     provided, None is used.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -520,7 +618,7 @@ class DictFromKeys(ComfyNodeABC):
             },
             "optional": {
                 "value": (IO.ANY, {"tooltip": "Default value assigned to every key (None when not provided)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("DICT",)
@@ -543,6 +641,7 @@ class DictGet(ComfyNodeABC):
     If the key is not found and a default value is provided, that default is returned.
     Otherwise, it returns None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -552,7 +651,7 @@ class DictGet(ComfyNodeABC):
             },
             "optional": {
                 "default": (IO.ANY, {"tooltip": "Value returned when the key is missing (None when not provided)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -574,6 +673,7 @@ class DictGetKeysValues(ComfyNodeABC):
     This node takes a dictionary and returns two lists: one containing
     all keys and another containing all corresponding values.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -604,6 +704,7 @@ class DictGetMultiple(ComfyNodeABC):
     containing the corresponding values. If a key is not found, the default
     value is used for that position.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -613,7 +714,7 @@ class DictGetMultiple(ComfyNodeABC):
             },
             "optional": {
                 "default": (IO.ANY, {"tooltip": "Value used for keys that are missing (None when not provided)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -623,10 +724,7 @@ class DictGetMultiple(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "get_multiple"
 
-    def get_multiple(
-        self,
-        input_dict: Mapping[Any, VT], keys: list, default: T = None
-    ) -> tuple[List[_U[VT, T]]]:
+    def get_multiple(self, input_dict: Mapping[Any, VT], keys: list, default: T = None) -> tuple[List[_U[VT, T]]]:
         input_dict = input_dict if input_dict is not None else {}
         keys = keys or []
         values = [input_dict.get(key, default) for key in keys]
@@ -641,6 +739,7 @@ class DictInvert(ComfyNodeABC):
     the keys become values and values become keys. Note that values must be
     hashable to be used as keys in the new dictionary.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -675,6 +774,7 @@ class DictItems(ComfyNodeABC):
     This node takes a dictionary and returns a list of tuples, where each tuple
     contains a key-value pair from the dictionary.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -701,6 +801,7 @@ class DictKeys(ComfyNodeABC):
 
     This node takes a dictionary and returns a list containing all of its keys.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -727,6 +828,7 @@ class DictLength(ComfyNodeABC):
 
     This node takes a dictionary as input and returns its length (number of items).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -754,6 +856,7 @@ class DictMerge(ComfyNodeABC):
     This node takes multiple dictionaries as input and combines them into a single
     dictionary. If there are duplicate keys, values from later dictionaries take precedence.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -764,7 +867,7 @@ class DictMerge(ComfyNodeABC):
                 "dict2": ("DICT", {"tooltip": "Optional DICT to merge; its values win over dict1."}),
                 "dict3": ("DICT", {"tooltip": "Optional DICT to merge; its values win over earlier ones."}),
                 "dict4": ("DICT", {"tooltip": "Optional DICT to merge; its values win over earlier ones."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("DICT",)
@@ -806,6 +909,7 @@ class DictPop(ComfyNodeABC):
     associated with the key. If the key is not found and a default value is provided,
     that default is returned. Otherwise, an error is raised.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -815,7 +919,7 @@ class DictPop(ComfyNodeABC):
             },
             "optional": {
                 "default_value": (IO.ANY, {"tooltip": "Value returned when the key is absent (None when not provided)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("DICT", IO.ANY)
@@ -852,6 +956,7 @@ class DictPopItem(ComfyNodeABC):
     If operation fails, no error is thrown, but the last argument is `False`,
     and the dictionary is returned intact.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -862,7 +967,12 @@ class DictPopItem(ComfyNodeABC):
 
     RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key", "value", "success")
-    OUTPUT_TOOLTIPS = ("The DICT with one entry removed.", "The removed key.", "The removed value.", "False when the DICT was empty or the operation failed.")
+    OUTPUT_TOOLTIPS = (
+        "The DICT with one entry removed.",
+        "The removed key.",
+        "The removed value.",
+        "False when the DICT was empty or the operation failed.",
+    )
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "popitem"
@@ -892,6 +1002,7 @@ class DictPopRandom(ComfyNodeABC):
     If the dictionary is empty, it returns empty values.
     An optional seed can be provided for reproducible selection.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -899,13 +1010,27 @@ class DictPopRandom(ComfyNodeABC):
                 "input_dict": ("DICT", {"tooltip": "The DICT to pop a random entry from."}),
             },
             "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
+                "seed": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "control_after_generate": True,
+                        "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run.",
+                    },
+                ),
             },
         }
 
     RETURN_TYPES = ("DICT", IO.STRING, IO.ANY, IO.BOOLEAN)
     RETURN_NAMES = ("dict", "key", "value", "success")
-    OUTPUT_TOOLTIPS = ("The DICT with a random entry removed.", "The removed key.", "The removed value.", "False when the DICT was empty or the operation failed.")
+    OUTPUT_TOOLTIPS = (
+        "The DICT with a random entry removed.",
+        "The removed key.",
+        "The removed value.",
+        "False when the DICT was empty or the operation failed.",
+    )
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "pop_random"
@@ -942,6 +1067,7 @@ class DictRemove(ComfyNodeABC):
     dictionary with the specified key removed. If the key doesn't exist,
     the dictionary remains unchanged.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -977,6 +1103,7 @@ class DictSet(ComfyNodeABC):
     This node takes a dictionary, key, and value as inputs, then returns
     a modified dictionary with the new key-value pair.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1011,6 +1138,7 @@ class DictSetDefault(ComfyNodeABC):
     in the dictionary, the corresponding value is returned. If the key doesn't
     exist, the default value is inserted for the key and returned.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1023,12 +1151,17 @@ class DictSetDefault(ComfyNodeABC):
 
     RETURN_TYPES = ("DICT", IO.ANY)
     RETURN_NAMES = ("DICT", "value")
-    OUTPUT_TOOLTIPS = ("The DICT, with the default inserted when the key was missing.", "The value for the key (existing or the inserted default).")
+    OUTPUT_TOOLTIPS = (
+        "The DICT, with the default inserted when the key was missing.",
+        "The value for the key (existing or the inserted default).",
+    )
     CATEGORY = "Basic/DICT"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "setdefault"
 
-    def setdefault(self, input_dict: Mapping[KT, VT], key: KT2, default_value: VT2 = None) -> tuple[Mapping[_U[KT, KT2], _U[VT, VT2]], _U[VT, VT2]]:
+    def setdefault(
+        self, input_dict: Mapping[KT, VT], key: KT2, default_value: VT2 = None
+    ) -> tuple[Mapping[_U[KT, KT2], _U[VT, VT2]], _U[VT, VT2]]:
         input_dict = input_dict if input_dict is not None else {}
         result = dict(input_dict)
         value = result.setdefault(key, default_value)
@@ -1045,6 +1178,7 @@ class DictUpdate(ComfyNodeABC):
     contains all key-value pairs from both dictionaries. If there are duplicate
     keys, the values from the second dictionary take precedence.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1079,6 +1213,7 @@ class DictValues(ComfyNodeABC):
 
     This node takes a dictionary and returns a list containing all of its values.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1107,11 +1242,15 @@ class DictCreateFromJSONString(ComfyNodeABC):
     parses it into a DICT. The input must be a JSON object (enclosed in curly
     braces); otherwise a clear error is raised.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "json_string": (IO.STRING, {"default": "{}", "widgetType": "STRING", "tooltip": "STRING containing a JSON object to parse, e.g. {\"a\": 1}."}),
+                "json_string": (
+                    IO.STRING,
+                    {"default": "{}", "widgetType": "STRING", "tooltip": 'STRING containing a JSON object to parse, e.g. {"a": 1}.'},
+                ),
             }
         }
 
@@ -1128,10 +1267,7 @@ class DictCreateFromJSONString(ComfyNodeABC):
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in input string: {e}")
         if not isinstance(result, dict):
-            raise ValueError(
-                "The JSON string must be a JSON object (enclosed in curly braces), "
-                f"not {type(result).__name__}."
-            )
+            raise ValueError(f"The JSON string must be a JSON object (enclosed in curly braces), not {type(result).__name__}.")
         return (result,)
 
 

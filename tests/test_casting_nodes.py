@@ -1,6 +1,5 @@
 import pytest
-from src.basic_data_handling.casting_nodes import (CastToString, CastToInt, CastToFloat, CastToBoolean,
-                           CastToList, CastToSet, CastToDict)
+from src.basic_data_handling.casting_nodes import CastToString, CastToInt, CastToFloat, CastToBoolean, CastToList, CastToSet, CastToDict
 
 
 def test_cast_to_string():

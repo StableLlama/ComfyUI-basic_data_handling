@@ -279,12 +279,10 @@ def test_create_from_string():
 def test_list_create():
     node = DataListListCreate()
     # Testing with string values
-    assert (node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], item_2="") ==
-            ([["hello", "world"], ["bye", "bye!"]],))
+    assert node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], item_2="") == ([["hello", "world"], ["bye", "bye!"]],)
 
     # Testing with mixed values
-    assert (node.create_list(item_0=[123, 456], item_1=[True, False], item_2="") ==
-            ([[123, 456], [True, False]],))
+    assert node.create_list(item_0=[123, 456], item_1=[True, False], item_2="") == ([[123, 456], [True, False]],)
 
     # Testing with empty list
     assert node.create_list(item_0="") == ([],)
@@ -370,9 +368,9 @@ def test_any():
 def test_enumerate():
     node = DataListEnumerate()
     # Basic enumeration starting from 0
-    assert node.enumerate_list(list=['a', 'b', 'c']) == ([[0, 'a'], [1, 'b'], [2, 'c']],)
+    assert node.enumerate_list(list=["a", "b", "c"]) == ([[0, "a"], [1, "b"], [2, "c"]],)
     # Custom start index
-    assert node.enumerate_list(list=['x', 'y', 'z'], start=[10]) == ([[10, 'x'], [11, 'y'], [12, 'z']],)
+    assert node.enumerate_list(list=["x", "y", "z"], start=[10]) == ([[10, "x"], [11, "y"], [12, "z"]],)
     # Empty list
     assert node.enumerate_list(list=[]) == ([],)
 

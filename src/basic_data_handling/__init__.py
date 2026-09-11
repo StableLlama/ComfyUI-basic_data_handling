@@ -1,7 +1,22 @@
-from . import (boolean_nodes, casting_nodes, comparison_nodes, control_flow_nodes,
-               data_list_nodes, dict_nodes, float_nodes, int_nodes, list_nodes,
-               math_nodes, math_formula_node, path_nodes, regex_nodes, set_nodes,
-               string_nodes, tensor_nodes, time_nodes)
+from . import (
+    boolean_nodes,
+    casting_nodes,
+    comparison_nodes,
+    control_flow_nodes,
+    data_list_nodes,
+    dict_nodes,
+    float_nodes,
+    int_nodes,
+    list_nodes,
+    math_nodes,
+    math_formula_node,
+    path_nodes,
+    regex_nodes,
+    set_nodes,
+    string_nodes,
+    tensor_nodes,
+    time_nodes,
+)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_CLASS_MAPPINGS.update(boolean_nodes.NODE_CLASS_MAPPINGS)

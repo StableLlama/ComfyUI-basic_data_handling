@@ -49,11 +49,12 @@ def test_dict_create():
 
 
 @pytest.mark.parametrize(
-    "in_dict, key, default, expected, message", [
+    "in_dict, key, default, expected, message",
+    [
         (_dict_x3, "key1", None, "value1", "existing key"),
         (_dict_x3, "non_existent", None, None, "missing key, no default"),
         (_dict_x3, "key99", "default_value", "default_value", "missing key with default"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_get(dict_type, in_dict, key, default, expected, message):
@@ -63,11 +64,12 @@ def test_dict_get(dict_type, in_dict, key, default, expected, message):
 
 
 @pytest.mark.parametrize(
-    "in_dict, key, value, expected, message", [
+    "in_dict, key, value, expected, message",
+    [
         (_dict_x1, "key2", "value2", _dict_x2, "base case"),
         (_dict_x1, "key1", "new_value", {"key1": "new_value"}, "overwriting existing key"),
         ({}, "key", "value", {"key": "value"}, "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_set(dict_type, in_dict, key, value, expected, message):
@@ -76,6 +78,7 @@ def test_dict_set(dict_type, in_dict, key, value, expected, message):
     result = node.set(my_dict, key, value)
     assert result == (dict_type(expected),), f"Wrong result: {message}"
     assert type(result[0]) == dict_type, f"Wrong type: {message}"
+
 
 def test_dict_create_from_boolean():
     node = DictCreateFromBoolean()
@@ -223,12 +226,13 @@ def test_dict_from_keys():
 
 
 @pytest.mark.parametrize(
-    "in_dict, key, default, out_dict, pop_value, message", [
+    "in_dict, key, default, out_dict, pop_value, message",
+    [
         (_dict_x2, "key1", None, _dict_b, "value1", "base case"),
         (_dict_x2, "non_existent", "default", _dict_x2, "default", "non-existent key (with default)"),
         ({"a": 1}, "b", None, {"a": 1}, None, "non-existent key (no default)"),
         ({}, "key", None, {}, None, "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_pop(dict_type, in_dict, key, default, out_dict, pop_value, message):
@@ -255,11 +259,12 @@ def test_dict_pop_item(dict_type):
 
 
 @pytest.mark.parametrize(
-    "in_dict, key, default, out_dict, out_value, message", [
+    "in_dict, key, default, out_dict, out_value, message",
+    [
         (_dict_x1, "key2", "default", {"key1": "value1", "key2": "default"}, "default", "key that doesn't exist"),
         (_dict_x1, "key1", "new_default", _dict_x1, "value1", "key that already exists"),
         ({}, "key", "value", {"key": "value"}, "value", "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_set_default(dict_type, in_dict, key, default, out_dict, out_value, message):
@@ -271,12 +276,13 @@ def test_dict_set_default(dict_type, in_dict, key, default, out_dict, out_value,
 
 
 @pytest.mark.parametrize(
-    "in_dict, update_dict, expected, message", [
+    "in_dict, update_dict, expected, message",
+    [
         (_dict_x1, _dict_b, _dict_x2, "base case"),
         ({"a": 1, "b": 2}, {"b": 3, "c": 4}, {"a": 1, "b": 3, "c": 4}, "overlapping keys"),
         (_dict_x1, {}, _dict_x1, "empty update dict"),
         ({}, _dict_b, _dict_b, "empty original dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("update_type", _tested_dict_types)
 @pytest.mark.parametrize("in_type", _tested_dict_types)
@@ -291,12 +297,13 @@ def test_dict_update(in_type, update_type, in_dict, update_dict, expected, messa
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_length(dict_type, num):
     node = DictLength()
-    my_dict = dict_type({f"key{x}": f"value{x}" for x in range(1, num+1)})
+    my_dict = dict_type({f"key{x}": f"value{x}" for x in range(1, num + 1)})
     assert node.length(my_dict) == (num,)
 
 
 @pytest.mark.parametrize(
-    "dict_a, other_dicts, expected, message", [
+    "dict_a, other_dicts, expected, message",
+    [
         (_dict_x1, [_dict_b], _dict_x2, "basic merge"),
         ({"a": 1}, [{"a": 2}], {"a": 2}, "overlapping keys (later dicts override earlier ones)"),
         ({"a": 1}, [{"b": 2}, {"c": 3}], {"a": 1, "b": 2, "c": 3}, "more than two dicts"),
@@ -306,7 +313,7 @@ def test_dict_length(dict_type, num):
         (_dict_x1, [{}, {}, {}], _dict_x1, "empty dict - v4"),
         ({}, [_dict_x1], _dict_x1, "empty dict - v5"),
         ({}, [_dict_x1, _dict_b], _dict_x2, "empty first dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("type_b", _tested_dict_types)
 @pytest.mark.parametrize("type_a", _tested_dict_types)
@@ -332,11 +339,12 @@ def test_dict_get_keys_values(dict_type):
 
 
 @pytest.mark.parametrize(
-    "in_dict, key, expected, success, message", [
+    "in_dict, key, expected, success, message",
+    [
         (_dict_x2, "key1", _dict_b, True, "successful removal"),
         (_dict_x2, "non_existent", _dict_x2, False, "removal of non-existent key"),
         ({}, "any_key", {}, False, "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_remove(dict_type, in_dict, key, expected, success, message):
@@ -348,13 +356,14 @@ def test_dict_remove(dict_type, in_dict, key, expected, success, message):
 
 
 @pytest.mark.parametrize(
-    "in_dict, keys, expected, message", [
+    "in_dict, keys, expected, message",
+    [
         (_dict_x3, ["key1", "key3"], {"key1": "value1", "key3": "value3"}, "subset of keys"),
         (_dict_x3, ["key1", "non_existent"], _dict_x1, "non-existent keys"),
         (_dict_x3, [], {}, "empty keys list"),
         (_dict_x3, list(_dict_x3.keys()), _dict_x3, "all keys"),
         ({}, ["any_key"], {}, "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_filter_by_keys(dict_type, in_dict, keys, expected, message):
@@ -366,13 +375,14 @@ def test_dict_filter_by_keys(dict_type, in_dict, keys, expected, message):
 
 
 @pytest.mark.parametrize(
-    "in_dict, keys, expected, message", [
+    "in_dict, keys, expected, message",
+    [
         (_dict_x3, ["key1", "key3"], _dict_b, "excluding some keys"),
         (_dict_x3, list(_dict_x3.keys()), {}, "excluding all keys"),
         (_dict_x3, ["non_existent"], _dict_x3, "excluding non-existent keys"),
         (_dict_x3, [], _dict_x3, "empty exclude list"),
         ({}, ["any_key"], {}, "empty dict"),
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_exclude_keys(dict_type, in_dict, keys, expected, message):
@@ -400,12 +410,13 @@ def test_dict_get_multiple(dict_type):
 
 
 @pytest.mark.parametrize(
-    "in_dict, out_dict, success, message", [
+    "in_dict, out_dict, success, message",
+    [
         (_dict_x2, {"value1": "key1", "value2": "key2"}, True, "basic inversion"),
         ({"key1": "value", "key2": "value"}, {"value": "key2"}, True, "duplicated values - last key wins"),
         ({}, {}, True, "empty dict"),
         # TODO: `False` success
-    ]
+    ],
 )
 @pytest.mark.parametrize("dict_type", _tested_dict_types)
 def test_dict_invert(dict_type, in_dict, out_dict, success, message):
