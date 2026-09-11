@@ -176,6 +176,7 @@ class ListAll:
     FUNCTION = "check_all"
 
     def check_all(self, list: list[Any]) -> tuple[bool]:
+        list = list if list is not None else []
         return (all(list),)
 
 
@@ -201,6 +202,7 @@ class ListAny:
     FUNCTION = "check_any"
 
     def check_any(self, list: list[Any]) -> tuple[bool]:
+        list = list if list is not None else []
         return (any(list),)
 
 
@@ -228,6 +230,7 @@ class ListAppend(ComfyNodeABC):
     FUNCTION = "append"
 
     def append(self, list: list[Any], item: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.append(item)
         return (result,)
@@ -257,6 +260,7 @@ class ListContains(ComfyNodeABC):
     FUNCTION = "contains"
 
     def contains(self, list: list[Any], value: Any) -> tuple[bool]:
+        list = list if list is not None else []
         return (value in list,)
 
 
@@ -284,6 +288,7 @@ class ListCount(ComfyNodeABC):
     FUNCTION = "count"
 
     def count(self, list: list[Any], value: Any) -> tuple[int]:
+        list = list if list is not None else []
         return (list.count(value),)
 
 
@@ -312,6 +317,7 @@ class ListEnumerate:
     FUNCTION = "enumerate_list"
 
     def enumerate_list(self, list: list[Any], start: int = 0) -> tuple[list]:
+        list = list if list is not None else []
         return ([__builtins__['list'](enumerate(list, start=start))],)
 
 
@@ -339,6 +345,8 @@ class ListExtend(ComfyNodeABC):
     FUNCTION = "extend"
 
     def extend(self, list1: list[Any], list2: list[Any]) -> tuple[list[Any]]:
+        list1 = list1 if list1 is not None else []
+        list2 = list2 if list2 is not None else []
         result = list1.copy()
         result.extend(list2)
         return (result,)
@@ -395,6 +403,7 @@ class ListGetItem(ComfyNodeABC):
     FUNCTION = "get_item"
 
     def get_item(self, list: list[Any], index: int) -> tuple[Any]:
+        list = list if list is not None else []
         try:
             return (list[index],)
         except IndexError:
@@ -430,6 +439,7 @@ class ListIndex(ComfyNodeABC):
     FUNCTION = "index"
 
     def index(self, list: list[Any], value: Any, start: int = 0, end: int = -1) -> tuple[int]:
+        list = list if list is not None else []
         if end == -1:
             end = len(list)
 
@@ -464,6 +474,7 @@ class ListInsert(ComfyNodeABC):
     FUNCTION = "insert"
 
     def insert(self, list: list[Any], index: int, item: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.insert(index, item)
         return (result,)
@@ -517,6 +528,7 @@ class ListLength(ComfyNodeABC):
     FUNCTION = "length"
 
     def length(self, list: list[Any]) -> tuple[int]:
+        list = list if list is not None else []
         return (len(list),)
 
 
@@ -614,6 +626,7 @@ class ListPop(ComfyNodeABC):
     FUNCTION = "pop"
 
     def pop(self, list: list[Any], index: int = -1) -> tuple[list[Any], Any]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             item = result.pop(index)
@@ -657,6 +670,7 @@ class ListPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, list: list[Any], seed=None) -> tuple[list[Any], Any]:
         import random
+        list = list if list is not None else []
         rng = random.Random(seed) if seed is not None else random
         result = list.copy()
         if result:
@@ -723,6 +737,7 @@ class ListRemove(ComfyNodeABC):
     FUNCTION = "remove"
 
     def remove(self, list: list[Any], value: Any) -> tuple[list[Any], bool]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             result.remove(value)
@@ -753,6 +768,7 @@ class ListReverse(ComfyNodeABC):
     FUNCTION = "reverse"
 
     def reverse(self, list: list[Any]) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.reverse()
         return (result,)
@@ -783,6 +799,7 @@ class ListSetItem(ComfyNodeABC):
     FUNCTION = "set_item"
 
     def set_item(self, list: list[Any], index: int, value: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             result[index] = value
@@ -815,6 +832,7 @@ class ListShuffle(ComfyNodeABC):
 
     def shuffle_list(self, list: list[Any], seed: int) -> tuple[list[Any]]:
         import random
+        list = list if list is not None else []
         random.seed(seed)
         result = list.copy()
         random.shuffle(result)
@@ -850,6 +868,7 @@ class ListSlice(ComfyNodeABC):
 
     def slice(self, list: list[Any], start: int = 0, stop: int = INT_MAX,
               step: int = 1) -> tuple[list[Any]]:
+        list = list if list is not None else []
         return (list[start:stop:step],)
 
 class ListSort(ComfyNodeABC):
@@ -880,6 +899,7 @@ class ListSort(ComfyNodeABC):
     def sort(self, list: list[Any], reverse: str = "False") -> tuple[list[Any]]:
         # Convert string to boolean
         reverse_bool = (reverse == "True")
+        list = list if list is not None else []
 
         # Use sorted to create a new sorted list
         try:
@@ -915,6 +935,7 @@ class ListSum:
     FUNCTION = "sum_list"
 
     def sum_list(self, list: list[Any], start: int = 0) -> tuple[int, float]:
+        list = list if list is not None else []
         result = sum(list, start)
         return result, float(result)
 
@@ -944,6 +965,7 @@ class ListToDataList(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def convert(self, list) -> tuple[list[Any]]:
+        list = list if list is not None else []
         return (list,)
 
 
@@ -970,6 +992,7 @@ class ListToSet(ComfyNodeABC):
     FUNCTION = "convert"
 
     def convert(self, list: list[Any]) -> tuple[set[Any]]:
+        list = list if list is not None else []
         return (set(list),)
 
 

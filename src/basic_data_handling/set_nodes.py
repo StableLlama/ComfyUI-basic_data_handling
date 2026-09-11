@@ -16,6 +16,11 @@ except:
 from ._dynamic_input import ContainsDynamicDict
 
 
+def _empty_set() -> set:
+    """Return an empty set, independent of a node parameter named ``set``."""
+    return set()
+
+
 class SetCreate(ComfyNodeABC):
     """
     Creates a new SET from items.
@@ -175,6 +180,7 @@ class SetAdd(ComfyNodeABC):
     FUNCTION = "add"
 
     def add(self, set: set[Any], item: Any) -> tuple[set[Any]]:
+        set = set if set is not None else _empty_set()
         result = set.copy()
         result.add(item)
         return (result,)
@@ -203,6 +209,7 @@ class SetAll(ComfyNodeABC):
     FUNCTION = "check_all"
 
     def check_all(self, set: set[Any]) -> tuple[bool]:
+        set = set if set is not None else _empty_set()
         return (all(set),)
 
 
@@ -229,6 +236,7 @@ class SetAny(ComfyNodeABC):
     FUNCTION = "check_any"
 
     def check_any(self, set: set[Any]) -> tuple[bool]:
+        set = set if set is not None else _empty_set()
         return (any(set),)
 
 
@@ -256,6 +264,7 @@ class SetContains(ComfyNodeABC):
     FUNCTION = "contains"
 
     def contains(self, set: set[Any], value: Any) -> tuple[bool]:
+        set = set if set is not None else _empty_set()
         return (value in set,)
 
 
@@ -283,6 +292,8 @@ class SetDifference(ComfyNodeABC):
     FUNCTION = "difference"
 
     def difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         result = set1.copy()
         result.difference_update(set2)
         return (result,)
@@ -312,6 +323,7 @@ class SetDiscard(ComfyNodeABC):
     FUNCTION = "discard"
 
     def discard(self, set: set[Any], item: Any) -> tuple[set[Any]]:
+        set = set if set is not None else _empty_set()
         result = set.copy()
         result.discard(item)
         return (result,)
@@ -347,6 +359,7 @@ class SetEnumerate(ComfyNodeABC):
     FUNCTION = "enumerate_set"
 
     def enumerate_set(self, set: set[Any], start: int = 0) -> tuple[list]:
+        set = set if set is not None else _empty_set()
         return (list(enumerate(set, start=start)),)
 
 
@@ -378,6 +391,8 @@ class SetIntersection(ComfyNodeABC):
     FUNCTION = "intersection"
 
     def intersection(self, set1: set[Any], set2: set[Any], set3=None, set4=None) -> tuple[set[Any]]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         result = set1.copy()
         result.intersection_update(set2)
 
@@ -413,6 +428,8 @@ class SetIsDisjoint(ComfyNodeABC):
     FUNCTION = "is_disjoint"
 
     def is_disjoint(self, set1: set[Any], set2: set[Any]) -> tuple[bool]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         return (set1.isdisjoint(set2),)
 
 
@@ -440,6 +457,8 @@ class SetIsSubset(ComfyNodeABC):
     FUNCTION = "is_subset"
 
     def is_subset(self, set1: set[Any], set2: set[Any]) -> tuple[bool]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         return (set1.issubset(set2),)
 
 
@@ -467,6 +486,8 @@ class SetIsSuperset(ComfyNodeABC):
     FUNCTION = "is_superset"
 
     def is_superset(self, set1: set[Any], set2: set[Any]) -> tuple[bool]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         return (set1.issuperset(set2),)
 
 
@@ -492,6 +513,7 @@ class SetLength(ComfyNodeABC):
     FUNCTION = "length"
 
     def length(self, set: set[Any]) -> tuple[int]:
+        set = set if set is not None else _empty_set()
         return (len(set),)
 
 
@@ -519,6 +541,7 @@ class SetPop(ComfyNodeABC):
     FUNCTION = "pop"
 
     def pop(self, set: set[Any]) -> tuple[set[Any], Any]:
+        set = set if set is not None else _empty_set()
         result = set.copy()
         try:
             item = result.pop()
@@ -562,6 +585,7 @@ class SetPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, set: set[Any], seed=None) -> tuple[set[Any], Any]:
         import random
+        set = set if set is not None else _empty_set()
         rng = random.Random(seed) if seed is not None else random
         result = set.copy()
         if result:
@@ -596,6 +620,7 @@ class SetRemove(ComfyNodeABC):
     FUNCTION = "remove"
 
     def remove(self, set: set[Any], item: Any) -> tuple[set[Any], bool]:
+        set = set if set is not None else _empty_set()
         result = set.copy()
         try:
             result.remove(item)
@@ -634,6 +659,7 @@ class SetSum(ComfyNodeABC):
     FUNCTION = "sum_set"
 
     def sum_set(self, set: set[Any], start: int = 0) -> tuple[int, float]:
+        set = set if set is not None else _empty_set()
         result = sum(set, start)
         return result, float(result)
 
@@ -662,6 +688,8 @@ class SetSymmetricDifference(ComfyNodeABC):
     FUNCTION = "symmetric_difference"
 
     def symmetric_difference(self, set1: set[Any], set2: set[Any]) -> tuple[set[Any]]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         result = set1.copy()
         result.symmetric_difference_update(set2)
         return (result,)
@@ -695,6 +723,8 @@ class SetUnion(ComfyNodeABC):
     FUNCTION = "union"
 
     def union(self, set1: set[Any], set2: set[Any], set3=None, set4=None) -> tuple[set[Any]]:
+        set1 = set1 if set1 is not None else set()
+        set2 = set2 if set2 is not None else set()
         result = set1.copy()
         result.update(set2)
 
@@ -732,6 +762,7 @@ class SetToDataList(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def convert(self, set) -> tuple[list[Any]]:
+        set = set if set is not None else _empty_set()
         return (list(set),)
 
 
@@ -759,6 +790,7 @@ class SetToList(ComfyNodeABC):
     FUNCTION = "convert"
 
     def convert(self, set: set[Any]) -> tuple[list[Any]]:
+        set = set if set is not None else _empty_set()
         return (list(set),)
 
 

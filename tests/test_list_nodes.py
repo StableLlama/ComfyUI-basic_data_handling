@@ -404,3 +404,32 @@ def test_list_sum():
     int_result, float_result = node.sum_list([1, 2.5, 3])
     assert int_result == 6.5
     assert float_result == 6.5
+
+
+def test_list_none_source():
+    """Graceful behaviour when the input LIST source is None."""
+    assert ListAll().check_all(None) == (True,)
+    assert ListAny().check_any(None) == (False,)
+    assert ListAppend().append(None, "item") == (["item"],)
+    assert ListContains().contains(None, "value") == (False,)
+    assert ListCount().count(None, "value") == (0,)
+    assert ListEnumerate().enumerate_list(None) == ([[]],)
+    assert ListExtend().extend(None, None) == ([],)
+    assert ListFirst().get_first_element(None) == (None,)
+    assert ListGetItem().get_item(None, 0) == (None,)
+    assert ListIndex().index(None, "value") == (-1,)
+    assert ListInsert().insert(None, 0, "item") == (["item"],)
+    assert ListLast().get_last_element(None) == (None,)
+    assert ListLength().length(None) == (0,)
+    assert ListMax().find_max(None) == (None,)
+    assert ListMin().find_min(None) == (None,)
+    assert ListPop().pop(None) == ([], None)
+    assert ListPopRandom().pop_random_element(None) == ([], None)
+    assert ListRemove().remove(None, "value") == ([], False)
+    assert ListReverse().reverse(None) == ([],)
+    assert ListShuffle().shuffle_list(None, seed=0) == ([],)
+    assert ListSlice().slice(None) == ([],)
+    assert ListSort().sort(None) == ([],)
+    assert ListSum().sum_list(None) == (0, 0.0)
+    assert ListToDataList().convert(None) == ([],)
+    assert ListToSet().convert(None) == (set(),)

@@ -371,6 +371,7 @@ class StringFormatMap(ComfyNodeABC):
     FUNCTION = "format_map"
 
     def format_map(self, template, mapping):
+        mapping = mapping if mapping is not None else {}
         try:
             result = template.format_map(mapping)
             return (result,)
@@ -778,6 +779,7 @@ class StringDataListJoin(ComfyNodeABC):
 
     def join(self, sep, strings):
         separator = sep[0]    # everything comes as a list, so sep is list[str]
+        strings = strings if strings is not None else []
         return (separator.join(strings),)
 
 
@@ -806,6 +808,7 @@ class StringListJoin(ComfyNodeABC):
     FUNCTION = "join"
 
     def join(self, sep, strings):
+        strings = strings if strings is not None else []
         return (sep.join(strings),)
 
 

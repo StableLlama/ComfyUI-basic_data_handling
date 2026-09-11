@@ -39,14 +39,18 @@ jobs:
           changelog = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
 
           # Match headings like "## [1.7.0] - 2026-08-27", "## 1.7.0" or "## v1.7.0".
-          heading = re.compile(rf"^##\s+\[?v?{re.escape(version)}\]?\s*(?:-\s*\d{{4}}-\d{{2}}-\d{{2}})?\s*$", re.M)
-          match = heading.search(changelog)
+          version_heading = re.compile(rf"^##\s+\[?v?{re.escape(version)}\]?\s*(?:-\s*\d{{4}}-\d{{2}}-\d{{2}})?\s*$", re.M)
+          # Any second-level changelog heading. This locates the *next* (older)
+          # release so we capture only this version's section, not the whole log.
+          next_heading = re.compile(r"^##\s+", re.M)
+
+          match = version_heading.search(changelog)
           if match is None:
               print(f"::notice::No CHANGELOG.md section found for v{version}; publishing without a changelog")
               pathlib.Path("CHANGELOG_CURRENT.md").write_text("", encoding="utf-8")
           else:
-              end = heading.search(changelog, match.end())
-              section = changelog[match.end():end.start() if end else None].strip()
+              end = next_heading.search(changelog, match.end())
+              section = changelog[match.end(): end.start() if end else None].strip()
               pathlib.Path("CHANGELOG_CURRENT.md").write_text(section + "\n", encoding="utf-8")
           EOF
 

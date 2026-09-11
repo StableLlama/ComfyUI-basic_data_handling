@@ -212,7 +212,7 @@ class DataListAll(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def check_all(self, **kwargs: list[Any]) -> tuple[bool]:
-        return (all(kwargs.get('list', [])),)
+        return (all(kwargs.get('list') or []),)
 
 
 class DataListAny(ComfyNodeABC):
@@ -238,7 +238,7 @@ class DataListAny(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def check_any(self, **kwargs: list[Any]) -> tuple[bool]:
-        return (any(kwargs.get('list', [])),)
+        return (any(kwargs.get('list') or []),)
 
 
 class DataListAppend(ComfyNodeABC):
@@ -267,8 +267,8 @@ class DataListAppend(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def append(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        item = kwargs.get('item', [])
+        result = (kwargs.get('list') or []).copy()
+        item = kwargs.get('item') or []
         if len(item) > 0:
             result.append(item[0])
         return (result,)
@@ -299,10 +299,10 @@ class DataListContains(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def contains(self, **kwargs: list[Any]) -> tuple[bool]:
-        value = kwargs.get('value', [])
+        value = kwargs.get('value') or []
         if len(value) == 0:
             return (False,)
-        return (value[0] in kwargs.get('list', []),)
+        return (value[0] in (kwargs.get('list') or []),)
 
 
 class DataListCount(ComfyNodeABC):
@@ -330,8 +330,8 @@ class DataListCount(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def count(self, **kwargs: list[Any]) -> tuple[int]:
-        value = kwargs.get('value', [None])[0]
-        return (kwargs.get('list', []).count(value),)
+        value = (kwargs.get('value') or [None])[0]
+        return ((kwargs.get('list') or []).count(value),)
 
 
 class DataListEnumerate(ComfyNodeABC):
@@ -361,8 +361,8 @@ class DataListEnumerate(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def enumerate_list(self, **kwargs: list[Any]) -> tuple[list]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
+        input_list = kwargs.get('list') or []
+        start = (kwargs.get('start') or [0])[0]
         return ([list(item) for item in enumerate(input_list, start=start)],)
 
 
@@ -392,7 +392,7 @@ class DataListExtend(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def extend(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list_a', []) + kwargs.get('list_b', []),)
+        return ((kwargs.get('list_a') or []) + (kwargs.get('list_b') or []),)
 
 
 class DataListFilter(ComfyNodeABC):
@@ -425,8 +425,8 @@ class DataListFilter(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def filter_data(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = kwargs.get('value', [])
-        filters = kwargs.get('filter', [])
+        values = kwargs.get('value') or []
+        filters = kwargs.get('filter') or []
 
         # Create a new list with only items where the filter is False
         result = [_val for _val, _filter in zip(values, filters) if not _filter]
@@ -464,8 +464,8 @@ class DataListFilterSelect(ComfyNodeABC):
     OUTPUT_IS_LIST = (True, True,)
 
     def select(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = kwargs.get('value', [])
-        selects = kwargs.get('select', [])
+        values = kwargs.get('value') or []
+        selects = kwargs.get('select') or []
 
         # Create a new list with only items where the filter is False
         result_true, result_false = [], []
@@ -499,7 +499,7 @@ class DataListFirst(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_first_element(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
+        input_list = kwargs.get('list') or []
         return (input_list[0] if input_list else None,)
 
 
@@ -529,9 +529,9 @@ class DataListGetItem(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_item(self, **kwargs: list[Any]) -> tuple[Any]:
-        index = kwargs.get('index', [0])[0]
+        index = (kwargs.get('index') or [0])[0]
         try:
-            return (kwargs.get('list', [])[index],)
+            return ((kwargs.get('list') or [])[index],)
         except IndexError:
             return (None,)
 
@@ -566,10 +566,10 @@ class DataListIndex(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def list_index(self, **kwargs: list[Any]) -> tuple[int]:
-        input_list = kwargs.get('list', [])
-        value = kwargs.get('value', [None])[0]
-        start = kwargs.get('start', [0])[0]
-        end = kwargs.get('end', [-1])[0]
+        input_list = kwargs.get('list') or []
+        value = (kwargs.get('value') or [None])[0]
+        start = (kwargs.get('start') or [0])[0]
+        end = (kwargs.get('end') or [-1])[0]
         if end == -1:
             end = len(input_list)
 
@@ -606,8 +606,8 @@ class DataListInsert(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def insert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
+        result = (kwargs.get('list') or []).copy()
+        result.insert((kwargs.get('index') or [0])[0], (kwargs.get('item') or [None])[0])
         return (result,)
 
 
@@ -635,7 +635,7 @@ class DataListLast(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_last_element(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
+        input_list = kwargs.get('list') or []
         return (input_list[-1] if input_list else None,)
 
 
@@ -662,7 +662,7 @@ class DataListLength(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def length(self, **kwargs: list[Any]) -> tuple[int]:
-        return (len(kwargs.get('list', [])),)
+        return (len(kwargs.get('list') or []),)
 
 
 class DataListMax(ComfyNodeABC):
@@ -690,7 +690,7 @@ class DataListMax(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def find_max(self, **kwargs: list[Any]) -> tuple[Any]:
-        values = kwargs.get('list', [])
+        values = kwargs.get('list') or []
         if not values:
             return (None,)
 
@@ -727,7 +727,7 @@ class DataListMin(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def find_min(self, **kwargs: list[Any]) -> tuple[Any]:
-        values = kwargs.get('list', [])
+        values = kwargs.get('list') or []
         if not values:
             return (None,)
 
@@ -769,8 +769,8 @@ class DataListPop(ComfyNodeABC):
     OUTPUT_IS_LIST = (True, False)
 
     def pop(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
-        result = kwargs.get('list', []).copy()
-        index = kwargs.get('index', [-1])[0]
+        result = (kwargs.get('list') or []).copy()
+        index = (kwargs.get('index') or [-1])[0]
         try:
             item = result.pop(index)
             return result, item
@@ -820,7 +820,7 @@ class DataListPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
         import random
-        input_list = kwargs.get('list', []).copy()
+        input_list = (kwargs.get('list') or []).copy()
         seed_values = kwargs.get('seed')
         seed = seed_values[0] if seed_values is not None else None
         rng = random.Random(seed) if seed is not None else random
@@ -889,8 +889,8 @@ class DataListRemove(ComfyNodeABC):
     OUTPUT_IS_LIST = (True, False,)
 
     def remove(self, **kwargs: list[Any]) -> tuple[list[Any], bool]:
-        result = kwargs.get('list', []).copy()
-        value = kwargs.get('value', [])
+        result = (kwargs.get('list') or []).copy()
+        value = kwargs.get('value') or []
         try:
             result.remove(value[0])
             return result, True
@@ -922,7 +922,7 @@ class DataListReverse(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def reverse(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
+        result = (kwargs.get('list') or []).copy()
         result.reverse()
         return (result,)
 
@@ -954,9 +954,9 @@ class DataListSetItem(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def set_item(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
-        index = kwargs.get('index', [0])[0]
-        value = kwargs.get('value', [None])[0]
+        input_list = kwargs.get('list') or []
+        index = (kwargs.get('index') or [0])[0]
+        value = (kwargs.get('value') or [None])[0]
         try:
             result = input_list.copy()
             result[index] = value
@@ -991,8 +991,8 @@ class DataListShuffle(ComfyNodeABC):
 
     def shuffle_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         import random
-        input_list = kwargs.get('list', [])
-        seed = kwargs.get('seed', [0])[0]
+        input_list = kwargs.get('list') or []
+        seed = (kwargs.get('seed') or [0])[0]
         random.seed(seed)
         result = input_list.copy()
         random.shuffle(result)
@@ -1029,10 +1029,10 @@ class DataListSlice(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def slice(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
-        stop = kwargs.get('stop', [INT_MAX])[0]
-        step = kwargs.get('step', [1])[0]
+        input_list = kwargs.get('list') or []
+        start = (kwargs.get('start') or [0])[0]
+        stop = (kwargs.get('stop') or [INT_MAX])[0]
+        step = (kwargs.get('step') or [1])[0]
 
         return (input_list[start:stop:step],)
 
@@ -1066,9 +1066,9 @@ class DataListSort(ComfyNodeABC):
 
     def sort(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         # Convert string to boolean
-        reverse = kwargs.get('reverse', ["False"])[0] == "True"
+        reverse = (kwargs.get('reverse') or ["False"])[0] == "True"
 
-        result = sorted(kwargs.get('list', []), reverse=reverse)
+        result = sorted(kwargs.get('list') or [], reverse=reverse)
         return (result,)
 
 
@@ -1098,8 +1098,8 @@ class DataListSum(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def sum_list(self, **kwargs: list[Any]) -> tuple[int, float]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
+        input_list = kwargs.get('list') or []
+        start = (kwargs.get('start') or [0])[0]
         result = sum(input_list, start)
         return int(result), float(result)
 
@@ -1135,13 +1135,13 @@ class DataListZip(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def zip_lists(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        lists = [kwargs.get('list1', []), kwargs.get('list2', [])]
+        lists = [(kwargs.get('list1') or []), (kwargs.get('list2') or [])]
 
         if 'list3' in kwargs:
-            lists.append(kwargs['list3'])
+            lists.append(kwargs['list3'] or [])
 
         if 'list4' in kwargs:
-            lists.append(kwargs['list4'])
+            lists.append(kwargs['list4'] or [])
 
         # Zip the lists together and convert each tuple to a list
         result = [list(item) for item in zip(*lists)]
@@ -1172,7 +1172,7 @@ class DataListToList(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (list(kwargs.get('list', [])).copy(),)
+        return (list(kwargs.get('list') or []).copy(),)
 
 
 class DataListToSet(ComfyNodeABC):
@@ -1199,7 +1199,7 @@ class DataListToSet(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set(kwargs.get('list', [])),)
+        return (set(kwargs.get('list') or []),)
 
 
 NODE_CLASS_MAPPINGS = {

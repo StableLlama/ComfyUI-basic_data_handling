@@ -349,3 +349,27 @@ def test_set_sum():
     int_result, float_result = node.sum_set(set(), start=5)
     assert int_result == 5
     assert float_result == 5.0
+
+
+def test_set_none_source():
+    """Graceful behaviour when the input SET source is None."""
+    assert SetAdd().add(None, 1) == ({1},)
+    assert SetAll().check_all(None) == (True,)
+    assert SetAny().check_any(None) == (False,)
+    assert SetContains().contains(None, 1) == (False,)
+    assert SetDifference().difference(None, None) == (set(),)
+    assert SetDiscard().discard(None, 1) == (set(),)
+    assert SetEnumerate().enumerate_set(None) == ([],)
+    assert SetIntersection().intersection(None, None) == (set(),)
+    assert SetIsDisjoint().is_disjoint(None, None) == (True,)
+    assert SetIsSubset().is_subset(None, None) == (True,)
+    assert SetIsSuperset().is_superset(None, None) == (True,)
+    assert SetLength().length(None) == (0,)
+    assert SetPop().pop(None) == (set(), None)
+    assert SetPopRandom().pop_random_element(None) == (set(), None)
+    assert SetRemove().remove(None, 1) == (set(), False)
+    assert SetSum().sum_set(None) == (0, 0.0)
+    assert SetSymmetricDifference().symmetric_difference(None, None) == (set(),)
+    assert SetUnion().union(None, None) == (set(),)
+    assert SetToDataList().convert(None) == ([],)
+    assert SetToList().convert(None) == ([],)

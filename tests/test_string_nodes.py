@@ -403,3 +403,20 @@ def test_length():
     assert node.length("hello") == (5,)
     assert node.length("") == (0,)  # Empty string
     assert node.length("hello world") == (11,)  # String with spaces
+
+
+def test_join_none_source():
+    # A missing (None) strings list behaves like an empty list.
+    node = StringDataListJoin()
+    assert node.join([", "], None) == ("",)
+    node_list = StringListJoin()
+    assert node_list.join(", ", None) == ("",)
+
+
+def test_format_map_none_source():
+    node = StringFormatMap()
+    # A missing (None) mapping behaves like an empty dict.
+    assert node.format_map("plain text", None) == ("plain text",)
+    # With placeholders a missing mapping produces the key-error message.
+    result = node.format_map("Hello, {name}!", None)[0]
+    assert result.startswith("Key error")

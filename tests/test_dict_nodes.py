@@ -464,3 +464,44 @@ def test_dict_compare(a_type, b_type):
 
     # Test empty dictionaries
     assert node.compare(a_type({}), b_type({})) == (True, [], [], [])
+
+
+def test_dict_none_source():
+    """Graceful behaviour when the input dict/source is None."""
+    # Read/query nodes return the natural "no data" result.
+    assert DictGet().get(None, "key") == (None,)
+    assert DictGet().get(None, "key", default="default") == ("default",)
+    assert DictGetMultiple().get_multiple(None, ["a", "b"], default="d") == (["d", "d"],)
+    assert DictContainsKey().contains_key(None, "key") == (False,)
+    assert DictLength().length(None) == (0,)
+    assert DictKeys().keys(None) == ([],)
+    assert DictValues().values(None) == ([],)
+    assert DictItems().items(None) == ([],)
+    assert DictGetKeysValues().get_keys_values(None) == ([], [])
+
+    # Comparison treats missing sources as empty dicts.
+    assert DictCompare().compare(None, None) == (True, [], [], [])
+    assert DictCompare().compare(None, {"a": 1}) == (False, [], ["a"], [])
+    assert DictCompare().compare({"a": 1}, None) == (False, ["a"], [], [])
+
+    # Transform/mutate nodes treat a missing source as an empty dict.
+    assert DictSet().set(None, "k", "v") == ({"k": "v"},)
+    assert DictRemove().remove(None, "k") == ({}, False)
+    assert DictSetDefault().setdefault(None, "k", "d") == ({"k": "d"}, "d")
+    assert DictUpdate().update(None, {"a": 1}) == ({"a": 1},)
+    assert DictUpdate().update(None, None) == ({},)
+    assert DictMerge().merge(None, {"a": 1}) == ({"a": 1},)
+    assert DictMerge().merge(None) == ({},)
+    assert DictPop().pop(None, "k", default_value="d") == ({}, "d")
+    assert DictPop().pop(None, "k") == ({}, None)
+    assert DictPopItem().popitem(None) == ({}, "", None, False)
+    assert DictPopRandom().pop_random(None) == ({}, "", None, False)
+    assert DictInvert().invert(None) == ({}, True)
+
+    # Constructors / filters treat missing sources as empty.
+    assert DictFromKeys().from_keys(None, value="v") == ({},)
+    assert DictExcludeKeys().exclude_keys(None, ["a"]) == ({},)
+    assert DictFilterByKeys().filter_by_keys(None, ["a"]) == ({},)
+    assert DictCreateFromItemsList().create_from_items(None) == ({},)
+    assert DictCreateFromItemsDataList().create_from_items(item=None) == ({},)
+    assert DictCreateFromLists().create_from_lists(None, None) == ({},)

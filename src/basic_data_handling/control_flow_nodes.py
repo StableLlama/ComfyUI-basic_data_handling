@@ -213,6 +213,65 @@ class SwitchCase(ComfyNodeABC):
         return (kwargs.get("default"),)
 
 
+class ContinueIfNotEmpty(ComfyNodeABC):
+    """
+    Passes a value through only when it is not empty; otherwise blocks execution.
+
+    This node guards against feeding an empty collection (None, empty data list,
+    empty LIST/DICT/SET, etc.) into downstream nodes that cannot handle an empty
+    input — e.g. ComfyUI's own list-mapping fails with an empty input list.
+
+    When the value is non-empty it is passed through unchanged; when it is empty an
+    execution blocker is returned so downstream nodes do not run. It is especially
+    useful placed before a node such as "get" / "filter" / "list" that would
+    otherwise crash on an empty input (for example an empty Data List).
+
+    A value counts as empty when it is falsy: ``None``, ``[]``, ``{}``, ``set()``,
+    ``""``, ``0`` or ``False``.
+
+    By default the block is silent; set ``message`` to show a dialog (like
+    "continue flow") when the execution is blocked.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "value": (IO.ANY, {"tooltip": "The value to guard; execution is blocked when the value is empty."}),
+            },
+            "optional": {
+                "message": (IO.STRING, {"default": "", "tooltip": "Optional message shown when the flow is blocked. Leave empty for silent operation."}),
+            }
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("value",)
+    OUTPUT_TOOLTIPS = ("The input value, or an execution blocker when the value is empty.",)
+    CATEGORY = "Basic/flow control"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "execute"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
+
+    def execute(self, value, message="") -> tuple[Any]:
+        # INPUT_IS_LIST hands the raw inputs over (a data list or a single value),
+        # so ComfyUI never slices them — this node is immune to the empty-list
+        # batching crash it guards against. `message` arrives as a list under
+        # ComfyUI, but may be a plain string when called directly.
+        if value is None:
+            value = []
+        msg = message[0] if isinstance(message, (list, tuple)) and message else (message or "")
+        if isinstance(value, list):
+            empty = (len(value) == 0)
+        else:
+            empty = (not value)
+        if empty:
+            return (ExecutionBlocker(msg if msg else None),)
+        # OUTPUT_IS_LIST expects a list, so wrap a single non-list value.
+        if not isinstance(value, list):
+            value = [value]
+        return (value,)
+
+
 class ContinueFlow(ComfyNodeABC):
     """
     Conditionally enable or disable a flow.
@@ -380,6 +439,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: IfElse": IfElse,
     "Basic data handling: IfElifElse": IfElifElse,
     "Basic data handling: SwitchCase": SwitchCase,
+    "Basic data handling: ContinueIfNotEmpty": ContinueIfNotEmpty,
     "Basic data handling: ContinueFlow": ContinueFlow,
     "Basic data handling: FlowSelect": FlowSelect,
     "Basic data handling: ForceCalculation": ForceCalculation,
@@ -391,6 +451,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: IfElse": "if/else",
     "Basic data handling: IfElifElse": "if/elif/.../else",
     "Basic data handling: SwitchCase": "switch/case",
+    "Basic data handling: ContinueIfNotEmpty": "continue if not empty",
     "Basic data handling: ContinueFlow": "continue flow",
     "Basic data handling: FlowSelect": "flow select",
     "Basic data handling: ForceCalculation": "force calculation",

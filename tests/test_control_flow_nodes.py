@@ -1,6 +1,6 @@
 #import pytest
 from src.basic_data_handling.control_flow_nodes import (
-    IfElse, SwitchCase, IfElifElse, ContinueFlow, FlowSelect, ForceCalculation, ExecutionOrder, IsConnected
+    IfElse, SwitchCase, IfElifElse, ContinueFlow, ContinueIfNotEmpty, FlowSelect, ForceCalculation, ExecutionOrder, IsConnected
 )
 
 
@@ -163,6 +163,26 @@ def test_continue_flow():
     # Test with different value types
     assert node.execute(123, select=True) == (123,)
     res = node.execute([1, 2], select=False)
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+
+
+def test_continue_if_not_empty():
+    node = ContinueIfNotEmpty()
+    # Non-empty values pass through (single values wrapped into a list for OUTPUT_IS_LIST).
+    assert node.execute("some value") == (["some value"],)
+    assert node.execute([1, 2]) == ([1, 2],)
+    assert node.execute({"key": "value"}) == ([{"key": "value"}],)
+    assert node.execute({1, 2}) == ([{1, 2}],)
+    # Empty values block execution (ExecutionBlocker under ComfyUI). Silent by default.
+    res = node.execute(None)
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    for empty in ([], {}, set(), "", 0, False):
+        res = node.execute(empty)
+        assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    # A provided message is passed to the blocker (as a list under INPUT_IS_LIST).
+    res = node.execute(None, message=["Interrupted"])
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    res = node.execute(None, message="Interrupted")
     assert res == (None,) or "ExecutionBlocker" in str(res[0])
 
 
