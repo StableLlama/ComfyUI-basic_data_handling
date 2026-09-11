@@ -4,6 +4,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,11 +12,12 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
 
-INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
+INT_MAX = 2**15 - 1  # the computer can do more but be nice to the eyes
 
 
 class DataListCreate(ComfyNodeABC):
@@ -25,12 +27,22 @@ class DataListCreate(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items of the Data List. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the items of the Data List. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -55,12 +67,22 @@ class DataListListCreate(ComfyNodeABC):
 
     Each input can be a list, so you'll get a list of lists.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items of the Data List; each may itself be a list, producing a list of lists."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the items of the Data List; each may itself be a list, producing a list of lists.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -84,12 +106,22 @@ class DataListCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the boolean items of the Data List. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.BOOLEAN,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the boolean items of the Data List. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -112,12 +144,22 @@ class DataListCreateFromFloat(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the float items of the Data List. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.FLOAT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the float items of the Data List. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.FLOAT,)
@@ -140,12 +182,22 @@ class DataListCreateFromInt(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the integer items of the Data List. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.INT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the integer items of the Data List. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -168,12 +220,22 @@ class DataListCreateFromString(ComfyNodeABC):
     This node creates and returns a Data List. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the string items of the Data List. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.STRING,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the string items of the Data List. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = (IO.STRING,)
@@ -212,7 +274,7 @@ class DataListAll(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def check_all(self, **kwargs: list[Any]) -> tuple[bool]:
-        return (all(kwargs.get('list', [])),)
+        return (all(kwargs.get("list") or []),)
 
 
 class DataListAny(ComfyNodeABC):
@@ -238,7 +300,7 @@ class DataListAny(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def check_any(self, **kwargs: list[Any]) -> tuple[bool]:
-        return (any(kwargs.get('list', [])),)
+        return (any(kwargs.get("list") or []),)
 
 
 class DataListAppend(ComfyNodeABC):
@@ -248,12 +310,13 @@ class DataListAppend(ComfyNodeABC):
     This node takes a list and any item as inputs, then returns the modified
     list with the new item appended.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list":(IO.ANY,{"tooltip": "The Data List to append to."}),
-                "item":(IO.ANY,{"tooltip": "The item to append at the end."}),
+                "list": (IO.ANY, {"tooltip": "The Data List to append to."}),
+                "item": (IO.ANY, {"tooltip": "The item to append at the end."}),
             }
         }
 
@@ -267,8 +330,8 @@ class DataListAppend(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def append(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        item = kwargs.get('item', [])
+        result = (kwargs.get("list") or []).copy()
+        item = kwargs.get("item") or []
         if len(item) > 0:
             result.append(item[0])
         return (result,)
@@ -281,6 +344,7 @@ class DataListContains(ComfyNodeABC):
     This node takes a list and a value as inputs, then returns True if the value
     is present in the list, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -299,10 +363,10 @@ class DataListContains(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def contains(self, **kwargs: list[Any]) -> tuple[bool]:
-        value = kwargs.get('value', [])
+        value = kwargs.get("value") or []
         if len(value) == 0:
             return (False,)
-        return (value[0] in kwargs.get('list', []),)
+        return (value[0] in (kwargs.get("list") or []),)
 
 
 class DataListCount(ComfyNodeABC):
@@ -312,6 +376,7 @@ class DataListCount(ComfyNodeABC):
     This node takes a list and a value as inputs, then returns the number of times
     the value appears in the list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -330,8 +395,8 @@ class DataListCount(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def count(self, **kwargs: list[Any]) -> tuple[int]:
-        value = kwargs.get('value', [None])[0]
-        return (kwargs.get('list', []).count(value),)
+        value = (kwargs.get("value") or [None])[0]
+        return ((kwargs.get("list") or []).count(value),)
 
 
 class DataListEnumerate(ComfyNodeABC):
@@ -348,7 +413,7 @@ class DataListEnumerate(ComfyNodeABC):
             },
             "optional": {
                 "start": (IO.INT, {"default": 0, "tooltip": "Index assigned to the first element."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -361,8 +426,8 @@ class DataListEnumerate(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def enumerate_list(self, **kwargs: list[Any]) -> tuple[list]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
+        input_list = kwargs.get("list") or []
+        start = (kwargs.get("start") or [0])[0]
         return ([list(item) for item in enumerate(input_list, start=start)],)
 
 
@@ -373,12 +438,13 @@ class DataListExtend(ComfyNodeABC):
     This node takes two lists as input and returns a new list that contains
     all elements from both lists.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "optional": {
-                "list_a":(IO.ANY,{"tooltip": "First Data List (kept as-is)."}),
-                "list_b":(IO.ANY,{"tooltip": "Second Data List whose elements are appended."}),
+                "list_a": (IO.ANY, {"tooltip": "First Data List (kept as-is)."}),
+                "list_b": (IO.ANY, {"tooltip": "Second Data List whose elements are appended."}),
             }
         }
 
@@ -392,7 +458,7 @@ class DataListExtend(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def extend(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (kwargs.get('list_a', []) + kwargs.get('list_b', []),)
+        return ((kwargs.get("list_a") or []) + (kwargs.get("list_b") or []),)
 
 
 class DataListFilter(ComfyNodeABC):
@@ -406,6 +472,7 @@ class DataListFilter(ComfyNodeABC):
     If the lists have different lengths, the last element of the shorter list is repeated
     till the lengths are matching.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -425,8 +492,8 @@ class DataListFilter(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def filter_data(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = kwargs.get('value', [])
-        filters = kwargs.get('filter', [])
+        values = kwargs.get("value") or []
+        filters = kwargs.get("filter") or []
 
         # Create a new list with only items where the filter is False
         result = [_val for _val, _filter in zip(values, filters) if not _filter]
@@ -445,6 +512,7 @@ class DataListFilterSelect(ComfyNodeABC):
     If the lists have different lengths, the last element of the shorter list is repeated
     till the lengths are matching.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -461,11 +529,14 @@ class DataListFilterSelect(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "select"
     INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True, True,)
+    OUTPUT_IS_LIST = (
+        True,
+        True,
+    )
 
     def select(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        values = kwargs.get('value', [])
-        selects = kwargs.get('select', [])
+        values = kwargs.get("value") or []
+        selects = kwargs.get("select") or []
 
         # Create a new list with only items where the filter is False
         result_true, result_false = [], []
@@ -482,6 +553,7 @@ class DataListFirst(ComfyNodeABC):
     This node takes a list as input and returns the first element of the list.
     If the list is empty, it returns None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -499,7 +571,7 @@ class DataListFirst(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_first_element(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
+        input_list = kwargs.get("list") or []
         return (input_list[0] if input_list else None,)
 
 
@@ -511,6 +583,7 @@ class DataListGetItem(ComfyNodeABC):
     Negative indices count from the end of the list.
     Out of range indices return None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -529,9 +602,9 @@ class DataListGetItem(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_item(self, **kwargs: list[Any]) -> tuple[Any]:
-        index = kwargs.get('index', [0])[0]
+        index = (kwargs.get("index") or [0])[0]
         try:
-            return (kwargs.get('list', [])[index],)
+            return ((kwargs.get("list") or [])[index],)
         except IndexError:
             return (None,)
 
@@ -544,6 +617,7 @@ class DataListIndex(ComfyNodeABC):
     occurrence of the value. Optional start and end parameters limit the search to a slice
     of the list. Returns -1 if the value is not present.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -554,7 +628,7 @@ class DataListIndex(ComfyNodeABC):
             "optional": {
                 "start": (IO.INT, {"default": 0, "tooltip": "Start position of the search slice."}),
                 "end": (IO.INT, {"default": -1, "tooltip": "End position of the search slice (-1 means the end)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.INT,)
@@ -566,10 +640,10 @@ class DataListIndex(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def list_index(self, **kwargs: list[Any]) -> tuple[int]:
-        input_list = kwargs.get('list', [])
-        value = kwargs.get('value', [None])[0]
-        start = kwargs.get('start', [0])[0]
-        end = kwargs.get('end', [-1])[0]
+        input_list = kwargs.get("list") or []
+        value = (kwargs.get("value") or [None])[0]
+        start = (kwargs.get("start") or [0])[0]
+        end = (kwargs.get("end") or [-1])[0]
         if end == -1:
             end = len(input_list)
 
@@ -586,6 +660,7 @@ class DataListInsert(ComfyNodeABC):
     This node takes a list, an index, and any item as inputs, then returns a new
     list with the item inserted at the specified index.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -606,8 +681,8 @@ class DataListInsert(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def insert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
-        result.insert(kwargs.get('index', [0])[0], kwargs.get('item', [None])[0])
+        result = (kwargs.get("list") or []).copy()
+        result.insert((kwargs.get("index") or [0])[0], (kwargs.get("item") or [None])[0])
         return (result,)
 
 
@@ -618,6 +693,7 @@ class DataListLast(ComfyNodeABC):
     This node takes a list as input and returns the last element of the list.
     If the list is empty, it returns None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -635,7 +711,7 @@ class DataListLast(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def get_last_element(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
+        input_list = kwargs.get("list") or []
         return (input_list[-1] if input_list else None,)
 
 
@@ -645,6 +721,7 @@ class DataListLength(ComfyNodeABC):
 
     This node takes a list as input and returns its length as an integer.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -662,7 +739,7 @@ class DataListLength(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def length(self, **kwargs: list[Any]) -> tuple[int]:
-        return (len(kwargs.get('list', [])),)
+        return (len(kwargs.get("list") or []),)
 
 
 class DataListMax(ComfyNodeABC):
@@ -673,6 +750,7 @@ class DataListMax(ComfyNodeABC):
     the maximum value. Returns None if the list is empty or if it contains
     non-numeric values.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -690,7 +768,7 @@ class DataListMax(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def find_max(self, **kwargs: list[Any]) -> tuple[Any]:
-        values = kwargs.get('list', [])
+        values = kwargs.get("list") or []
         if not values:
             return (None,)
 
@@ -710,6 +788,7 @@ class DataListMin(ComfyNodeABC):
     the minimum value. Returns None if the list is empty or if it contains
     non-numeric values.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -727,7 +806,7 @@ class DataListMin(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def find_min(self, **kwargs: list[Any]) -> tuple[Any]:
-        values = kwargs.get('list', [])
+        values = kwargs.get("list") or []
         if not values:
             return (None,)
 
@@ -748,6 +827,7 @@ class DataListPop(ComfyNodeABC):
     removes and returns the last item.
     When the list is empty, the item is None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -756,7 +836,7 @@ class DataListPop(ComfyNodeABC):
             },
             "optional": {
                 "index": (IO.INT, {"default": -1, "tooltip": "Position of the item to remove (-1 = last item)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY, IO.ANY)
@@ -769,8 +849,8 @@ class DataListPop(ComfyNodeABC):
     OUTPUT_IS_LIST = (True, False)
 
     def pop(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
-        result = kwargs.get('list', []).copy()
-        index = kwargs.get('index', [-1])[0]
+        result = (kwargs.get("list") or []).copy()
+        index = (kwargs.get("index") or [-1])[0]
         try:
             item = result.pop(index)
             return result, item
@@ -786,6 +866,7 @@ class DataListPopRandom(ComfyNodeABC):
     and the removed element itself. If the list is empty, it returns None for the element.
     An optional seed can be provided for reproducible selection.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -793,7 +874,16 @@ class DataListPopRandom(ComfyNodeABC):
                 "list": (IO.ANY, {"tooltip": "The Data List to pop a random element from."}),
             },
             "optional": {
-                "seed": (IO.INT, {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
+                "seed": (
+                    IO.INT,
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "control_after_generate": True,
+                        "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run.",
+                    },
+                ),
             },
         }
 
@@ -820,8 +910,9 @@ class DataListPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, **kwargs: list[Any]) -> tuple[list[Any], Any]:
         import random
-        input_list = kwargs.get('list', []).copy()
-        seed_values = kwargs.get('seed')
+
+        input_list = (kwargs.get("list") or []).copy()
+        seed_values = kwargs.get("seed")
         seed = seed_values[0] if seed_values is not None else None
         rng = random.Random(seed) if seed is not None else random
         if input_list:
@@ -837,6 +928,7 @@ class DataListRange(ComfyNodeABC):
     This node generates a sequence of numbers similar to Python's range() function.
     It takes start, stop, and step parameters to define the sequence.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -846,7 +938,7 @@ class DataListRange(ComfyNodeABC):
             },
             "optional": {
                 "step": ("INT", {"default": 1, "tooltip": "Step between numbers; must not be 0."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("INT",)
@@ -870,6 +962,7 @@ class DataListRemove(ComfyNodeABC):
     This node takes a list and a value as inputs, then returns a new list with
     the first occurrence of the value removed. Raises a ValueError if the value is not present.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -879,18 +972,27 @@ class DataListRemove(ComfyNodeABC):
             }
         }
 
-    RETURN_TYPES = (IO.ANY, IO.BOOLEAN,)
-    RETURN_NAMES = ("list", "success",)
+    RETURN_TYPES = (
+        IO.ANY,
+        IO.BOOLEAN,
+    )
+    RETURN_NAMES = (
+        "list",
+        "success",
+    )
     OUTPUT_TOOLTIPS = ("The list with the first occurrence removed.", "True when the value was present and removed.")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "remove"
     INPUT_IS_LIST = True
-    OUTPUT_IS_LIST = (True, False,)
+    OUTPUT_IS_LIST = (
+        True,
+        False,
+    )
 
     def remove(self, **kwargs: list[Any]) -> tuple[list[Any], bool]:
-        result = kwargs.get('list', []).copy()
-        value = kwargs.get('value', [])
+        result = (kwargs.get("list") or []).copy()
+        value = kwargs.get("value") or []
         try:
             result.remove(value[0])
             return result, True
@@ -904,6 +1006,7 @@ class DataListReverse(ComfyNodeABC):
 
     This node takes a list as input and returns a new list with the items in reversed order.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -922,7 +1025,7 @@ class DataListReverse(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def reverse(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        result = kwargs.get('list', []).copy()
+        result = (kwargs.get("list") or []).copy()
         result.reverse()
         return (result,)
 
@@ -934,6 +1037,7 @@ class DataListSetItem(ComfyNodeABC):
     This node takes a list, an index, and a value, then returns a new list with
     the item at the specified index replaced by the value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -954,9 +1058,9 @@ class DataListSetItem(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def set_item(self, **kwargs: list[Any]) -> tuple[Any]:
-        input_list = kwargs.get('list', [])
-        index = kwargs.get('index', [0])[0]
-        value = kwargs.get('value', [None])[0]
+        input_list = kwargs.get("list") or []
+        index = (kwargs.get("index") or [0])[0]
+        value = (kwargs.get("value") or [None])[0]
         try:
             result = input_list.copy()
             result[index] = value
@@ -971,6 +1075,7 @@ class DataListShuffle(ComfyNodeABC):
 
     This node takes a list and a seed as input and returns a new shuffled list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -991,8 +1096,9 @@ class DataListShuffle(ComfyNodeABC):
 
     def shuffle_list(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         import random
-        input_list = kwargs.get('list', [])
-        seed = kwargs.get('seed', [0])[0]
+
+        input_list = kwargs.get("list") or []
+        seed = (kwargs.get("seed") or [0])[0]
         random.seed(seed)
         result = input_list.copy()
         random.shuffle(result)
@@ -1006,6 +1112,7 @@ class DataListSlice(ComfyNodeABC):
     This node takes a list and start/stop/step parameters, and returns a new list
     containing the specified slice of the original list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1016,7 +1123,7 @@ class DataListSlice(ComfyNodeABC):
                 "start": (IO.INT, {"default": 0, "tooltip": "Start index (inclusive)."}),
                 "stop": (IO.INT, {"default": INT_MAX, "tooltip": "Stop index (exclusive); INT_MAX means the end."}),
                 "step": (IO.INT, {"default": 1, "tooltip": "Step between indices."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -1029,10 +1136,10 @@ class DataListSlice(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def slice(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
-        stop = kwargs.get('stop', [INT_MAX])[0]
-        step = kwargs.get('step', [1])[0]
+        input_list = kwargs.get("list") or []
+        start = (kwargs.get("start") or [0])[0]
+        stop = (kwargs.get("stop") or [INT_MAX])[0]
+        step = (kwargs.get("step") or [1])[0]
 
         return (input_list[start:stop:step],)
 
@@ -1044,6 +1151,7 @@ class DataListSort(ComfyNodeABC):
     This node takes a list as input and returns a new sorted list.
     Options include sorting in reverse order and using a key function.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1052,7 +1160,7 @@ class DataListSort(ComfyNodeABC):
             },
             "optional": {
                 "reverse": (["False", "True"], {"default": "False", "tooltip": "Sort in descending order when True."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -1066,9 +1174,9 @@ class DataListSort(ComfyNodeABC):
 
     def sort(self, **kwargs: list[Any]) -> tuple[list[Any]]:
         # Convert string to boolean
-        reverse = kwargs.get('reverse', ["False"])[0] == "True"
+        reverse = (kwargs.get("reverse") or ["False"])[0] == "True"
 
-        result = sorted(kwargs.get('list', []), reverse=reverse)
+        result = sorted(kwargs.get("list") or [], reverse=reverse)
         return (result,)
 
 
@@ -1086,11 +1194,17 @@ class DataListSum(ComfyNodeABC):
             },
             "optional": {
                 "start": (IO.INT, {"default": 0, "tooltip": "Initial value added to the sum."}),
-            }
+            },
         }
 
-    RETURN_TYPES = (IO.INT, IO.FLOAT,)
-    RETURN_NAMES = ("int_sum", "float_sum",)
+    RETURN_TYPES = (
+        IO.INT,
+        IO.FLOAT,
+    )
+    RETURN_NAMES = (
+        "int_sum",
+        "float_sum",
+    )
     OUTPUT_TOOLTIPS = ("The total as an integer.", "The total as a float.")
     CATEGORY = "Basic/Data List"
     DESCRIPTION = cleandoc(__doc__ or "")
@@ -1098,8 +1212,8 @@ class DataListSum(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def sum_list(self, **kwargs: list[Any]) -> tuple[int, float]:
-        input_list = kwargs.get('list', [])
-        start = kwargs.get('start', [0])[0]
+        input_list = kwargs.get("list") or []
+        start = (kwargs.get("start") or [0])[0]
         result = sum(input_list, start)
         return int(result), float(result)
 
@@ -1112,6 +1226,7 @@ class DataListZip(ComfyNodeABC):
     where each item is a list containing the corresponding elements from the input lists.
     The length of the output list will be equal to the length of the shortest input list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1122,7 +1237,7 @@ class DataListZip(ComfyNodeABC):
             "optional": {
                 "list3": (IO.ANY, {"tooltip": "Optional additional Data List."}),
                 "list4": (IO.ANY, {"tooltip": "Optional additional Data List."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.ANY,)
@@ -1135,13 +1250,13 @@ class DataListZip(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def zip_lists(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        lists = [kwargs.get('list1', []), kwargs.get('list2', [])]
+        lists = [(kwargs.get("list1") or []), (kwargs.get("list2") or [])]
 
-        if 'list3' in kwargs:
-            lists.append(kwargs['list3'])
+        if "list3" in kwargs:
+            lists.append(kwargs["list3"] or [])
 
-        if 'list4' in kwargs:
-            lists.append(kwargs['list4'])
+        if "list4" in kwargs:
+            lists.append(kwargs["list4"] or [])
 
         # Zip the lists together and convert each tuple to a list
         result = [list(item) for item in zip(*lists)]
@@ -1155,6 +1270,7 @@ class DataListToList(ComfyNodeABC):
     This node takes a Data List input (which is typically a list of items with the same type)
     and converts it to a LIST object (a Python list as a single variable).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1172,7 +1288,7 @@ class DataListToList(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[list[Any]]:
-        return (list(kwargs.get('list', [])).copy(),)
+        return (list(kwargs.get("list") or []).copy(),)
 
 
 class DataListToSet(ComfyNodeABC):
@@ -1182,6 +1298,7 @@ class DataListToSet(ComfyNodeABC):
     This node takes a Data List input (which is typically a list of items with the same type)
     and converts it to a LIST object (a Python list as a single variable).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -1199,7 +1316,7 @@ class DataListToSet(ComfyNodeABC):
     INPUT_IS_LIST = True
 
     def convert(self, **kwargs: list[Any]) -> tuple[set[Any]]:
-        return (set(kwargs.get('list', [])),)
+        return (set(kwargs.get("list") or []),)
 
 
 NODE_CLASS_MAPPINGS = {

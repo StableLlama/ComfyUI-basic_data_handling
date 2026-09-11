@@ -4,6 +4,7 @@ import re
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,12 +12,15 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class RegexFindallDataList(ComfyNodeABC):
     """
     Returns all non-overlapping matches of a pattern in the string as a data list of strings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -42,6 +46,7 @@ class RegexFindallList(ComfyNodeABC):
     """
     Returns all non-overlapping matches of a pattern in the string as a Python LIST.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -67,6 +72,7 @@ class RegexGroupDict(ComfyNodeABC):
     Searches the string with the given pattern and returns a DICT of named groups.
     If no match is found, it returns an empty DICT.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -95,6 +101,7 @@ class RegexSearchGroupsDataList(ComfyNodeABC):
     Searches the string for a match to the pattern and returns a data list of the captured groups.
     If no match is found, it returns an empty data list.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -124,6 +131,7 @@ class RegexSearchGroupsList(ComfyNodeABC):
     Searches the string for a match to the pattern and returns a Python LIST of the captured groups.
     If no match is found, it returns an empty LIST.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -151,6 +159,7 @@ class RegexSplitDataList(ComfyNodeABC):
     """
     Splits the string at each match of the pattern and returns a data list of substrings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -176,6 +185,7 @@ class RegexSplitList(ComfyNodeABC):
     """
     Splits the string at each match of the pattern and returns a Python LIST of substrings.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -200,6 +210,7 @@ class RegexSub(ComfyNodeABC):
     """
     Substitutes matches of the pattern in the string with a replacement string.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -207,7 +218,10 @@ class RegexSub(ComfyNodeABC):
                 "string": (IO.STRING, {"tooltip": "The text to modify."}),
                 "pattern": (IO.STRING, {"tooltip": "Regular expression pattern whose matches are replaced."}),
                 "repl": (IO.STRING, {"tooltip": "Replacement text. Backreferences to groups are supported."}),
-                "count": ("INT", {"default": 0, "tooltip": "Maximum number of replacements; 0 replaces all occurrences."}),  # 0 means replace all occurrences
+                "count": (
+                    "INT",
+                    {"default": 0, "tooltip": "Maximum number of replacements; 0 replaces all occurrences."},
+                ),  # 0 means replace all occurrences
             }
         }
 
@@ -227,6 +241,7 @@ class RegexTest(ComfyNodeABC):
     Tests whether a given regex pattern matches any part of the input string.
     Returns True if a match is found, otherwise False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {

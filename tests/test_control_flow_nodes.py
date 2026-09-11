@@ -1,6 +1,14 @@
-#import pytest
+# import pytest
 from src.basic_data_handling.control_flow_nodes import (
-    IfElse, SwitchCase, IfElifElse, ContinueFlow, FlowSelect, ForceCalculation, ExecutionOrder, IsConnected
+    IfElse,
+    SwitchCase,
+    IfElifElse,
+    ContinueFlow,
+    ContinueIfNotEmpty,
+    FlowSelect,
+    ForceCalculation,
+    ExecutionOrder,
+    IsConnected,
 )
 
 
@@ -88,9 +96,21 @@ def test_if_elif_else():
     # if is False, and one elif that is False, else
     assert node.execute(**{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif0_val", "else": "else_val"}) == ("else_val",)
     # if is False, multiple elifs, one is true
-    assert node.execute(**{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif0_val", "elif_1": True, "then_1": "elif1_val", "else": "else_val"}) == ("elif1_val",)
+    assert node.execute(
+        **{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif0_val", "elif_1": True, "then_1": "elif1_val", "else": "else_val"}
+    ) == ("elif1_val",)
     # all false, else
-    assert node.execute(**{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif0_val", "elif_1": False, "then_1": "elif1_val", "else": "else_val"}) == ("else_val",)
+    assert node.execute(
+        **{
+            "if": False,
+            "then": "if_val",
+            "elif_0": False,
+            "then_0": "elif0_val",
+            "elif_1": False,
+            "then_1": "elif1_val",
+            "else": "else_val",
+        }
+    ) == ("else_val",)
     # all false, no else
     assert node.execute(**{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif0_val"}) == (None,)
     # Missing then for a true condition
@@ -136,13 +156,24 @@ def test_if_elif_else_lazy_status():
     # if is False, elif_0 False, elif_1 False, else needs evaluation but is already fulfilled
     assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": False, "else": "else_val"}) == []
     # if is False, elif_0 False, elif_1 is True, then_1 is needed
-    assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": None, "else": None}) == ["then_1"]
+    assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": None, "else": None}) == [
+        "then_1"
+    ]
     # if is False, elif_0 False, elif_1 is True, then_1 is needed
-    assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": None, "else": "else_val"}) == ["then_1"]
+    assert node.check_lazy_status(
+        **{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": None, "else": "else_val"}
+    ) == ["then_1"]
     # if is False, elif_0 False, elif_1 is True, then_1 is not needed, but else is needed
-    assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": "elif1_val", "else": None}) == ["else"]
+    assert node.check_lazy_status(
+        **{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": "elif1_val", "else": None}
+    ) == ["else"]
     # if is False, elif_0 False, elif_1 is True, then_1 is not needed, but else is needed
-    assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": "elif1_val", "else": "else_val"}) == []
+    assert (
+        node.check_lazy_status(
+            **{"if": False, "then": "if_val", "elif_0": False, "elif_1": True, "then_1": "elif1_val", "else": "else_val"}
+        )
+        == []
+    )
     # all false, else is needed
     assert node.check_lazy_status(**{"if": False, "then": "if_val", "elif_0": False, "then_0": "elif1_val", "else": None}) == ["else"]
     # all false, else is not needed
@@ -166,6 +197,26 @@ def test_continue_flow():
     assert res == (None,) or "ExecutionBlocker" in str(res[0])
 
 
+def test_continue_if_not_empty():
+    node = ContinueIfNotEmpty()
+    # Non-empty values pass through (single values wrapped into a list for OUTPUT_IS_LIST).
+    assert node.execute("some value") == (["some value"],)
+    assert node.execute([1, 2]) == ([1, 2],)
+    assert node.execute({"key": "value"}) == ([{"key": "value"}],)
+    assert node.execute({1, 2}) == ([{1, 2}],)
+    # Empty values block execution (ExecutionBlocker under ComfyUI). Silent by default.
+    res = node.execute(None)
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    for empty in ([], {}, set(), "", 0, False):
+        res = node.execute(empty)
+        assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    # A provided message is passed to the blocker (as a list under INPUT_IS_LIST).
+    res = node.execute(None, message=["Interrupted"])
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+    res = node.execute(None, message="Interrupted")
+    assert res == (None,) or "ExecutionBlocker" in str(res[0])
+
+
 def test_flow_select():
     node = FlowSelect()
     # select is True
@@ -184,9 +235,9 @@ def test_flow_select():
     res = node.select(42, select=True)
     assert res[0] == 42
     assert res[1] is None or "ExecutionBlocker" in str(res[1])
-    res = node.select({'a': 1}, select=False)
+    res = node.select({"a": 1}, select=False)
     assert res[0] is None or "ExecutionBlocker" in str(res[0])
-    assert res[1] == {'a': 1}
+    assert res[1] == {"a": 1}
 
 
 def test_force_calculation():
@@ -199,13 +250,13 @@ def test_force_calculation():
 def test_execution_order():
     node = ExecutionOrder()
     # with "any node output"
-    assert node.execute(**{'any node output': "passthrough_val"}) == (None, "passthrough_val")
+    assert node.execute(**{"any node output": "passthrough_val"}) == (None, "passthrough_val")
     # without "any node output"
     assert node.execute() == (None, [])
     # with other kwargs
     assert node.execute(other_kwarg="some_val") == (None, [])
     # with multiple kwargs
-    assert node.execute(**{'any node output': "passthrough_val", "E/O": "ignored"}) == (None, "passthrough_val")
+    assert node.execute(**{"any node output": "passthrough_val", "E/O": "ignored"}) == (None, "passthrough_val")
 
 
 def test_is_connected():

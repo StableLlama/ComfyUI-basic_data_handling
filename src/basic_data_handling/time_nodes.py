@@ -13,6 +13,7 @@ except ImportError:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 # Add custom IO types for DATETIME and TIMEDELTA
@@ -25,13 +26,10 @@ class TimeNow(ComfyNodeABC):
     Returns the current time and date as a DATETIME object.
     Note: Output changes for every run, providing a fresh timestamp each time.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "optional": {
-                "trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})
-            }
-        }
+        return {"optional": {"trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})}}
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("now",)
@@ -58,13 +56,10 @@ class TimeNowUTC(ComfyNodeABC):
     Returns the current time and date as a DATETIME object, in the UTC timezone.
     Note: Output changes for every run, providing a fresh timestamp each time.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "optional": {
-                "trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})
-            }
-        }
+        return {"optional": {"trigger": (IO.ANY, {"tooltip": "Optional input to trigger a fresh evaluation."})}}
 
     RETURN_TYPES = (IO.DATETIME,)
     RETURN_NAMES = ("now",)
@@ -90,6 +85,7 @@ class TimeToUnix(ComfyNodeABC):
     """
     Converts a DATETIME object to a Unix timestamp (a float representing seconds since the epoch).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -116,6 +112,7 @@ class UnixToTime(ComfyNodeABC):
     """
     Converts a Unix timestamp (float or int) to a DATETIME object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -143,6 +140,7 @@ class TimeFormat(ComfyNodeABC):
     Formats a DATETIME object into a string using a specified format code.
     Common format codes: %Y (year), %m (month), %d (day), %H (hour), %M (minute), %S (second).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -170,12 +168,16 @@ class TimeParse(ComfyNodeABC):
     """
     Parses a string containing a date and time into a DATETIME object, using a specified format code.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "time_string": (IO.STRING, {"tooltip": "The date/time string to parse."}),
-                "format_string": (IO.STRING, {"default": "%Y-%m-%d %H:%M:%S", "tooltip": "strptime format code matching the input string, e.g. %Y-%m-%d %H:%M:%S."}),
+                "format_string": (
+                    IO.STRING,
+                    {"default": "%Y-%m-%d %H:%M:%S", "tooltip": "strptime format code matching the input string, e.g. %Y-%m-%d %H:%M:%S."},
+                ),
             }
         }
 
@@ -197,6 +199,7 @@ class TimeDelta(ComfyNodeABC):
     """
     Creates a TIMEDELTA object, which represents a duration and can be used for date calculations.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -229,6 +232,7 @@ class TimeAddDelta(ComfyNodeABC):
     """
     Adds a TIMEDELTA (duration) to a DATETIME object, resulting in a new DATETIME.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -256,6 +260,7 @@ class TimeSubtractDelta(ComfyNodeABC):
     """
     Subtracts a TIMEDELTA (duration) from a DATETIME object, resulting in a new DATETIME.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -283,6 +288,7 @@ class TimeDifference(ComfyNodeABC):
     """
     Calculates the difference between two DATETIME objects, returning a TIMEDELTA object.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -311,15 +317,23 @@ class TimeExtract(ComfyNodeABC):
     Extracts individual components (year, month, day, hour, etc.) from a DATETIME object.
     Weekday is returned as an integer, where Monday is 0 and Sunday is 6.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
-        return {
-            "required": { "datetime": (IO.DATETIME, {"tooltip": "The DATETIME to decompose."}) }
-        }
+        return {"required": {"datetime": (IO.DATETIME, {"tooltip": "The DATETIME to decompose."})}}
 
     RETURN_TYPES = (IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT, IO.INT)
     RETURN_NAMES = ("year", "month", "day", "hour", "minute", "second", "microsecond", "weekday")
-    OUTPUT_TOOLTIPS = ("Year.", "Month (1-12).", "Day of the month.", "Hour (0-23).", "Minute (0-59).", "Second (0-59).", "Microsecond.", "Weekday (Monday = 0 .. Sunday = 6).")
+    OUTPUT_TOOLTIPS = (
+        "Year.",
+        "Month (1-12).",
+        "Day of the month.",
+        "Hour (0-23).",
+        "Minute (0-59).",
+        "Second (0-59).",
+        "Microsecond.",
+        "Weekday (Monday = 0 .. Sunday = 6).",
+    )
     CATEGORY = "Basic/time"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "extract"
@@ -328,8 +342,16 @@ class TimeExtract(ComfyNodeABC):
         """
         Extracts all time components from a datetime object.
         """
-        return (datetime.year, datetime.month, datetime.day, datetime.hour,
-                datetime.minute, datetime.second, datetime.microsecond, datetime.weekday())
+        return (
+            datetime.year,
+            datetime.month,
+            datetime.day,
+            datetime.hour,
+            datetime.minute,
+            datetime.second,
+            datetime.microsecond,
+            datetime.weekday(),
+        )
 
 
 class TimeDeltaToSeconds(ComfyNodeABC):
@@ -337,6 +359,7 @@ class TimeDeltaToSeconds(ComfyNodeABC):
     Converts a TIMEDELTA object to a float representing its duration in seconds.
     A value of 1.0 corresponds to a time delta of one second.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -364,6 +387,7 @@ class TimeDeltaToMilliseconds(ComfyNodeABC):
     Converts a TIMEDELTA object to an integer representing its duration in milliseconds.
     A value of 1 corresponds to a time delta of one millisecond, rounded to the nearest millisecond.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {

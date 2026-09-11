@@ -13,9 +13,11 @@ except ImportError:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
+
 
 class MathFormula(ComfyNodeABC):
     """
@@ -44,11 +46,26 @@ class MathFormula(ComfyNodeABC):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "formula": (IO.STRING, {"default": "-pi() ** 2", "tooltip": "Expression to evaluate using single-letter variables (a, b, c, ...), supported operators, parentheses and functions. Example: sqrt(a**2 + b**2)."}),
+                "formula": (
+                    IO.STRING,
+                    {
+                        "default": "-pi() ** 2",
+                        "tooltip": "Expression to evaluate using single-letter variables (a, b, c, ...), supported operators, parentheses and functions. Example: sqrt(a**2 + b**2).",
+                    },
+                ),
             },
-            "optional": ContainsDynamicDict({
-                "a": (IO.NUMBER, {"default": 0.0, "_dynamic": "letter", "tooltip": "A numeric value bound to a single-letter variable in the formula. Connect more values to add the variables b, c, d, ..."}),
-            }),
+            "optional": ContainsDynamicDict(
+                {
+                    "a": (
+                        IO.NUMBER,
+                        {
+                            "default": 0.0,
+                            "_dynamic": "letter",
+                            "tooltip": "A numeric value bound to a single-letter variable in the formula. Connect more values to add the variables b, c, d, ...",
+                        },
+                    ),
+                }
+            ),
         }
 
     RETURN_TYPES = (IO.FLOAT,)
@@ -59,10 +76,35 @@ class MathFormula(ComfyNodeABC):
     FUNCTION = "evaluate"
 
     FUNC_ARITIES = {
-        "pi": 0, "e": 0, "abs": 1, "floor": 1, "ceil": 1, "round": 1, "sin": 1, "cos": 1,
-        "tan": 1, "asin": 1, "acos": 1, "atan": 1, "degrees": 1, "radians": 1, "sinh": 1,
-        "cosh": 1, "tanh": 1, "asinh": 1, "acosh": 1, "atanh": 1, "exp": 1, "log": 1,
-        "log10": 1, "log2": 1, "sqrt": 1, "pow": 2, "atan2": 2, "min": 2, "max": 2,
+        "pi": 0,
+        "e": 0,
+        "abs": 1,
+        "floor": 1,
+        "ceil": 1,
+        "round": 1,
+        "sin": 1,
+        "cos": 1,
+        "tan": 1,
+        "asin": 1,
+        "acos": 1,
+        "atan": 1,
+        "degrees": 1,
+        "radians": 1,
+        "sinh": 1,
+        "cosh": 1,
+        "tanh": 1,
+        "asinh": 1,
+        "acosh": 1,
+        "atanh": 1,
+        "exp": 1,
+        "log": 1,
+        "log10": 1,
+        "log2": 1,
+        "sqrt": 1,
+        "pow": 2,
+        "atan2": 2,
+        "min": 2,
+        "max": 2,
     }
     SUPPORTED_FUNCTIONS = set(FUNC_ARITIES.keys())
 
@@ -75,15 +117,11 @@ class MathFormula(ComfyNodeABC):
         "//": (3, "LEFT", 2),
         "%": (3, "LEFT", 2),
         "**": (4, "RIGHT", 2),
-        "_NEG": (5, "RIGHT", 1), # Unary has higher precedence than exponentiation
+        "_NEG": (5, "RIGHT", 1),  # Unary has higher precedence than exponentiation
     }
     OPERATORS = set(OPERATOR_PROPS.keys())
 
-    TOKEN_REGEX = re.compile(
-        r"([a-zA-Z_][a-zA-Z0-9_]*)"
-        r"|(\d+(?:\.\d*)?|\.\d+)"
-        r"|(\*\*|//|[+\-*/%(),])"
-    )
+    TOKEN_REGEX = re.compile(r"([a-zA-Z_][a-zA-Z0-9_]*)" r"|(\d+(?:\.\d*)?|\.\d+)" r"|(\*\*|//|[+\-*/%(),])")
 
     def evaluate(self, formula: str, **kwargs) -> tuple[float]:
         tokens = self.tokenize_formula(formula)
@@ -108,14 +146,14 @@ class MathFormula(ComfyNodeABC):
             if self.is_number(token):
                 output_queue.append(float(token))
             elif token.isalnum() and not token.isdigit():
-                is_function_call = (i + 1 < len(tokens) and tokens[i+1] == '(')
+                is_function_call = i + 1 < len(tokens) and tokens[i + 1] == "("
                 if is_function_call:
                     if token not in self.SUPPORTED_FUNCTIONS:
                         raise ValueError(f"Unknown function: '{token}'")
                     op_stack.append(token)
                 else:
                     if len(token) == 1 and token.isalpha():
-                        output_queue.append(('VAR', token))
+                        output_queue.append(("VAR", token))
                     else:
                         if token in self.SUPPORTED_FUNCTIONS:
                             raise ValueError(f"Function '{token}' must be called with parentheses, e.g., {token}()")
@@ -138,12 +176,12 @@ class MathFormula(ComfyNodeABC):
                 if op_stack and op_stack[-1] in self.SUPPORTED_FUNCTIONS:
                     output_queue.append(op_stack.pop())
             elif token in self.OPERATORS:
-                is_unary = token == '-' and (prev_token is None or prev_token in binary_operators or prev_token in ['(', ','])
+                is_unary = token == "-" and (prev_token is None or prev_token in binary_operators or prev_token in ["(", ","])
                 op_to_push = "_NEG" if is_unary else token
                 props = self.OPERATOR_PROPS[op_to_push]
                 prec = props[0]
 
-                while (op_stack and op_stack[-1] != '(' and op_stack[-1] in self.OPERATORS):
+                while op_stack and op_stack[-1] != "(" and op_stack[-1] in self.OPERATORS:
                     stack_op_props = self.OPERATOR_PROPS[op_stack[-1]]
                     stack_op_prec = stack_op_props[0]
                     stack_op_assoc = stack_op_props[1]
@@ -169,7 +207,7 @@ class MathFormula(ComfyNodeABC):
         for token in postfix:
             if isinstance(token, float):
                 stack.append(token)
-            elif isinstance(token, tuple) and token[0] == 'VAR':
+            elif isinstance(token, tuple) and token[0] == "VAR":
                 var_name = token[1]
                 if var_name not in variables:
                     raise ValueError(f"Variable '{var_name}' was not provided.")
@@ -202,51 +240,87 @@ class MathFormula(ComfyNodeABC):
         return stack[0]
 
     def apply_operator(self, a: float, b: float, operator: str) -> float:
-        if operator == "+": return a + b
-        if operator == "-": return a - b
-        if operator == "*": return a * b
-        if operator == "**": return a ** b
-        if b == 0 and operator in ['/', '//', '%']:
+        if operator == "+":
+            return a + b
+        if operator == "-":
+            return a - b
+        if operator == "*":
+            return a * b
+        if operator == "**":
+            return a**b
+        if b == 0 and operator in ["/", "//", "%"]:
             raise ZeroDivisionError(f"Division by zero in operator '{operator}'.")
-        if operator == "/": return a / b
-        if operator == "//": return a // b
-        if operator == "%": return a % b
+        if operator == "/":
+            return a / b
+        if operator == "//":
+            return a // b
+        if operator == "%":
+            return a % b
         raise ValueError(f"Unsupported operator: {operator}")
 
     def apply_function(self, func: str, args: list) -> float:
-        if func == "pi": return math.pi
-        if func == "e": return math.e
+        if func == "pi":
+            return math.pi
+        if func == "e":
+            return math.e
         if len(args) == 1:
             arg = args[0]
-            if func == "abs": return abs(arg)
-            if func == "floor": return math.floor(arg)
-            if func == "ceil": return math.ceil(arg)
-            if func == "round": return round(arg)
-            if func == "sin": return math.sin(arg)
-            if func == "cos": return math.cos(arg)
-            if func == "tan": return math.tan(arg)
-            if func == "asin": return math.asin(arg)
-            if func == "acos": return math.acos(arg)
-            if func == "atan": return math.atan(arg)
-            if func == "degrees": return math.degrees(arg)
-            if func == "radians": return math.radians(arg)
-            if func == "sinh": return math.sinh(arg)
-            if func == "cosh": return math.cosh(arg)
-            if func == "tanh": return math.tanh(arg)
-            if func == "asinh": return math.asinh(arg)
-            if func == "acosh": return math.acosh(arg)
-            if func == "atanh": return math.atanh(arg)
-            if func == "exp": return math.exp(arg)
-            if func == "log": return math.log(arg)
-            if func == "log10": return math.log10(arg)
-            if func == "log2": return math.log2(arg)
-            if func == "sqrt": return math.sqrt(arg)
+            if func == "abs":
+                return abs(arg)
+            if func == "floor":
+                return math.floor(arg)
+            if func == "ceil":
+                return math.ceil(arg)
+            if func == "round":
+                return round(arg)
+            if func == "sin":
+                return math.sin(arg)
+            if func == "cos":
+                return math.cos(arg)
+            if func == "tan":
+                return math.tan(arg)
+            if func == "asin":
+                return math.asin(arg)
+            if func == "acos":
+                return math.acos(arg)
+            if func == "atan":
+                return math.atan(arg)
+            if func == "degrees":
+                return math.degrees(arg)
+            if func == "radians":
+                return math.radians(arg)
+            if func == "sinh":
+                return math.sinh(arg)
+            if func == "cosh":
+                return math.cosh(arg)
+            if func == "tanh":
+                return math.tanh(arg)
+            if func == "asinh":
+                return math.asinh(arg)
+            if func == "acosh":
+                return math.acosh(arg)
+            if func == "atanh":
+                return math.atanh(arg)
+            if func == "exp":
+                return math.exp(arg)
+            if func == "log":
+                return math.log(arg)
+            if func == "log10":
+                return math.log10(arg)
+            if func == "log2":
+                return math.log2(arg)
+            if func == "sqrt":
+                return math.sqrt(arg)
         if len(args) == 2:
             a, b = args[0], args[1]
-            if func == "pow": return math.pow(a, b)
-            if func == "atan2": return math.atan2(a, b)
-            if func == "min": return min(a, b)
-            if func == "max": return max(a, b)
+            if func == "pow":
+                return math.pow(a, b)
+            if func == "atan2":
+                return math.atan2(a, b)
+            if func == "min":
+                return min(a, b)
+            if func == "max":
+                return max(a, b)
         raise ValueError(f"Internal error: apply_function called with wrong number of args for '{func}'")
 
     def is_number(self, value: str) -> bool:
@@ -255,6 +329,7 @@ class MathFormula(ComfyNodeABC):
             return True
         except (ValueError, TypeError):
             return False
+
 
 NODE_CLASS_MAPPINGS = {
     "Basic data handling: MathFormula": MathFormula,

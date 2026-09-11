@@ -4,6 +4,7 @@ from inspect import cleandoc
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,7 +12,9 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class Equal(ComfyNodeABC):
     """
@@ -21,6 +24,7 @@ class Equal(ComfyNodeABC):
     and False otherwise. For complex objects (lists, dicts, sets), structural
     equality is tested.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -49,6 +53,7 @@ class NotEqual(ComfyNodeABC):
     and False otherwise. For complex objects (lists, dicts, sets), structural
     inequality is tested.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -80,6 +85,7 @@ class LessThan(ComfyNodeABC):
     This node takes two numerical inputs and returns True if the first value
     is strictly less than the second value, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -107,6 +113,7 @@ class LessThanOrEqual(ComfyNodeABC):
     This node takes two numerical inputs and returns True if the first value
     is less than or equal to the second value, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -134,6 +141,7 @@ class GreaterThan(ComfyNodeABC):
     This node takes two numerical inputs and returns True if the first value
     is strictly greater than the second value, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -161,6 +169,7 @@ class GreaterThanOrEqual(ComfyNodeABC):
     This node takes two numerical inputs and returns True if the first value
     is greater than or equal to the second value, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -188,6 +197,7 @@ class IsNull(ComfyNodeABC):
     This node takes any input value and returns True if the value is None
     (Python null), and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -215,6 +225,7 @@ class NumberInRange(ComfyNodeABC):
     number lies within the range. The ``include_min`` and ``include_max`` options control
     whether the boundaries themselves count as being inside the range.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -226,7 +237,7 @@ class NumberInRange(ComfyNodeABC):
             "optional": {
                 "include_min": (IO.BOOLEAN, {"default": "True", "tooltip": "Treat the lower bound as inside the range (>=)."}),
                 "include_max": (IO.BOOLEAN, {"default": "True", "tooltip": "Treat the upper bound as inside the range (<=)."}),
-            }
+            },
         }
 
     RETURN_TYPES = (IO.BOOLEAN,)
@@ -236,8 +247,9 @@ class NumberInRange(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "check_range"
 
-    def check_range(self, value: float, min_value: float, max_value: float,
-                    include_min: str = "True", include_max: str = "True") -> tuple[bool]:
+    def check_range(
+        self, value: float, min_value: float, max_value: float, include_min: str = "True", include_max: str = "True"
+    ) -> tuple[bool]:
         min_check = value >= min_value if include_min == "True" else value > min_value
         max_check = value <= max_value if include_max == "True" else value < max_value
 
@@ -252,12 +264,16 @@ class CompareLength(ComfyNodeABC):
     selected *operator*. Returns the boolean result and, as a convenience, the
     actual measured length.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "container": (IO.ANY, {"tooltip": "The object whose length is measured (string, list, dict, set, ...)."}),
-                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "==", "tooltip": "Comparison operator applied between the length and the given value."}),
+                "operator": (
+                    ["==", "!=", ">", "<", ">=", "<="],
+                    {"default": "==", "tooltip": "Comparison operator applied between the length and the given value."},
+                ),
                 "length": (IO.INT, {"default": 0, "min": 0, "tooltip": "The value the measured length is compared against."}),
             }
         }
@@ -300,13 +316,17 @@ class StringComparison(ComfyNodeABC):
     comparison holds. Comparisons are lexicographic (dictionary order); enable
     *case_sensitive* to treat uppercase and lowercase letters as distinct.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "string1": ("STRING", {"default": "", "tooltip": "First string to compare."}),
                 "string2": ("STRING", {"default": "", "tooltip": "Second string to compare."}),
-                "operator": (["==", "!=", ">", "<", ">=", "<="], {"default": "==", "tooltip": "Comparison operator applied between the two strings."}),
+                "operator": (
+                    ["==", "!=", ">", "<", ">=", "<="],
+                    {"default": "==", "tooltip": "Comparison operator applied between the two strings."},
+                ),
                 "case_sensitive": (IO.BOOLEAN, {"default": True, "tooltip": "When enabled, letter case is respected (e.g. 'A' != 'a')."}),
             }
         }

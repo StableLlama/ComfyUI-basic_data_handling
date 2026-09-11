@@ -1,4 +1,4 @@
-#import pytest
+# import pytest
 
 from datetime import datetime, timedelta
 from src.basic_data_handling.time_nodes import (
@@ -17,6 +17,7 @@ from src.basic_data_handling.time_nodes import (
     TimeDeltaToMilliseconds,
 )
 
+
 def test_time_now():
     node = TimeNow()
     result = node.get_now()
@@ -29,6 +30,7 @@ def test_time_now():
     assert isinstance(result_with_trigger, tuple)
     assert len(result_with_trigger) == 1
     assert isinstance(result_with_trigger[0], datetime)
+
 
 def test_time_now_utc():
     node = TimeNowUTC()
@@ -43,6 +45,7 @@ def test_time_now_utc():
     assert len(result_with_trigger) == 1
     assert isinstance(result_with_trigger[0], datetime)
 
+
 def test_time_to_unix():
     node = TimeToUnix()
     test_datetime = datetime(2023, 1, 1, 12, 0, 0)
@@ -54,6 +57,7 @@ def test_time_to_unix():
     # 2023-01-01 12:00:00 should convert to a specific timestamp
     expected_timestamp = test_datetime.timestamp()
     assert result[0] == expected_timestamp
+
 
 def test_unix_to_time():
     node = UnixToTime()
@@ -76,6 +80,7 @@ def test_unix_to_time():
     assert returned_dt.minute == 0
     assert returned_dt.second == 0
 
+
 def test_time_format():
     node = TimeFormat()
     test_datetime = datetime(2023, 1, 1, 12, 30, 45)
@@ -91,6 +96,7 @@ def test_time_format():
     # Test with time-only format
     result = node.format_time(test_datetime, "%H:%M")
     assert result == ("12:30",)
+
 
 def test_time_parse():
     node = TimeParse()
@@ -112,6 +118,7 @@ def test_time_parse():
     assert parsed_datetime.hour == 12
     assert parsed_datetime.minute == 30
 
+
 def test_time_delta():
     node = TimeDelta()
 
@@ -127,27 +134,20 @@ def test_time_delta():
     delta = result[0]
     # Convert to seconds for easier comparison
     total_seconds = delta.total_seconds()
-    expected_seconds = 24*60*60 + 2*60*60 + 30*60  # 1 day, 2 hours, 30 minutes
+    expected_seconds = 24 * 60 * 60 + 2 * 60 * 60 + 30 * 60  # 1 day, 2 hours, 30 minutes
     assert total_seconds == expected_seconds
 
     # Test with all parameters
-    result = node.create_delta(
-        days=1,
-        seconds=30,
-        microseconds=500,
-        milliseconds=100,
-        minutes=5,
-        hours=2,
-        weeks=1
-    )
+    result = node.create_delta(days=1, seconds=30, microseconds=500, milliseconds=100, minutes=5, hours=2, weeks=1)
     delta = result[0]
     # A week plus a day
     assert delta.days == 8
     # Convert the remainder to seconds for comparison
     remainder_seconds = delta.seconds
-    expected_remainder = 2*60*60 + 5*60 + 30 + 0.1  # 2 hours, 5 minutes, 30 seconds, 100 milliseconds
+    expected_remainder = 2 * 60 * 60 + 5 * 60 + 30 + 0.1  # 2 hours, 5 minutes, 30 seconds, 100 milliseconds
     assert abs(remainder_seconds - expected_remainder) < 1
     assert delta.microseconds == 100500
+
 
 def test_time_add_delta():
     node = TimeAddDelta()
@@ -162,6 +162,7 @@ def test_time_add_delta():
     expected_datetime = datetime(2023, 1, 2, 14, 30, 0)  # 1 day, 2 hours, 30 minutes later
     assert result[0] == expected_datetime
 
+
 def test_time_subtract_delta():
     node = TimeSubtractDelta()
     test_datetime = datetime(2023, 1, 2, 14, 30, 0)
@@ -174,6 +175,7 @@ def test_time_subtract_delta():
 
     expected_datetime = datetime(2023, 1, 1, 12, 0, 0)  # 1 day, 2 hours, 30 minutes earlier
     assert result[0] == expected_datetime
+
 
 def test_time_difference():
     node = TimeDifference()
@@ -191,6 +193,7 @@ def test_time_difference():
     # Test reverse order (should give negative timedelta)
     result = node.difference(datetime2, datetime1)
     assert result[0] == -expected_delta
+
 
 def test_time_extract():
     node = TimeExtract()
@@ -212,6 +215,7 @@ def test_time_extract():
     # January 2, 2023 was a Monday (weekday 0)
     assert weekday == 0
 
+
 def test_time_delta_to_seconds():
     node = TimeDeltaToSeconds()
 
@@ -224,7 +228,7 @@ def test_time_delta_to_seconds():
 
     # Larger durations
     result = node.to_seconds(timedelta(days=1, hours=2, minutes=30))
-    assert result[0] == 24*60*60 + 2*60*60 + 30*60
+    assert result[0] == 24 * 60 * 60 + 2 * 60 * 60 + 30 * 60
 
     # Sub-second durations remain fractional
     result = node.to_seconds(timedelta(milliseconds=500))
@@ -233,6 +237,7 @@ def test_time_delta_to_seconds():
     # Negative deltas
     result = node.to_seconds(timedelta(seconds=-2))
     assert result[0] == -2.0
+
 
 def test_time_delta_to_milliseconds():
     node = TimeDeltaToMilliseconds()

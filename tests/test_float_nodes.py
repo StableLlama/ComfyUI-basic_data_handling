@@ -15,6 +15,7 @@ from src.basic_data_handling.float_nodes import (
     FloatFromHex,
 )
 
+
 def test_float_create():
     node = FloatCreate()
     assert node.create("3.14") == (3.14,)
@@ -58,8 +59,8 @@ def test_float_divide_safe():
 
     assert node.divide(7.0, 2.0) == (3.5,)
     assert node.divide(-6.0, 3.0) == (-2.0,)
-    assert node.divide(5.0, 0.0) == (float('inf'),)
-    assert node.divide(-5.0, 0.0) == (float('-inf'),)
+    assert node.divide(5.0, 0.0) == (float("inf"),)
+    assert node.divide(-5.0, 0.0) == (float("-inf"),)
 
     # Special handling for NaN because NaN != NaN
     result = node.divide(0.0, 0.0)

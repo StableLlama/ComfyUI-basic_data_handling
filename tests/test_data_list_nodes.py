@@ -279,12 +279,10 @@ def test_create_from_string():
 def test_list_create():
     node = DataListListCreate()
     # Testing with string values
-    assert (node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], item_2="") ==
-            ([["hello", "world"], ["bye", "bye!"]],))
+    assert node.create_list(item_0=["hello", "world"], item_1=["bye", "bye!"], item_2="") == ([["hello", "world"], ["bye", "bye!"]],)
 
     # Testing with mixed values
-    assert (node.create_list(item_0=[123, 456], item_1=[True, False], item_2="") ==
-            ([[123, 456], [True, False]],))
+    assert node.create_list(item_0=[123, 456], item_1=[True, False], item_2="") == ([[123, 456], [True, False]],)
 
     # Testing with empty list
     assert node.create_list(item_0="") == ([],)
@@ -370,9 +368,9 @@ def test_any():
 def test_enumerate():
     node = DataListEnumerate()
     # Basic enumeration starting from 0
-    assert node.enumerate_list(list=['a', 'b', 'c']) == ([[0, 'a'], [1, 'b'], [2, 'c']],)
+    assert node.enumerate_list(list=["a", "b", "c"]) == ([[0, "a"], [1, "b"], [2, "c"]],)
     # Custom start index
-    assert node.enumerate_list(list=['x', 'y', 'z'], start=[10]) == ([[10, 'x'], [11, 'y'], [12, 'z']],)
+    assert node.enumerate_list(list=["x", "y", "z"], start=[10]) == ([[10, "x"], [11, "y"], [12, "z"]],)
     # Empty list
     assert node.enumerate_list(list=[]) == ([],)
 
@@ -426,3 +424,35 @@ def test_range():
     # Test with ValueError (step cannot be zero)
     with pytest.raises(ValueError, match="Step cannot be zero"):
         node.create_range(start=0, stop=5, step=0)
+
+
+def test_data_list_none_source():
+    """Graceful behaviour when the Data List source is None."""
+    assert DataListAll().check_all(list=None) == (True,)
+    assert DataListAny().check_any(list=None) == (False,)
+    assert DataListAppend().append(list=None, item=[1]) == ([1],)
+    assert DataListContains().contains(list=None, value=[1]) == (False,)
+    assert DataListCount().count(list=None, value=[1]) == (0,)
+    assert DataListEnumerate().enumerate_list(list=None) == ([],)
+    assert DataListExtend().extend(list_a=None, list_b=None) == ([],)
+    assert DataListFilter().filter_data(value=None, filter=None) == ([],)
+    assert DataListFilterSelect().select(value=None, select=None) == ([], [])
+    assert DataListFirst().get_first_element(list=None) == (None,)
+    assert DataListGetItem().get_item(list=None, index=[0]) == (None,)
+    assert DataListIndex().list_index(list=None, value=[1]) == (-1,)
+    assert DataListInsert().insert(list=None, index=[0], item=[1]) == ([1],)
+    assert DataListLast().get_last_element(list=None) == (None,)
+    assert DataListLength().length(list=None) == (0,)
+    assert DataListMax().find_max(list=None) == (None,)
+    assert DataListMin().find_min(list=None) == (None,)
+    assert DataListPop().pop(list=None) == ([], None)
+    assert DataListPopRandom().pop_random_element(list=None) == ([], None)
+    assert DataListRemove().remove(list=None, value=[1]) == ([], False)
+    assert DataListReverse().reverse(list=None) == ([],)
+    assert DataListShuffle().shuffle_list(list=None, seed=[0]) == ([],)
+    assert DataListSlice().slice(list=None) == ([],)
+    assert DataListSort().sort(list=None) == ([],)
+    assert DataListSum().sum_list(list=None) == (0, 0.0)
+    assert DataListZip().zip_lists(list1=None, list2=None) == ([],)
+    assert DataListToList().convert(list=None) == ([],)
+    assert DataListToSet().convert(list=None) == (set(),)

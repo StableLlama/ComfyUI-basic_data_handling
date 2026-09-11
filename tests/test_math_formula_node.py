@@ -3,6 +3,7 @@ import math
 from math import sin, cos
 from src.basic_data_handling.math_formula_node import MathFormula
 
+
 def test_basic_formula_evaluation():
     """Test basic formula evaluation with simple operations."""
     node = MathFormula()
@@ -24,23 +25,24 @@ def test_basic_formula_evaluation():
     assert node.evaluate("-a", a=5)[0] == pytest.approx(-5.0)
     assert node.evaluate("a * -b", a=3, b=4)[0] == pytest.approx(-12.0)
 
+
 def test_function_calls():
     """Test formula evaluation with math functions."""
     node = MathFormula()
 
     # Single-argument functions
-    assert node.evaluate("sin(a)", a=math.pi/6)[0] == pytest.approx(0.5)
+    assert node.evaluate("sin(a)", a=math.pi / 6)[0] == pytest.approx(0.5)
     assert node.evaluate("cos(a)", a=0)[0] == pytest.approx(1.0)
 
     # Unary minus with function calls
-    assert node.evaluate("sin(-a)", a=math.pi/6)[0] == pytest.approx(-0.5)
-    assert node.evaluate("-sin(a)", a=math.pi/6)[0] == pytest.approx(-0.5)
-    assert node.evaluate("-sin(-a)", a=math.pi/6)[0] == pytest.approx(0.5)
+    assert node.evaluate("sin(-a)", a=math.pi / 6)[0] == pytest.approx(-0.5)
+    assert node.evaluate("-sin(a)", a=math.pi / 6)[0] == pytest.approx(-0.5)
+    assert node.evaluate("-sin(-a)", a=math.pi / 6)[0] == pytest.approx(0.5)
 
     # Unary minus with nested function calls
     assert node.evaluate("sin(cos(-a))", a=math.pi)[0] == pytest.approx(sin(cos(-math.pi)))
     assert node.evaluate("-sin(cos(-a))", a=math.pi)[0] == pytest.approx(-sin(cos(-math.pi)))
-    assert node.evaluate("tan(a)", a=math.pi/4)[0] == pytest.approx(1.0)
+    assert node.evaluate("tan(a)", a=math.pi / 4)[0] == pytest.approx(1.0)
     assert node.evaluate("sqrt(a)", a=16)[0] == pytest.approx(4.0)
     assert node.evaluate("log(a)", a=math.e)[0] == pytest.approx(1.0)
     assert node.evaluate("exp(a)", a=2)[0] == pytest.approx(math.exp(2))
@@ -49,6 +51,7 @@ def test_function_calls():
     assert node.evaluate("min(a, b)", a=5, b=10)[0] == pytest.approx(5.0)
     assert node.evaluate("max(a, b)", a=5, b=10)[0] == pytest.approx(10.0)
     assert node.evaluate("pow(a, b)", a=2, b=3)[0] == pytest.approx(8.0)
+
 
 def test_constants():
     """Test formula evaluation with constants."""
@@ -60,14 +63,15 @@ def test_constants():
 
     # Using constants in expressions
     assert node.evaluate("2 * pi()")[0] == pytest.approx(2 * math.pi)
-    assert node.evaluate("e() ** 2")[0] == pytest.approx(math.e ** 2)
+    assert node.evaluate("e() ** 2")[0] == pytest.approx(math.e**2)
     assert node.evaluate("sin(pi() / 2)")[0] == pytest.approx(1.0)
     assert node.evaluate("log(e())")[0] == pytest.approx(1.0)
 
     # More complex expressions with constants
     assert node.evaluate("a * pi() + b", a=2, b=1)[0] == pytest.approx(2 * math.pi + 1)
-    assert node.evaluate("e() ** a", a=3)[0] == pytest.approx(math.e ** 3)
+    assert node.evaluate("e() ** a", a=3)[0] == pytest.approx(math.e**3)
     assert node.evaluate("sin(a * pi())", a=0.5)[0] == pytest.approx(1.0, abs=1e-10)
+
 
 def test_variable_constant_distinction():
     """Test that variables and constants can coexist without conflict."""
@@ -84,6 +88,7 @@ def test_variable_constant_distinction():
     assert node.evaluate("e * log(e())", e=2)[0] == pytest.approx(2.0)
     assert node.evaluate("a * e() + b * e", a=2, b=3, e=4)[0] == pytest.approx(2 * math.e + 3 * 4)
 
+
 def test_unary_minus():
     """Test that unary minus (negation) is handled correctly in all contexts."""
     node = MathFormula()
@@ -97,7 +102,7 @@ def test_unary_minus():
     assert node.evaluate("-e()")[0] == pytest.approx(-math.e)
 
     # Function result negation
-    assert node.evaluate("-sin(a)", a=math.pi/2)[0] == pytest.approx(-1.0)
+    assert node.evaluate("-sin(a)", a=math.pi / 2)[0] == pytest.approx(-1.0)
     assert node.evaluate("-sqrt(a)", a=4)[0] == pytest.approx(-2.0)
 
     # Nested unary minus
@@ -126,8 +131,9 @@ def test_unary_minus():
     assert node.evaluate("(-a - b)", a=5, b=3)[0] == pytest.approx(-8.0)
 
     # Unary minus with constants and functions in complex expressions
-    assert node.evaluate("-pi() * sin(-a)", a=math.pi/2)[0] == pytest.approx(math.pi)
-    assert node.evaluate("-e() ** -2")[0] == pytest.approx(1/(math.e**2)) # see documentation about this special case
+    assert node.evaluate("-pi() * sin(-a)", a=math.pi / 2)[0] == pytest.approx(math.pi)
+    assert node.evaluate("-e() ** -2")[0] == pytest.approx(1 / (math.e**2))  # see documentation about this special case
+
 
 def test_error_conditions():
     """Test error conditions in formula evaluation."""
@@ -176,6 +182,7 @@ def test_error_conditions():
     with pytest.raises(ValueError):
         node.evaluate("asin(x)", x=2)  # Out of domain [-1, 1]
 
+
 def test_complex_expressions():
     """Test evaluation of complex mathematical expressions."""
     node = MathFormula()
@@ -183,7 +190,7 @@ def test_complex_expressions():
     # Complex expression with variables, functions, and constants
     formula = "a * sin(b * pi()) + c * sqrt(d) + e() ** 2"
     result = node.evaluate(formula, a=2, b=0.5, c=3, d=9)[0]
-    expected = 2 * math.sin(0.5 * math.pi) + 3 * math.sqrt(9) + math.e ** 2
+    expected = 2 * math.sin(0.5 * math.pi) + 3 * math.sqrt(9) + math.e**2
     assert result == pytest.approx(expected)
 
     # Expression with nested functions
@@ -193,13 +200,13 @@ def test_complex_expressions():
     # Expression with multiple operations and precedence
     formula = "a + b * c - d / e + f ** g"
     result = node.evaluate(formula, a=1, b=2, c=3, d=8, e=4, f=2, g=3)[0]
-    expected = 1 + 2 * 3 - 8 / 4 + 2 ** 3
+    expected = 1 + 2 * 3 - 8 / 4 + 2**3
     assert result == pytest.approx(expected)
 
     # Complex expressions with unary minus
     formula = "a + -b * c - -(d / e) + -f ** g"
     result = node.evaluate(formula, a=1, b=2, c=3, d=8, e=4, f=2, g=3)[0]
-    expected = 1 + (-2) * 3 - (-(8 / 4)) + (-(2 ** 3))
+    expected = 1 + (-2) * 3 - (-(8 / 4)) + (-(2**3))
     assert result == pytest.approx(expected)
 
     # Expression with multiple unary minuses and parentheses
@@ -207,6 +214,7 @@ def test_complex_expressions():
     result = node.evaluate(formula, a=2, b=5, c=3, d=4)[0]
     expected = -2 * (5 + (-3)) / (-4)
     assert result == pytest.approx(expected)
+
 
 def test_formula_with_e_variable():
     """Test formulas with 'e' as a variable to ensure it doesn't clash with the constant."""
@@ -230,6 +238,7 @@ def test_formula_with_e_variable():
     expected = 2 * math.sin(math.e * math.pi)
     assert result == pytest.approx(expected)
 
+
 def test_whitespace_handling():
     """Test that the parser correctly handles different whitespace patterns."""
     node = MathFormula()
@@ -249,11 +258,12 @@ def test_whitespace_handling():
     assert node.evaluate("-    (a + b)", a=2, b=3)[0] == pytest.approx(-5.0)
 
     # Mixed spacing around functions
-    assert node.evaluate("sin( a )+cos(b)", a=math.pi/2, b=0)[0] == pytest.approx(2.0)
+    assert node.evaluate("sin( a )+cos(b)", a=math.pi / 2, b=0)[0] == pytest.approx(2.0)
 
     # Spacing around constants
     assert node.evaluate("2*pi( )", a=1)[0] == pytest.approx(2 * math.pi)
-    assert node.evaluate("e( )**2")[0] == pytest.approx(math.e ** 2)
+    assert node.evaluate("e( )**2")[0] == pytest.approx(math.e**2)
+
 
 def test_tokenizing():
     """Test the tokenization functionality."""
@@ -289,6 +299,7 @@ def test_tokenizing():
     tokens = node.tokenize_formula("a + b * (c - d) / e() ** 2")
     assert all(token in tokens for token in ["a", "+", "b", "*", "(", "c", "-", "d", ")", "/", "e", "(", ")", "**", "2"])
 
+
 def test_infix_to_postfix():
     """Test the infix to postfix conversion."""
     node = MathFormula()
@@ -305,7 +316,7 @@ def test_infix_to_postfix():
 
     # Test function calls
     formula = "sin(a) + cos(b)"
-    assert node.evaluate(formula, a=math.pi/2, b=0)[0] == pytest.approx(2.0)
+    assert node.evaluate(formula, a=math.pi / 2, b=0)[0] == pytest.approx(2.0)
 
     # Test constant function calls
     formula = "pi() + e()"

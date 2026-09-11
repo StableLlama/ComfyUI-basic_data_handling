@@ -1,8 +1,15 @@
 import torch
 from src.basic_data_handling.tensor_nodes import (
-    TensorCreate, TensorBinaryOp, TensorUnaryOp, TensorSlice,
-    TensorReshape, TensorPermute, TensorJoin, TensorInfo
+    TensorCreate,
+    TensorBinaryOp,
+    TensorUnaryOp,
+    TensorSlice,
+    TensorReshape,
+    TensorPermute,
+    TensorJoin,
+    TensorInfo,
 )
+
 
 def test_tensor_create():
     node = TensorCreate()
@@ -20,6 +27,7 @@ def test_tensor_create():
     result = node.create(t)
     assert result[0] is t
 
+
 def test_tensor_binary_op():
     node = TensorBinaryOp()
     a = torch.tensor([10.0, 20.0])
@@ -29,7 +37,8 @@ def test_tensor_binary_op():
     assert torch.equal(node.operate(a, b, "subtract")[0], a - b)
     assert torch.equal(node.operate(a, b, "multiply")[0], a * b)
     assert torch.equal(node.operate(a, b, "divide")[0], a / b)
-    assert torch.equal(node.operate(a, 2.0, "power")[0], a ** 2.0)
+    assert torch.equal(node.operate(a, 2.0, "power")[0], a**2.0)
+
 
 def test_tensor_unary_op():
     node = TensorUnaryOp()
@@ -39,9 +48,10 @@ def test_tensor_unary_op():
     assert torch.equal(node.operate(t, "neg")[0], torch.tensor([1.0, 0.0, -1.0]))
     assert torch.equal(node.operate(torch.tensor([0.0]), "sin")[0], torch.tensor([0.0]))
 
+
 def test_tensor_slice():
     node = TensorSlice()
-    t = torch.arange(10).reshape(2, 5) # [[0,1,2,3,4], [5,6,7,8,9]]
+    t = torch.arange(10).reshape(2, 5)  # [[0,1,2,3,4], [5,6,7,8,9]]
 
     # Simple slice
     result = node.slice_tensor(t, "0, 1:3")
@@ -50,6 +60,7 @@ def test_tensor_slice():
     # Ellipsis/Full slice
     result = node.slice_tensor(t, ":, 2")
     assert torch.equal(result[0], t[:, 2])
+
 
 def test_tensor_reshape():
     node = TensorReshape()
@@ -61,12 +72,14 @@ def test_tensor_reshape():
     result = node.reshape(t, "-1, 2")
     assert result[0].shape == (3, 2)
 
+
 def test_tensor_permute():
     node = TensorPermute()
     t = torch.randn(2, 3, 4)
 
     result = node.permute(t, "2, 0, 1")
     assert result[0].shape == (4, 2, 3)
+
 
 def test_tensor_join():
     node = TensorJoin()
@@ -81,6 +94,7 @@ def test_tensor_join():
     result = node.join(t1, t2, 0, "stack")
     assert result[0].shape == (2, 2)
     assert torch.equal(result[0], torch.tensor([[1, 2], [3, 4]]))
+
 
 def test_tensor_info():
     node = TensorInfo()

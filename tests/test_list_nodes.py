@@ -10,6 +10,7 @@ from src.basic_data_handling.list_nodes import (
     ListCreateFromFloat,
     ListCreateFromInt,
     ListCreateFromString,
+    ListCreateFromJSONString,
     ListEnumerate,
     ListExtend,
     ListFirst,
@@ -257,6 +258,22 @@ def test_list_create_from_string():
     assert node.create_list() == ([],)
 
 
+def test_list_create_from_json_string():
+    node = ListCreateFromJSONString()
+    # Multiline JSON array
+    assert node.create_from_json("[\n  1,\n  2,\n  3\n]") == ([1, 2, 3],)
+    # Empty array
+    assert node.create_from_json("[]") == ([],)
+    # Mix of JSON types
+    assert node.create_from_json('["a", 1, true, null]') == (["a", 1, True, None],)
+    # JSON object is not a valid array -> error
+    with pytest.raises(ValueError, match="JSON array"):
+        node.create_from_json('{"a": 1}')
+    # Malformed JSON -> error
+    with pytest.raises(ValueError):
+        node.create_from_json("[1, 2,")
+
+
 def test_list_to_data_list():
     node = ListToDataList()
     input_list = [1, 2, 3]
@@ -387,3 +404,32 @@ def test_list_sum():
     int_result, float_result = node.sum_list([1, 2.5, 3])
     assert int_result == 6.5
     assert float_result == 6.5
+
+
+def test_list_none_source():
+    """Graceful behaviour when the input LIST source is None."""
+    assert ListAll().check_all(None) == (True,)
+    assert ListAny().check_any(None) == (False,)
+    assert ListAppend().append(None, "item") == (["item"],)
+    assert ListContains().contains(None, "value") == (False,)
+    assert ListCount().count(None, "value") == (0,)
+    assert ListEnumerate().enumerate_list(None) == ([[]],)
+    assert ListExtend().extend(None, None) == ([],)
+    assert ListFirst().get_first_element(None) == (None,)
+    assert ListGetItem().get_item(None, 0) == (None,)
+    assert ListIndex().index(None, "value") == (-1,)
+    assert ListInsert().insert(None, 0, "item") == (["item"],)
+    assert ListLast().get_last_element(None) == (None,)
+    assert ListLength().length(None) == (0,)
+    assert ListMax().find_max(None) == (None,)
+    assert ListMin().find_min(None) == (None,)
+    assert ListPop().pop(None) == ([], None)
+    assert ListPopRandom().pop_random_element(None) == ([], None)
+    assert ListRemove().remove(None, "value") == ([], False)
+    assert ListReverse().reverse(None) == ([],)
+    assert ListShuffle().shuffle_list(None, seed=0) == ([],)
+    assert ListSlice().slice(None) == ([],)
+    assert ListSort().sort(None) == ([],)
+    assert ListSum().sum_list(None) == (0, 0.0)
+    assert ListToDataList().convert(None) == ([],)
+    assert ListToSet().convert(None) == (set(),)

@@ -1,9 +1,11 @@
 from typing import Any
 from inspect import cleandoc
+import json
 
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -11,11 +13,12 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
 
-INT_MAX = 2**15-1 # the computer can do more but be nice to the eyes
+INT_MAX = 2**15 - 1  # the computer can do more but be nice to the eyes
 
 
 class ListCreate(ComfyNodeABC):
@@ -25,12 +28,22 @@ class ListCreate(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.ANY, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the items of the LIST. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.ANY,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the items of the LIST. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("LIST",)
@@ -52,12 +65,22 @@ class ListCreateFromBoolean(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.BOOLEAN, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the boolean items of the LIST. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.BOOLEAN,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the boolean items of the LIST. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("LIST",)
@@ -79,12 +102,22 @@ class ListCreateFromFloat(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.FLOAT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the float items of the LIST. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.FLOAT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the float items of the LIST. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("LIST",)
@@ -106,12 +139,22 @@ class ListCreateFromInt(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.INT, {"_dynamic": "number", "widgetType": "STRING", "tooltip": "One of the integer items of the LIST. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.INT,
+                        {
+                            "_dynamic": "number",
+                            "widgetType": "STRING",
+                            "tooltip": "One of the integer items of the LIST. Connect more values to add more items.",
+                        },
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("LIST",)
@@ -133,12 +176,18 @@ class ListCreateFromString(ComfyNodeABC):
     This node creates and returns a LIST. The list of items is dynamically
     extended based on the number of inputs provided.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
-            "optional": ContainsDynamicDict({
-                "item_0": (IO.STRING, {"_dynamic": "number", "tooltip": "One of the string items of the LIST. Connect more values to add more items."}),
-            })
+            "optional": ContainsDynamicDict(
+                {
+                    "item_0": (
+                        IO.STRING,
+                        {"_dynamic": "number", "tooltip": "One of the string items of the LIST. Connect more values to add more items."},
+                    ),
+                }
+            )
         }
 
     RETURN_TYPES = ("LIST",)
@@ -175,6 +224,7 @@ class ListAll:
     FUNCTION = "check_all"
 
     def check_all(self, list: list[Any]) -> tuple[bool]:
+        list = list if list is not None else []
         return (all(list),)
 
 
@@ -200,6 +250,7 @@ class ListAny:
     FUNCTION = "check_any"
 
     def check_any(self, list: list[Any]) -> tuple[bool]:
+        list = list if list is not None else []
         return (any(list),)
 
 
@@ -210,6 +261,7 @@ class ListAppend(ComfyNodeABC):
     This node takes a LIST and any item as inputs, then returns a new LIST
     with the item appended to the end.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -227,6 +279,7 @@ class ListAppend(ComfyNodeABC):
     FUNCTION = "append"
 
     def append(self, list: list[Any], item: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.append(item)
         return (result,)
@@ -239,6 +292,7 @@ class ListContains(ComfyNodeABC):
     This node takes a LIST and a value as inputs, then returns True if the value
     is present in the LIST, and False otherwise.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -256,6 +310,7 @@ class ListContains(ComfyNodeABC):
     FUNCTION = "contains"
 
     def contains(self, list: list[Any], value: Any) -> tuple[bool]:
+        list = list if list is not None else []
         return (value in list,)
 
 
@@ -266,6 +321,7 @@ class ListCount(ComfyNodeABC):
     This node takes a LIST and a value as inputs, then returns the number of times
     the value appears in the LIST.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -283,6 +339,7 @@ class ListCount(ComfyNodeABC):
     FUNCTION = "count"
 
     def count(self, list: list[Any], value: Any) -> tuple[int]:
+        list = list if list is not None else []
         return (list.count(value),)
 
 
@@ -300,7 +357,7 @@ class ListEnumerate:
             },
             "optional": {
                 "start": ("INT", {"default": 0, "tooltip": "Index assigned to the first element."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -311,7 +368,8 @@ class ListEnumerate:
     FUNCTION = "enumerate_list"
 
     def enumerate_list(self, list: list[Any], start: int = 0) -> tuple[list]:
-        return ([__builtins__['list'](enumerate(list, start=start))],)
+        list = list if list is not None else []
+        return ([__builtins__["list"](enumerate(list, start=start))],)
 
 
 class ListExtend(ComfyNodeABC):
@@ -321,6 +379,7 @@ class ListExtend(ComfyNodeABC):
     This node takes two LIST objects as input and returns a new LIST that contains
     all elements from both lists.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -338,6 +397,8 @@ class ListExtend(ComfyNodeABC):
     FUNCTION = "extend"
 
     def extend(self, list1: list[Any], list2: list[Any]) -> tuple[list[Any]]:
+        list1 = list1 if list1 is not None else []
+        list2 = list2 if list2 is not None else []
         result = list1.copy()
         result.extend(list2)
         return (result,)
@@ -350,6 +411,7 @@ class ListFirst(ComfyNodeABC):
     This node takes a LIST as input and returns the first element of the list.
     If the LIST is empty, it returns None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -377,6 +439,7 @@ class ListGetItem(ComfyNodeABC):
     Negative indices count from the end of the LIST.
     Out of range indices return None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -394,6 +457,7 @@ class ListGetItem(ComfyNodeABC):
     FUNCTION = "get_item"
 
     def get_item(self, list: list[Any], index: int) -> tuple[Any]:
+        list = list if list is not None else []
         try:
             return (list[index],)
         except IndexError:
@@ -408,6 +472,7 @@ class ListIndex(ComfyNodeABC):
     occurrence of the value. Optional start and end parameters limit the search to a slice
     of the LIST. Returns -1 if the value is not present.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -418,7 +483,7 @@ class ListIndex(ComfyNodeABC):
             "optional": {
                 "start": ("INT", {"default": 0, "tooltip": "Start position of the search slice."}),
                 "end": ("INT", {"default": -1, "tooltip": "End position of the search slice (-1 means the end of the LIST)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("INT",)
@@ -429,6 +494,7 @@ class ListIndex(ComfyNodeABC):
     FUNCTION = "index"
 
     def index(self, list: list[Any], value: Any, start: int = 0, end: int = -1) -> tuple[int]:
+        list = list if list is not None else []
         if end == -1:
             end = len(list)
 
@@ -445,6 +511,7 @@ class ListInsert(ComfyNodeABC):
     This node takes a LIST, an index, and any item as inputs, then returns a new
     LIST with the item inserted at the specified index.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -463,6 +530,7 @@ class ListInsert(ComfyNodeABC):
     FUNCTION = "insert"
 
     def insert(self, list: list[Any], index: int, item: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.insert(index, item)
         return (result,)
@@ -475,6 +543,7 @@ class ListLast(ComfyNodeABC):
     This node takes a LIST as input and returns the last element of the list.
     If the LIST is empty, it returns None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -500,6 +569,7 @@ class ListLength(ComfyNodeABC):
 
     This node takes a LIST as input and returns its length as an integer.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -516,6 +586,7 @@ class ListLength(ComfyNodeABC):
     FUNCTION = "length"
 
     def length(self, list: list[Any]) -> tuple[int]:
+        list = list if list is not None else []
         return (len(list),)
 
 
@@ -526,6 +597,7 @@ class ListMax(ComfyNodeABC):
     This node takes a LIST of comparable items and returns the maximum value.
     Returns None if the LIST is empty or if items are not comparable.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -559,6 +631,7 @@ class ListMin(ComfyNodeABC):
     This node takes a LIST of comparable items and returns the minimum value.
     Returns None if the LIST is empty or if items are not comparable.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -594,6 +667,7 @@ class ListPop(ComfyNodeABC):
     removes and returns the last item.
     When the LIST is empty, the item is None.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -602,7 +676,7 @@ class ListPop(ComfyNodeABC):
             },
             "optional": {
                 "index": ("INT", {"default": -1, "tooltip": "Position of the item to remove (-1 = last item)."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST", IO.ANY)
@@ -613,6 +687,7 @@ class ListPop(ComfyNodeABC):
     FUNCTION = "pop"
 
     def pop(self, list: list[Any], index: int = -1) -> tuple[list[Any], Any]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             item = result.pop(index)
@@ -629,6 +704,7 @@ class ListPopRandom(ComfyNodeABC):
     and the removed element itself. If the LIST is empty, it returns None for the element.
     An optional seed can be provided for reproducible selection.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -636,7 +712,16 @@ class ListPopRandom(ComfyNodeABC):
                 "list": ("LIST", {"tooltip": "The LIST to pop a random element from."}),
             },
             "optional": {
-                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "control_after_generate": True, "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run."}),
+                "seed": (
+                    "INT",
+                    {
+                        "default": 0,
+                        "min": 0,
+                        "max": 0xFFFFFFFFFFFFFFFF,
+                        "control_after_generate": True,
+                        "tooltip": "Seed for reproducible selection. Leave empty to pick randomly each run.",
+                    },
+                ),
             },
         }
 
@@ -656,6 +741,8 @@ class ListPopRandom(ComfyNodeABC):
 
     def pop_random_element(self, list: list[Any], seed=None) -> tuple[list[Any], Any]:
         import random
+
+        list = list if list is not None else []
         rng = random.Random(seed) if seed is not None else random
         result = list.copy()
         if result:
@@ -672,6 +759,7 @@ class ListRange(ComfyNodeABC):
     This node generates a LIST of numbers similar to Python's range() function.
     It takes start, stop, and step parameters to define the sequence.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -681,7 +769,7 @@ class ListRange(ComfyNodeABC):
             },
             "optional": {
                 "step": ("INT", {"default": 1, "tooltip": "Step between numbers; must not be 0."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -705,6 +793,7 @@ class ListRemove(ComfyNodeABC):
     the first occurrence of the value removed and a success indicator. If the value
     is not present, the original LIST is returned with success set to False.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -722,6 +811,7 @@ class ListRemove(ComfyNodeABC):
     FUNCTION = "remove"
 
     def remove(self, list: list[Any], value: Any) -> tuple[list[Any], bool]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             result.remove(value)
@@ -736,6 +826,7 @@ class ListReverse(ComfyNodeABC):
 
     This node takes a LIST as input and returns a new LIST with the items in reversed order.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -752,6 +843,7 @@ class ListReverse(ComfyNodeABC):
     FUNCTION = "reverse"
 
     def reverse(self, list: list[Any]) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         result.reverse()
         return (result,)
@@ -764,6 +856,7 @@ class ListSetItem(ComfyNodeABC):
     This node takes a LIST, an index, and a value, then returns a new LIST with
     the item at the specified index replaced by the value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -782,6 +875,7 @@ class ListSetItem(ComfyNodeABC):
     FUNCTION = "set_item"
 
     def set_item(self, list: list[Any], index: int, value: Any) -> tuple[list[Any]]:
+        list = list if list is not None else []
         result = list.copy()
         try:
             result[index] = value
@@ -796,6 +890,7 @@ class ListShuffle(ComfyNodeABC):
 
     This node takes a LIST and a seed as input and returns a new shuffled LIST.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -814,6 +909,8 @@ class ListShuffle(ComfyNodeABC):
 
     def shuffle_list(self, list: list[Any], seed: int) -> tuple[list[Any]]:
         import random
+
+        list = list if list is not None else []
         random.seed(seed)
         result = list.copy()
         random.shuffle(result)
@@ -827,6 +924,7 @@ class ListSlice(ComfyNodeABC):
     This node takes a LIST and start/stop/step parameters, and returns a new LIST
     containing the specified slice of the original LIST.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -837,7 +935,7 @@ class ListSlice(ComfyNodeABC):
                 "start": ("INT", {"default": 0, "tooltip": "Start index (inclusive)."}),
                 "stop": ("INT", {"default": INT_MAX, "tooltip": "Stop index (exclusive); INT_MAX means the end."}),
                 "step": ("INT", {"default": 1, "tooltip": "Step between indices."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -847,9 +945,10 @@ class ListSlice(ComfyNodeABC):
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "slice"
 
-    def slice(self, list: list[Any], start: int = 0, stop: int = INT_MAX,
-              step: int = 1) -> tuple[list[Any]]:
+    def slice(self, list: list[Any], start: int = 0, stop: int = INT_MAX, step: int = 1) -> tuple[list[Any]]:
+        list = list if list is not None else []
         return (list[start:stop:step],)
+
 
 class ListSort(ComfyNodeABC):
     """
@@ -858,6 +957,7 @@ class ListSort(ComfyNodeABC):
     This node takes a LIST as input and returns a new sorted LIST.
     Option includes sorting in reverse order.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -866,7 +966,7 @@ class ListSort(ComfyNodeABC):
             },
             "optional": {
                 "reverse": (["False", "True"], {"default": "False", "tooltip": "Sort in descending order when True."}),
-            }
+            },
         }
 
     RETURN_TYPES = ("LIST",)
@@ -878,7 +978,8 @@ class ListSort(ComfyNodeABC):
 
     def sort(self, list: list[Any], reverse: str = "False") -> tuple[list[Any]]:
         # Convert string to boolean
-        reverse_bool = (reverse == "True")
+        reverse_bool = reverse == "True"
+        list = list if list is not None else []
 
         # Use sorted to create a new sorted list
         try:
@@ -903,17 +1004,24 @@ class ListSum:
             },
             "optional": {
                 "start": ("INT", {"default": 0, "tooltip": "Initial value added to the sum."}),
-            }
+            },
         }
 
-    RETURN_TYPES = ("INT", "FLOAT",)
-    RETURN_NAMES = ("sum_int", "sum_float",)
+    RETURN_TYPES = (
+        "INT",
+        "FLOAT",
+    )
+    RETURN_NAMES = (
+        "sum_int",
+        "sum_float",
+    )
     OUTPUT_TOOLTIPS = ("The total as an integer.", "The total as a float.")
     CATEGORY = "Basic/LIST"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "sum_list"
 
     def sum_list(self, list: list[Any], start: int = 0) -> tuple[int, float]:
+        list = list if list is not None else []
         result = sum(list, start)
         return result, float(result)
 
@@ -926,6 +1034,7 @@ class ListToDataList(ComfyNodeABC):
     converts it to a ComfyUI data list, allowing its items to be processed
     individually by nodes that accept data lists.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -943,6 +1052,7 @@ class ListToDataList(ComfyNodeABC):
     OUTPUT_IS_LIST = (True,)
 
     def convert(self, list) -> tuple[list[Any]]:
+        list = list if list is not None else []
         return (list,)
 
 
@@ -953,6 +1063,7 @@ class ListToSet(ComfyNodeABC):
     This node takes a LIST input and creates a new SET containing all unique elements
     from the LIST, removing any duplicates.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -969,7 +1080,45 @@ class ListToSet(ComfyNodeABC):
     FUNCTION = "convert"
 
     def convert(self, list: list[Any]) -> tuple[set[Any]]:
+        list = list if list is not None else []
         return (set(list),)
+
+
+class ListCreateFromJSONString(ComfyNodeABC):
+    """
+    Creates a LIST from a JSON array string.
+
+    This node takes a STRING that must contain a valid JSON array and
+    parses it into a LIST. The input must be a JSON array (enclosed in square
+    brackets); otherwise a clear error is raised.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "json_string": (
+                    IO.STRING,
+                    {"default": "[]", "widgetType": "STRING", "tooltip": "STRING containing a JSON array to parse, e.g. [1, 2, 3]."},
+                ),
+            }
+        }
+
+    RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("The LIST parsed from the JSON array string.",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "create_from_json"
+
+    def create_from_json(self, json_string: str) -> tuple[list[Any]]:
+        try:
+            result = json.loads(json_string)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in input string: {e}")
+        if not isinstance(result, list):
+            raise ValueError(f"The JSON string must be a JSON array (enclosed in square brackets), not {type(result).__name__}.")
+        return (result,)
 
 
 NODE_CLASS_MAPPINGS = {
@@ -978,6 +1127,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListCreateFromFloat": ListCreateFromFloat,
     "Basic data handling: ListCreateFromInt": ListCreateFromInt,
     "Basic data handling: ListCreateFromString": ListCreateFromString,
+    "Basic data handling: ListCreateFromJSONString": ListCreateFromJSONString,
     "Basic data handling: ListAll": ListAll,
     "Basic data handling: ListAny": ListAny,
     "Basic data handling: ListAppend": ListAppend,
@@ -1013,6 +1163,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListCreateFromFloat": "create LIST from FLOATs",
     "Basic data handling: ListCreateFromInt": "create LIST from INTs",
     "Basic data handling: ListCreateFromString": "create LIST from STRINGs",
+    "Basic data handling: ListCreateFromJSONString": "create LIST from JSON string",
     "Basic data handling: ListAll": "all",
     "Basic data handling: ListAny": "any",
     "Basic data handling: ListAppend": "append",

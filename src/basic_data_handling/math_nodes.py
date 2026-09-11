@@ -5,6 +5,7 @@ from typing import Literal, Union
 try:
     from comfy.comfy_types.node_typing import IO, ComfyNodeABC
 except:
+
     class IO:
         BOOLEAN = "BOOLEAN"
         INT = "INT"
@@ -12,7 +13,9 @@ except:
         STRING = "STRING"
         NUMBER = "FLOAT,INT"
         ANY = "*"
+
     ComfyNodeABC = object
+
 
 class MathAbs(ComfyNodeABC):
     """
@@ -20,6 +23,7 @@ class MathAbs(ComfyNodeABC):
 
     This node takes a number and returns its absolute value (magnitude without sign).
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -46,11 +50,15 @@ class MathAcos(ComfyNodeABC):
     This node takes a value between -1 and 1, and returns the arc cosine in radians or degrees.
     The arc cosine is the inverse operation of cosine, returning the angle whose cosine is the input value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc cosine is computed."}),
+                "value": (
+                    IO.NUMBER,
+                    {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc cosine is computed."},
+                ),
                 "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
@@ -76,11 +84,15 @@ class MathAsin(ComfyNodeABC):
     This node takes a value between -1 and 1, and returns the arc sine in radians or degrees.
     The arc sine is the inverse operation of sine, returning the angle whose sine is the input value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc sine is computed."}),
+                "value": (
+                    IO.NUMBER,
+                    {"default": 0.0, "widgetType": "STRING", "tooltip": "The value (in [-1, 1]) whose arc sine is computed."},
+                ),
                 "unit": (["radians", "degrees"], {"default": "degrees", "tooltip": "Unit of the returned angle."}),
             }
         }
@@ -106,6 +118,7 @@ class MathAtan(ComfyNodeABC):
     This node takes a value and returns the arc tangent in radians or degrees.
     The arc tangent is the inverse operation of tangent, returning the angle whose tangent is the input value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -137,6 +150,7 @@ class MathAtan2(ComfyNodeABC):
     Unlike atan(y/x), this function handles the case where x is zero and correctly determines
     the quadrant of the resulting angle.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -167,6 +181,7 @@ class MathCeil(ComfyNodeABC):
 
     This node takes a number and returns the smallest integer greater than or equal to the input value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -194,6 +209,7 @@ class MathCos(ComfyNodeABC):
     The cosine of an angle is the ratio of the length of the adjacent side to the length
     of the hypotenuse in a right-angled triangle.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -223,6 +239,7 @@ class MathDegrees(ComfyNodeABC):
 
     This node takes an angle in radians and returns the equivalent angle in degrees.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -248,6 +265,7 @@ class MathE(ComfyNodeABC):
 
     This node returns the value of e (Euler's number), which is approximately 2.71828.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {}}
@@ -269,6 +287,7 @@ class MathExp(ComfyNodeABC):
 
     This node takes a number and returns e (Euler's number) raised to the power of that number.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -294,6 +313,7 @@ class MathFloor(ComfyNodeABC):
 
     This node takes a number and returns the largest integer less than or equal to the input value.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -320,15 +340,27 @@ class MathLog(ComfyNodeABC):
     This node takes a positive number and returns its natural logarithm.
     If the specified base is not 'e', calculates the logarithm with the specified base.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING", "tooltip": "The positive number to take the logarithm of."}),
+                "value": (
+                    IO.NUMBER,
+                    {"default": 1.0, "min": 0.0000001, "widgetType": "STRING", "tooltip": "The positive number to take the logarithm of."},
+                ),
             },
             "optional": {
-                "base": (IO.NUMBER, {"default": math.e, "min": 0.0000001, "widgetType": "STRING", "tooltip": "Logarithm base; e gives the natural logarithm."}),
-            }
+                "base": (
+                    IO.NUMBER,
+                    {
+                        "default": math.e,
+                        "min": 0.0000001,
+                        "widgetType": "STRING",
+                        "tooltip": "Logarithm base; e gives the natural logarithm.",
+                    },
+                ),
+            },
         }
 
     RETURN_TYPES = (IO.FLOAT,)
@@ -348,11 +380,20 @@ class MathLog10(ComfyNodeABC):
 
     This node takes a positive number and returns its base-10 logarithm.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 1.0, "min": 0.0000001, "widgetType": "STRING", "tooltip": "The positive number to take the base-10 logarithm of."}),
+                "value": (
+                    IO.NUMBER,
+                    {
+                        "default": 1.0,
+                        "min": 0.0000001,
+                        "widgetType": "STRING",
+                        "tooltip": "The positive number to take the base-10 logarithm of.",
+                    },
+                ),
             }
         }
 
@@ -374,6 +415,7 @@ class MathMax(ComfyNodeABC):
     This node takes two or more values and returns the maximum value among them.
     The function works with both FLOAT and INT types.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -401,6 +443,7 @@ class MathMin(ComfyNodeABC):
     This node takes two or more values and returns the minimum value among them.
     The function works with both FLOAT and INT types.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -427,6 +470,7 @@ class MathPi(ComfyNodeABC):
 
     This node returns the value of π, which is approximately 3.14159.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {}}
@@ -448,6 +492,7 @@ class MathRadians(ComfyNodeABC):
 
     This node takes an angle in degrees and returns the equivalent angle in radians.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -475,6 +520,7 @@ class MathSin(ComfyNodeABC):
     The sine of an angle is the ratio of the length of the opposite side to the length
     of the hypotenuse in a right-angled triangle.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -504,11 +550,15 @@ class MathSqrt(ComfyNodeABC):
 
     This node takes a non-negative number and returns its square root.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "value": (IO.NUMBER, {"default": 0.0, "min": 0.0, "widgetType": "STRING", "tooltip": "The non-negative number to take the square root of."}),
+                "value": (
+                    IO.NUMBER,
+                    {"default": 0.0, "min": 0.0, "widgetType": "STRING", "tooltip": "The non-negative number to take the square root of."},
+                ),
             }
         }
 
@@ -531,6 +581,7 @@ class MathTan(ComfyNodeABC):
     The tangent of an angle is the ratio of the length of the opposite side to the length
     of the adjacent side in a right-angled triangle.
     """
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
