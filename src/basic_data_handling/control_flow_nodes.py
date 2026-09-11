@@ -13,7 +13,16 @@ except:
         NUMBER = "FLOAT,INT"
         ANY = "*"
     ComfyNodeABC = object
-    ExecutionBlocker = lambda x: x
+
+    class ExecutionBlocker:
+        """Stand-in used when ComfyUI is not installed (e.g. in the test-suite).
+
+        Mirrors ``comfy_execution.graph_utils.ExecutionBlocker``: it only stores
+        the message, but its class name shows up in the default ``repr`` exactly
+        like the real one, so callers/tests can still detect a blocker.
+        """
+        def __init__(self, message):
+            self.message = message
 
 from ._dynamic_input import ContainsDynamicDict
 

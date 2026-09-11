@@ -1270,18 +1270,26 @@ def _discover_save_formats() -> tuple[list[str], list[str]]:
     return all_formats, alpha_formats
 
 
-(_IMAGE_SAVE_FORMATS, _IMAGE_SAVE_ALPHA_FORMATS) = _discover_save_formats()
+# Discovering the formats probes the installed Pillow/plugins, so it must not be
+# required for importing this module: environments that only inspect the node
+# metadata (e.g. the comfy-org/node-diff CI) have no Pillow installed. Fall back
+# to the classic formats there instead of failing to load the whole node pack.
+try:
+    (_IMAGE_SAVE_FORMATS, _IMAGE_SAVE_ALPHA_FORMATS) = _discover_save_formats()
+except ModuleNotFoundError:
+    _IMAGE_SAVE_FORMATS = ["png", "jpg", "webp", "jxl", "bmp", "tif", "gif"]
+    _IMAGE_SAVE_ALPHA_FORMATS = ["png", "webp", "jxl"]
+else:
+    # Always make sure the most common formats are present when the backend
+    # supports them (guards against an odd Pillow not probing its core formats).
+    for _token in ("png", "jpg", "webp"):
+        if _token in _PIL_FORMAT_BY_TOKEN and _PIL_FORMAT_BY_TOKEN[_token] and _token not in _IMAGE_SAVE_FORMATS:
+            _IMAGE_SAVE_FORMATS.insert(0, _token)
 
-# Always make sure the most common formats are present when the backend supports
-# them (guards against an odd Pillow not probing its own core formats).
-for _token in ("png", "jpg", "webp"):
-    if _token in _PIL_FORMAT_BY_TOKEN and _PIL_FORMAT_BY_TOKEN[_token] and _token not in _IMAGE_SAVE_FORMATS:
-        _IMAGE_SAVE_FORMATS.insert(0, _token)
-
-# Log the supported save formats once at node-load time, so users can see what
-# the running Pillow/image plugins can write.
-print("Basic data handling: supported image formats: " + ", ".join(_IMAGE_SAVE_FORMATS))
-print("Basic data handling: supported IMAGE+MASK (alpha) formats: " + ", ".join(_IMAGE_SAVE_ALPHA_FORMATS))
+    # Log the supported save formats once at node-load time, so users can see
+    # what the running Pillow/image plugins can write.
+    print("Basic data handling: supported image formats: " + ", ".join(_IMAGE_SAVE_FORMATS))
+    print("Basic data handling: supported IMAGE+MASK (alpha) formats: " + ", ".join(_IMAGE_SAVE_ALPHA_FORMATS))
 
 
 def _normalize_image_format(format: str) -> str:
