@@ -1,4 +1,6 @@
 from inspect import cleandoc
+from typing import Any, Optional
+import json
 import os
 import glob
 
@@ -19,13 +21,14 @@ except:
     ComfyNodeABC = object
 
 try:
-    from folder_paths import get_input_directory, get_output_directory
+    from folder_paths import get_input_directory, get_output_directory, get_temp_directory
 except:
 
-    def get_input_directory():
+    def get_input_directory() -> str:
         return "./"
 
     get_output_directory = get_input_directory
+    get_temp_directory = get_input_directory
 
 # ComfyUI's official prefix->path resolver is reused when running under ComfyUI
 # so the nodes follow upstream naming exactly (folder layout, %width%/%height%/
@@ -1103,41 +1106,116 @@ def compose_prompt_text(prompt: str, negative_prompt: str) -> str:
     return "\n".join(lines)
 
 
-def build_png_info(metadata_text: str):
+def _metadata_disabled() -> bool:
     """
-    Wrap ``metadata_text`` in a Pillow ``PngInfo`` container under the standard
-    ``parameters`` text-chunk key so it can be embedded in a PNG file.
+    True when ComfyUI was started with ``--disable-metadata``.
 
-    Returns ``None`` when there is no text to embed (or Pillow's PNG metadata
-    support is unavailable), in which case the image should be saved without
-    extra metadata.
+    The flag is honoured exactly like the built-in save node does. ``comfy``
+    only exists inside ComfyUI, hence the guarded runtime import.
     """
-    if not metadata_text:
+    try:
+        from comfy.cli_args import args
+    except Exception:
+        return False
+    return bool(getattr(args, "disable_metadata", False))
+
+
+def build_workflow_metadata(workflow_prompt: Any, workflow_extra_pnginfo: Any) -> dict[str, str]:
+    """
+    Serialise ComfyUI's hidden ``PROMPT`` / ``EXTRA_PNGINFO`` inputs into the
+    ``{key: json}`` mapping the built-in save node writes into a file.
+
+    ``EXTRA_PNGINFO`` carries the complete workflow - and with it *every* prompt
+    of the graph. When a whole batch is saved from a data list there is no single
+    prompt to point at, so this full workflow is what makes the saved file a
+    usable workflow again when it is dragged back onto the canvas. The prompt of
+    the image currently being written is kept *separately* in the
+    ``parameters`` text (see ``compose_prompt_text``) so that it stays easy to
+    extract afterwards and is still displayed by image viewers.
+
+    Returns an empty mapping when nothing is available.
+    """
+    metadata: dict[str, str] = {}
+    if workflow_prompt is not None:
+        metadata["prompt"] = json.dumps(workflow_prompt)
+    if workflow_extra_pnginfo is not None:
+        for key, value in workflow_extra_pnginfo.items():
+            metadata[key] = json.dumps(value)
+    return metadata
+
+
+def compose_save_metadata(
+    prompt: str, negative_prompt: str, workflow_prompt: Any, workflow_extra_pnginfo: Any
+) -> tuple[str, dict[str, str]]:
+    """
+    Build both metadata channels of an image save.
+
+    Returns ``(metadata_text, workflow_metadata)``: the A1111-style
+    ``parameters`` text of the explicit prompt(s) and the ``{key: json}`` mapping
+    of ComfyUI's workflow prompt info.
+
+    ComfyUI's ``--disable-metadata`` flag suppresses *all* metadata, exactly like
+    the built-in save node does, so a run started with it writes files without
+    either channel.
+    """
+    if _metadata_disabled():
+        return "", {}
+    return compose_prompt_text(prompt, negative_prompt), build_workflow_metadata(workflow_prompt, workflow_extra_pnginfo)
+
+
+def build_png_info(metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None):
+    """
+    Wrap the metadata in a Pillow ``PngInfo`` container so it can be embedded in
+    a PNG file.
+
+    ``metadata_text`` is written under the standard ``parameters`` text-chunk key
+    (the A1111 convention: shown by image viewers and easy to extract), while
+    every entry of ``workflow_metadata`` (``prompt``, ``workflow``, ...) gets its
+    own text chunk - the same keys ComfyUI's built-in "Save Image" node writes,
+    which is what makes dragging the file back onto the canvas restore the
+    workflow.
+
+    Returns ``None`` when there is nothing to embed (or Pillow's PNG metadata
+    support is unavailable), in which case the image is saved without metadata.
+    """
+    workflow_metadata = workflow_metadata or {}
+    if not metadata_text and not workflow_metadata:
         return None
     try:
         from PIL import PngImagePlugin
     except ModuleNotFoundError:
         return None
     pnginfo = PngImagePlugin.PngInfo()
-    pnginfo.add_text("parameters", metadata_text)
+    if metadata_text:
+        pnginfo.add_text("parameters", metadata_text)
+    for key, value in workflow_metadata.items():
+        pnginfo.add_text(key, value)
     return pnginfo
 
 
-def build_image_exif(metadata_text: str, include_description: bool = True):
+def build_image_exif(metadata_text: str, include_description: bool = True, workflow_metadata: Optional[dict[str, str]] = None):
     """
-    Build an EXIF block that stores ``metadata_text`` for formats without a
-    native text chunk (JPEG, WEBP, JXL).
+    Build an EXIF block for formats without a native text chunk (JPEG, WEBP,
+    JXL).
 
-    The payload is written into the EXIF ``UserComment`` field (tag 0x9286) of
-    the Exif IFD as ``UNICODE\0`` + UTF-16-BE, which matches what Stable
+    ``metadata_text`` is written into the EXIF ``UserComment`` field (tag 0x9286)
+    of the Exif IFD as ``UNICODE\0`` + UTF-16-BE, which matches what Stable
     Diffusion WebUI / piexif based readers expect. When ``include_description``
-    is true, the payload is also written as UTF-8 into the EXIF
-    ``ImageDescription`` field (tag 0x010E) of IFD0.
+    is true, it is also written as UTF-8 into the EXIF ``ImageDescription`` field
+    (tag 0x010E) of IFD0.
+
+    ``workflow_metadata`` is stored the same way ComfyUI's own writer does it for
+    these formats: the workflow prompt in the EXIF ``Model`` tag (0x0110) as
+    ``prompt:<json>`` and the remaining entries (``workflow``, ...) in ``Make``
+    (0x010F) and downwards as ``<key>:<json>``. ``parameters`` and the workflow
+    info therefore coexist, and readers looking for either one find it in the
+    field they expect.
 
     Returns the EXIF bytes (starting with the ``Exif\0\0`` marker), or ``None``
-    when there is no text to embed.
+    when there is nothing to embed.
     """
-    if not metadata_text:
+    workflow_metadata = workflow_metadata or {}
+    if not metadata_text and not workflow_metadata:
         return None
     try:
         from PIL import ExifTags
@@ -1145,9 +1223,30 @@ def build_image_exif(metadata_text: str, include_description: bool = True):
         return None
     Image, _ = _require_pillow()
     exif = Image.Exif()
-    if include_description:
-        exif[0x010E] = metadata_text.encode("utf-8")
-    exif.get_ifd(ExifTags.IFD.Exif)[0x9286] = b"UNICODE\x00" + metadata_text.encode("utf-16-be")
+    used_tags = set()
+    if metadata_text:
+        if include_description:
+            exif[0x010E] = metadata_text.encode("utf-8")
+            used_tags.add(0x010E)
+        exif.get_ifd(ExifTags.IFD.Exif)[0x9286] = b"UNICODE\x00" + metadata_text.encode("utf-16-be")
+    if workflow_metadata:
+        workflow_json = workflow_metadata.get("prompt")
+        if workflow_json is not None:
+            exif[0x0110] = f"prompt:{workflow_json}"
+            used_tags.add(0x0110)
+        # Same descending-tag scheme as ComfyUI's own EXIF/WebP metadata writer,
+        # but skipping the tags the explicit prompt already occupies.
+        tag = 0x010F
+        for key, value in workflow_metadata.items():
+            if key == "prompt":
+                continue
+            while tag in used_tags and tag > 0x0100:
+                tag -= 1
+            if tag <= 0x0100:
+                break
+            exif[tag] = f"{key}:{value}"
+            used_tags.add(tag)
+            tag -= 1
     return exif.tobytes()
 
 
@@ -1173,28 +1272,32 @@ def build_xmp_packet(metadata_text: str) -> bytes:
     return packet.encode("utf-8")
 
 
-def metadata_save_kwargs(metadata_text: str, fmt: str) -> dict:
+def metadata_save_kwargs(metadata_text: str, fmt: str, workflow_metadata: Optional[dict[str, str]] = None) -> dict:
     """
-    Return the extra keyword arguments that embed ``metadata_text`` when saving
-    an image in the (lower-case) format ``fmt``.
+    Return the extra keyword arguments that embed ``metadata_text`` (the explicit
+    prompt) and ``workflow_metadata`` (ComfyUI's workflow prompt info) when
+    saving an image in the (lower-case) format ``fmt``.
 
-    Returns an empty dict when there is no text to embed or when the format
+    Returns an empty dict when there is nothing to embed or when the format
     cannot carry text metadata.
     """
-    if not metadata_text:
+    workflow_metadata = workflow_metadata or {}
+    if not metadata_text and not workflow_metadata:
         return {}
     if fmt == "png":
-        return {"pnginfo": build_png_info(metadata_text)}
+        pnginfo = build_png_info(metadata_text, workflow_metadata)
+        return {"pnginfo": pnginfo} if pnginfo is not None else {}
     if fmt in ("jpg", "jpeg"):
-        exif = build_image_exif(metadata_text, include_description=True)
+        exif = build_image_exif(metadata_text, include_description=True, workflow_metadata=workflow_metadata)
         return {"exif": exif} if exif is not None else {}
     if fmt in ("webp", "jxl"):
-        exif = build_image_exif(metadata_text, include_description=False)
+        exif = build_image_exif(metadata_text, include_description=False, workflow_metadata=workflow_metadata)
         kwargs = {"exif": exif} if exif is not None else {}
         if fmt == "jxl":
             # EXIF and XMP boxes are only available in the JXL container format
             kwargs["use_container"] = True
-            kwargs["xmp"] = build_xmp_packet(metadata_text)
+            if metadata_text:
+                kwargs["xmp"] = build_xmp_packet(metadata_text)
         return kwargs
     return {}
 
@@ -1523,32 +1626,65 @@ def _has_jxl_support() -> bool:
         return False
 
 
-def _write_pil_image(pil_img, path: str, fmt: str, quality: int, metadata_text: str) -> bool:
+def _write_pil_image(
+    pil_img, path: str, fmt: str, quality: int, metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None
+) -> bool:
     """
     Write ``pil_img`` to ``path``. ``fmt`` is a canonical save token (see
     ``_PIL_FORMAT_BY_TOKEN``). For the lossy/metadata-capable set (png/jpg/webp/
-    jxl) the prompt text is embedded as ``parameters`` metadata and ``quality``
+    jxl) the prompt text and the workflow metadata are embedded and ``quality``
     is honoured; all other discovered formats are written plainly. Returns True
     on success.
     """
     try:
         if fmt == "png":
-            pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt))
+            pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
         elif fmt == "jpg":
             # JPEG cannot carry alpha; drop it so an RGBA input still saves.
-            pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
         elif fmt == "webp":
-            pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
         elif fmt == "jxl":
-            pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt))
+            pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
         else:
-            if metadata_text:
-                print("Basic data handling: Prompt metadata is not supported for this format; skipping it.")
+            if metadata_text or workflow_metadata:
+                print("Basic data handling: Prompt/workflow metadata is not supported for this format; skipping it.")
             pil_img.save(path, format=_PIL_FORMAT_BY_TOKEN.get(fmt, fmt.upper()))
         return True
     except Exception as e:
         print(f"Basic data handling: Error saving image: {e}")
         return False
+
+
+def _ui_image_entry(path: str) -> Optional[dict[str, str]]:
+    """
+    Build the ComfyUI ``ui.images`` entry that makes a saved file show up.
+
+    ComfyUI displays previews and lists generated images by resolving
+    ``/view?filename=..&subfolder=..&type=..``, where ``type`` selects the
+    output/temp (or input) directory and any path outside it is refused. A file
+    written somewhere else (plain ``path`` mode pointing outside the ComfyUI
+    folders) is still saved, it simply cannot be previewed, so ``None`` is
+    returned for it. ``input`` is deliberately never reported: the frontend
+    treats an output whose images are all ``type: "input"`` as the upload
+    preview of a load node.
+
+    Returns ``{"filename": ..., "subfolder": ..., "type": ...}`` for a file inside
+    one of the folders ComfyUI serves, or ``None`` when there is no such folder.
+    """
+    directory = os.path.dirname(os.path.abspath(path))
+    for folder_type, folder in (("output", get_output_directory()), ("temp", get_temp_directory())):
+        try:
+            real_folder = os.path.realpath(folder)
+            if os.path.commonpath([real_folder, os.path.realpath(directory)]) != real_folder:
+                continue
+        except ValueError:  # e.g. different drives on Windows
+            continue
+        subfolder = os.path.relpath(os.path.realpath(directory), real_folder).replace(os.sep, "/")
+        if subfolder == ".":
+            subfolder = ""
+        return {"filename": os.path.basename(path), "subfolder": subfolder, "type": folder_type}
+    return None
 
 
 class PathSaveImageRGB(ComfyNodeABC):
@@ -1564,11 +1700,21 @@ class PathSaveImageRGB(ComfyNodeABC):
     a ComfyUI ``filename_prefix`` under the output folder, named and
     auto-numbered exactly like the built-in "Save Image" node.
 
-    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
-    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
-    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
-    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
-    ignore the prompts.
+    Files written into ComfyUI's output (or temp) folder are reported back to the
+    frontend, so the node shows a preview of what it saved and the images appear
+    in ComfyUI's generated-images list, exactly like the built-in "Save Image"
+    node does. Files written anywhere else (plain ``path`` mode) are still saved,
+    they just cannot be previewed.
+
+    Two independent metadata channels are embedded, so both stay usable: with
+    ``prompt``/``negative_prompt`` the A1111-style ``parameters`` text is written
+    (PNG text chunk, EXIF ``UserComment``, XMP for JPEG XL) which image viewers
+    display and which is easy to extract afterwards, and in addition ComfyUI's
+    hidden workflow prompt info (``prompt``/``workflow`` chunks) is stored, which
+    is what makes a saved file drag-and-drop back into ComfyUI as a workflow.
+    When a batch is saved from a data list the workflow necessarily contains
+    every prompt of the graph; the prompt of the individual image is the one in
+    ``parameters``. Formats that cannot carry text metadata ignore both.
     """
 
     @classmethod
@@ -1607,11 +1753,21 @@ class PathSaveImageRGB(ComfyNodeABC):
                     },
                 ),
             },
+            "hidden": {
+                # Deliberately not called "prompt"/"extra_pnginfo": hidden input
+                # names become function-argument names and "prompt" is already the
+                # explicit-prompt widget of this node.
+                "workflow_prompt": "PROMPT",
+                "workflow_extra_pnginfo": "EXTRA_PNGINFO",
+            },
         }
 
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("success",)
-    OUTPUT_TOOLTIPS = ("True when the image was saved successfully.",)
+    RETURN_TYPES = (IO.BOOLEAN, IO.IMAGE)
+    RETURN_NAMES = ("success", "images")
+    OUTPUT_TOOLTIPS = (
+        "True when the image was saved successfully.",
+        "The saved images, passed through unchanged so they can be used further down the graph.",
+    )
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image"
@@ -1627,10 +1783,12 @@ class PathSaveImageRGB(ComfyNodeABC):
         create_dirs: bool = True,
         prompt: str = "",
         negative_prompt: str = "",
+        workflow_prompt: Any = None,
+        workflow_extra_pnginfo: Any = None,
     ):
         if not path:
             print("Basic data handling: Save failed - no path specified")
-            return (False,)
+            return {"ui": {"images": []}, "result": (False, images)}
 
         import numpy as np
         from PIL import Image
@@ -1641,14 +1799,19 @@ class PathSaveImageRGB(ComfyNodeABC):
                 "Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
                 "Please install it with 'pip install pillow-jxl-plugin'."
             )
-            return (False,)
+            return {"ui": {"images": []}, "result": (False, images)}
 
         batch = len(images)
         height, width = images.shape[1], images.shape[2]
         paths, create_dirs = _plan_save_paths(path, fmt, use_prefix_mode, batch, width, height)
 
-        # Compose the prompt metadata to embed into the saved file once.
-        metadata_text = compose_prompt_text(prompt, negative_prompt)
+        # Compose both metadata channels: the explicit prompt(s) of this save
+        # (the A1111-style "parameters" text) and ComfyUI's workflow prompt info.
+        metadata_text, workflow_metadata = compose_save_metadata(prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo)
+
+        # Reporting the written files makes the frontend preview them and list
+        # them with the generated images (same payload as the built-in node).
+        ui_images = []
 
         for index, target_path in enumerate(paths):
             _ensure_parent_directories(target_path, create_dirs)
@@ -1658,11 +1821,15 @@ class PathSaveImageRGB(ComfyNodeABC):
             img_np = (img_tensor * 255).astype(np.uint8)
             pil_img = Image.fromarray(img_np)
 
-            if not _write_pil_image(pil_img, target_path, fmt, quality, metadata_text):
-                return (False,)
+            if not _write_pil_image(pil_img, target_path, fmt, quality, metadata_text, workflow_metadata):
+                return {"ui": {"images": ui_images}, "result": (False, images)}
+
+            entry = _ui_image_entry(target_path)
+            if entry is not None:
+                ui_images.append(entry)
             print(f"Basic data handling: Successfully saved image to {target_path}")
 
-        return (True,)
+        return {"ui": {"images": ui_images}, "result": (True, images)}
 
 
 class PathSaveImageRGBA(ComfyNodeABC):
@@ -1679,11 +1846,21 @@ class PathSaveImageRGBA(ComfyNodeABC):
     a ComfyUI ``filename_prefix`` under the output folder, named and
     auto-numbered exactly like the built-in "Save Image" node.
 
-    When ``prompt`` and/or ``negative_prompt`` are provided, they are embedded
-    into the saved image as ``parameters`` metadata: in the PNG text chunk, in
-    the EXIF ``UserComment`` (and ``ImageDescription`` for JPEG) fields, and in
-    the EXIF + XMP boxes for JPEG XL. Formats that cannot carry text metadata
-    ignore the prompts.
+    Files written into ComfyUI's output (or temp) folder are reported back to the
+    frontend, so the node shows a preview of what it saved and the images appear
+    in ComfyUI's generated-images list, exactly like the built-in "Save Image"
+    node does. Files written anywhere else (plain ``path`` mode) are still saved,
+    they just cannot be previewed.
+
+    Two independent metadata channels are embedded, so both stay usable: with
+    ``prompt``/``negative_prompt`` the A1111-style ``parameters`` text is written
+    (PNG text chunk, EXIF ``UserComment``, XMP for JPEG XL) which image viewers
+    display and which is easy to extract afterwards, and in addition ComfyUI's
+    hidden workflow prompt info (``prompt``/``workflow`` chunks) is stored, which
+    is what makes a saved file drag-and-drop back into ComfyUI as a workflow.
+    When a batch is saved from a data list the workflow necessarily contains
+    every prompt of the graph; the prompt of the individual image is the one in
+    ``parameters``. Formats that cannot carry text metadata ignore both.
     """
 
     @classmethod
@@ -1724,11 +1901,21 @@ class PathSaveImageRGBA(ComfyNodeABC):
                     },
                 ),
             },
+            "hidden": {
+                # Deliberately not called "prompt"/"extra_pnginfo": hidden input
+                # names become function-argument names and "prompt" is already the
+                # explicit-prompt widget of this node.
+                "workflow_prompt": "PROMPT",
+                "workflow_extra_pnginfo": "EXTRA_PNGINFO",
+            },
         }
 
-    RETURN_TYPES = (IO.BOOLEAN,)
-    RETURN_NAMES = ("success",)
-    OUTPUT_TOOLTIPS = ("True when the image with alpha was saved successfully.",)
+    RETURN_TYPES = (IO.BOOLEAN, IO.IMAGE)
+    RETURN_NAMES = ("success", "images")
+    OUTPUT_TOOLTIPS = (
+        "True when the image with alpha was saved successfully.",
+        "The saved images, passed through unchanged so they can be used further down the graph.",
+    )
     CATEGORY = "Basic/Path"
     DESCRIPTION = cleandoc(__doc__ or "")
     FUNCTION = "save_image_with_mask"
@@ -1746,10 +1933,12 @@ class PathSaveImageRGBA(ComfyNodeABC):
         create_dirs: bool = True,
         prompt: str = "",
         negative_prompt: str = "",
+        workflow_prompt: Any = None,
+        workflow_extra_pnginfo: Any = None,
     ):
         if not path:
             print("Basic data handling: Save failed - no path specified")
-            return (False,)
+            return {"ui": {"images": []}, "result": (False, images)}
 
         import numpy as np
         from PIL import Image
@@ -1764,7 +1953,7 @@ class PathSaveImageRGBA(ComfyNodeABC):
                 "Basic data handling: JPEG XL format requested but pillow_jxl module is not installed. "
                 "Please install it with 'pip install pillow-jxl-plugin'."
             )
-            return (False,)
+            return {"ui": {"images": []}, "result": (False, images)}
 
         batch = len(images)
         height, width = images.shape[1], images.shape[2]
@@ -1775,7 +1964,13 @@ class PathSaveImageRGBA(ComfyNodeABC):
         # mask has fewer frames (e.g. a single mask applied to every frame).
         mask_frames = mask.cpu()
 
-        metadata_text = compose_prompt_text(prompt, negative_prompt)
+        # Compose both metadata channels: the explicit prompt(s) of this save
+        # (the A1111-style "parameters" text) and ComfyUI's workflow prompt info.
+        metadata_text, workflow_metadata = compose_save_metadata(prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo)
+
+        # Reporting the written files makes the frontend preview them and list
+        # them with the generated images (same payload as the built-in node).
+        ui_images = []
 
         for index, target_path in enumerate(paths):
             _ensure_parent_directories(target_path, create_dirs)
@@ -1803,11 +1998,15 @@ class PathSaveImageRGBA(ComfyNodeABC):
             pil_img_rgba = pil_img.convert("RGBA")
             pil_img_rgba.putalpha(alpha_img)
 
-            if not _write_pil_image(pil_img_rgba, target_path, fmt, quality, metadata_text):
-                return (False,)
+            if not _write_pil_image(pil_img_rgba, target_path, fmt, quality, metadata_text, workflow_metadata):
+                return {"ui": {"images": ui_images}, "result": (False, images)}
+
+            entry = _ui_image_entry(target_path)
+            if entry is not None:
+                ui_images.append(entry)
             print(f"Basic data handling: Successfully saved image with mask to {target_path}")
 
-        return (True,)
+        return {"ui": {"images": ui_images}, "result": (True, images)}
 
 
 class PathInputDir(ComfyNodeABC):
