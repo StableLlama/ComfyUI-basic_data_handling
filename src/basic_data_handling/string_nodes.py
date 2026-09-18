@@ -1697,7 +1697,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: StringRstrip": "rstrip",
     "Basic data handling: StringSplitDataList": "split (to data list)",
     "Basic data handling: StringSplitList": "split (to LIST)",
-    "Basic data handling: StringSplitlinesDataList": "splitlines (from data list)",
+    "Basic data handling: StringSplitlinesDataList": "splitlines (to data list)",
     "Basic data handling: StringSplitlinesList": "splitlines (to LIST)",
     "Basic data handling: StringStartswith": "startswith",
     "Basic data handling: StringStrip": "strip",

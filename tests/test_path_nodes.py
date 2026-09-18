@@ -1,4 +1,5 @@
 import os
+import json
 import pytest
 import platform
 import numpy as np
@@ -48,6 +49,29 @@ def decode_user_comment(value):
             return value[8:].decode("utf-16-be", errors="ignore")
         return value.decode("utf-8", errors="ignore")
     return value
+
+
+def save_success(result):
+    """Success flag of a save-node result.
+
+    The save nodes return ComfyUI's ``{"ui": ..., "result": ...}`` form so that
+    the frontend previews/lists the written image, so the socket outputs live
+    under ``result``.
+    """
+    assert isinstance(result, dict), result
+    return result["result"][0]
+
+
+def save_passthrough_images(result):
+    """The IMAGE passthrough output of a save-node result."""
+    assert isinstance(result, dict), result
+    return result["result"][1]
+
+
+def save_ui_images(result):
+    """The ``ui.images`` entries a save-node result reports for the frontend."""
+    assert isinstance(result, dict), result
+    return result["ui"]["images"]
 
 
 def test_path_join():
@@ -429,17 +453,17 @@ def test_path_load_save_image_rgba(tmp_path, monkeypatch):
         mask[0, :, i] = i / img_size[0]
 
     # Save the image with mask
-    assert save_node.save_image_with_mask(red_img, mask, output_path) == (True,)
+    assert save_success(save_node.save_image_with_mask(red_img, mask, output_path)) is True
 
     # Verify the image was saved with the correct extension
     assert os.path.exists(output_path + ".png")
 
     # Test with invert_mask option
-    assert save_node.save_image_with_mask(red_img, mask, str(tmp_path / "inverted"), invert_mask=True) == (True,)
+    assert save_success(save_node.save_image_with_mask(red_img, mask, str(tmp_path / "inverted"), invert_mask=True)) is True
     assert os.path.exists(str(tmp_path / "inverted.png"))
 
     # Test with JPEG format (should switch to PNG for transparency)
-    assert save_node.save_image_with_mask(red_img, mask, str(tmp_path / "jpeg_test"), format="jpg") == (True,)
+    assert save_success(save_node.save_image_with_mask(red_img, mask, str(tmp_path / "jpeg_test"), format="jpg")) is True
     # Should be saved as PNG despite the request for JPEG
     assert os.path.exists(str(tmp_path / "jpeg_test.png"))
 
@@ -478,18 +502,18 @@ def test_path_load_save_image_rgb(tmp_path, monkeypatch):
     red_img[0, :, :, 0] = 1.0  # Red channel set to 1
 
     # Save the image
-    assert save_node.save_image(red_img, output_path) == (True,)
+    assert save_success(save_node.save_image(red_img, output_path)) is True
 
     # Verify the image was saved with the correct extension
     assert os.path.exists(output_path + ".png")
 
     # Test different formats
-    assert save_node.save_image(red_img, str(tmp_path / "jpeg_test"), format="jpg") == (True,)
+    assert save_success(save_node.save_image(red_img, str(tmp_path / "jpeg_test"), format="jpg")) is True
     assert os.path.exists(str(tmp_path / "jpeg_test.jpg"))
 
     # Test with directories that don't exist
     nested_path = str(tmp_path / "nested" / "images" / "test_rgb")
-    assert save_node.save_image(red_img, nested_path) == (True,)
+    assert save_success(save_node.save_image(red_img, nested_path)) is True
     assert os.path.exists(nested_path + ".png")
 
     # Test error handling for loading
@@ -505,35 +529,38 @@ def test_path_save_image_rgb_prompt_metadata(tmp_path):
 
     # No metadata when neither prompt nor negative prompt is provided
     plain_path = str(tmp_path / "plain")
-    assert save_node.save_image(red_img, plain_path) == (True,)
+    assert save_success(save_node.save_image(red_img, plain_path)) is True
     with Image.open(plain_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") is None
 
     # Both prompt and negative prompt provided
     full_path = str(tmp_path / "full")
-    assert save_node.save_image(red_img, full_path, prompt="a red square", negative_prompt="blurry, low quality") == (True,)
+    assert save_success(save_node.save_image(red_img, full_path, prompt="a red square", negative_prompt="blurry, low quality")) is True
     with Image.open(full_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
 
     # Only the prompt is provided
     pos_path = str(tmp_path / "pos_only")
-    assert save_node.save_image(red_img, pos_path, prompt="only positive") == (True,)
+    assert save_success(save_node.save_image(red_img, pos_path, prompt="only positive")) is True
     with Image.open(pos_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "only positive"
 
     # Only the negative prompt is provided
     neg_path = str(tmp_path / "neg_only")
-    assert save_node.save_image(red_img, neg_path, negative_prompt="only negative") == (True,)
+    assert save_success(save_node.save_image(red_img, neg_path, negative_prompt="only negative")) is True
     with Image.open(neg_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "Negative prompt: only negative"
 
     # JPEG embeds the prompt into the EXIF UserComment and ImageDescription fields
     jpg_path = str(tmp_path / "jpeg_meta")
-    assert save_node.save_image(red_img, jpg_path, format="jpg", prompt="a red square", negative_prompt="blurry, low quality") == (True,)
+    assert (
+        save_success(save_node.save_image(red_img, jpg_path, format="jpg", prompt="a red square", negative_prompt="blurry, low quality"))
+        is True
+    )
     assert os.path.exists(jpg_path + ".jpg")
     with Image.open(jpg_path + ".jpg") as img:
         img.load()
@@ -544,7 +571,10 @@ def test_path_save_image_rgb_prompt_metadata(tmp_path):
 
     # WEBP embeds the prompt into the EXIF UserComment field (no ImageDescription)
     webp_path = str(tmp_path / "webp_meta")
-    assert save_node.save_image(red_img, webp_path, format="webp", prompt="a red square", negative_prompt="blurry, low quality") == (True,)
+    assert (
+        save_success(save_node.save_image(red_img, webp_path, format="webp", prompt="a red square", negative_prompt="blurry, low quality"))
+        is True
+    )
     with Image.open(webp_path + ".webp") as img:
         img.load()
         exif_bytes = img.info.get("exif", b"")
@@ -565,14 +595,17 @@ def test_path_save_image_rgba_prompt_metadata(tmp_path):
 
     # No metadata when neither prompt nor negative prompt is provided
     plain_path = str(tmp_path / "plain")
-    assert save_node.save_image_with_mask(red_img, mask, plain_path) == (True,)
+    assert save_success(save_node.save_image_with_mask(red_img, mask, plain_path)) is True
     with Image.open(plain_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") is None
 
     # Both prompt and negative prompt provided
     full_path = str(tmp_path / "full")
-    assert save_node.save_image_with_mask(red_img, mask, full_path, prompt="a red square", negative_prompt="blurry, low quality") == (True,)
+    assert (
+        save_success(save_node.save_image_with_mask(red_img, mask, full_path, prompt="a red square", negative_prompt="blurry, low quality"))
+        is True
+    )
     with Image.open(full_path + ".png") as img:
         img.load()
         assert img.text.get("parameters") == "a red square\nNegative prompt: blurry, low quality"
@@ -588,7 +621,7 @@ def test_path_save_image_jxl_prompt_metadata(tmp_path):
     prompt = "a red square <lora:x:1.0>"
     negative_prompt = "blurry, low quality"
     jxl_path = str(tmp_path / "jxl_meta")
-    assert save_node.save_image(red_img, jxl_path, format="jxl", prompt=prompt, negative_prompt=negative_prompt) == (True,)
+    assert save_success(save_node.save_image(red_img, jxl_path, format="jxl", prompt=prompt, negative_prompt=negative_prompt)) is True
     assert os.path.exists(jxl_path + ".jxl")
 
     # JXL embeds the prompt into the EXIF UserComment field
@@ -671,7 +704,7 @@ def test_path_save_image_formats_are_library_derived():
     for fmt in pn._IMAGE_SAVE_FORMATS:
         out = f"/tmp/_bdh_fmt_{fmt}"
         # RGB node writes any offered format
-        assert save_node.save_image(img, out, format=fmt) == (True,), fmt
+        assert save_success(save_node.save_image(img, out, format=fmt)) is True, fmt
         # correct file extension appended
         expected = f"{out}.{fmt}"
         assert os.path.exists(expected), fmt
@@ -687,7 +720,7 @@ def test_path_save_image_rgb_multi_frame_suffix(tmp_path):
     frames = _batch_rgb(3)
     out = str(tmp_path / "frames")
 
-    assert save_node.save_image(frames, out) == (True,)
+    assert save_success(save_node.save_image(frames, out)) is True
     expected = [
         str(tmp_path / "frames_00000.png"),
         str(tmp_path / "frames_00001.png"),
@@ -705,12 +738,12 @@ def test_path_save_image_prefix_mode_mirrors_comfy(tmp_path, monkeypatch):
     img = _batch_rgb(1)
     prefix = "my_subdir/shot"
 
-    assert save_node.save_image(img, prefix, use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image(img, prefix, use_prefix_mode=True)) is True
     first = tmp_path / "my_subdir" / "shot_00001_.png"
     assert first.exists()
 
     # A second save must not overwrite the first file.
-    assert save_node.save_image(img, prefix, use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image(img, prefix, use_prefix_mode=True)) is True
     assert (tmp_path / "my_subdir" / "shot_00002_.png").exists()
 
 
@@ -719,7 +752,7 @@ def test_path_save_image_prefix_mode_batch(tmp_path, monkeypatch):
     save_node = PathSaveImageRGB()
     frames = _batch_rgb(2)
 
-    assert save_node.save_image(frames, "batch", use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image(frames, "batch", use_prefix_mode=True)) is True
     assert (tmp_path / "batch_00001_.png").exists()
     assert (tmp_path / "batch_00002_.png").exists()
 
@@ -730,7 +763,7 @@ def test_path_save_image_prefix_mode_template_tokens(tmp_path, monkeypatch):
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1, size=(8, 4))  # width=8, height=4
 
-    assert save_node.save_image(img, "w%width%_h%height%", use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image(img, "w%width%_h%height%", use_prefix_mode=True)) is True
     assert (tmp_path / "w8_h4_00001_.png").exists()
 
 
@@ -743,7 +776,7 @@ def test_path_save_image_prefix_mode_date_token(tmp_path, monkeypatch):
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1)
 
-    assert save_node.save_image(img, "%date:yyyy-MM-dd%/dated_test", use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image(img, "%date:yyyy-MM-dd%/dated_test", use_prefix_mode=True)) is True
     # The literal token must never be used as a folder name.
     assert not (tmp_path / "%date:yyyy-MM-dd%").exists()
     # A folder named after today's date holds the numbered file.
@@ -760,7 +793,7 @@ def test_path_save_image_path_mode_date_token(tmp_path):
     today = datetime.now().strftime("%Y-%m-%d")
     out = os.path.join(str(tmp_path), "%date:yyyy-MM-dd%", "dated")
 
-    assert save_node.save_image(img, out) == (True,)
+    assert save_success(save_node.save_image(img, out)) is True
     assert not (tmp_path / "%date:yyyy-MM-dd%").exists()
     assert (tmp_path / today / "dated.png").exists()
 
@@ -768,7 +801,11 @@ def test_path_save_image_path_mode_date_token(tmp_path):
 def test_path_save_image_empty_path_returns_false():
     save_node = PathSaveImageRGB()
     img = _batch_rgb(1)
-    assert save_node.save_image(img, "") == (False,)
+    result = save_node.save_image(img, "")
+    assert save_success(result) is False
+    # The images are passed through even when nothing was written.
+    assert save_passthrough_images(result) is img
+    assert save_ui_images(result) == []
 
 
 def test_path_save_image_rgba_prefix_mode_and_transparency(tmp_path, monkeypatch):
@@ -779,7 +816,7 @@ def test_path_save_image_rgba_prefix_mode_and_transparency(tmp_path, monkeypatch
     img[0, :, :, 0] = 1.0
     mask = torch.zeros(1, size[1], size[0])
 
-    assert save_node.save_image_with_mask(img, mask, "alpha", use_prefix_mode=True) == (True,)
+    assert save_success(save_node.save_image_with_mask(img, mask, "alpha", use_prefix_mode=True)) is True
     path = tmp_path / "alpha_00001_.png"
     assert path.exists()
 
@@ -798,9 +835,166 @@ def test_path_save_image_rgba_multi_frame(tmp_path):
     frames[1, :, :, 1] = 1.0
     mask = torch.zeros(1, size[1], size[0])  # single mask shared across frames
 
-    assert save_node.save_image_with_mask(frames, mask, str(tmp_path / "rgba_batch")) == (True,)
+    assert save_success(save_node.save_image_with_mask(frames, mask, str(tmp_path / "rgba_batch"))) is True
     assert (tmp_path / "rgba_batch_00000.png").exists()
     assert (tmp_path / "rgba_batch_00001.png").exists()
+
+
+def test_path_save_image_reports_preview_entries(tmp_path, monkeypatch):
+    """Files saved into ComfyUI's output folder are reported as ``ui.images``,
+    which is what makes the frontend preview them and list them with the
+    generated images (same payload as the built-in "Save Image" node)."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    frames = _batch_rgb(2)
+
+    result = save_node.save_image(frames, "my_subdir/shot", use_prefix_mode=True)
+
+    assert save_ui_images(result) == [
+        {"filename": "shot_00001_.png", "subfolder": "my_subdir", "type": "output"},
+        {"filename": "shot_00002_.png", "subfolder": "my_subdir", "type": "output"},
+    ]
+    # The images are passed through unchanged, like the built-in node does.
+    assert save_passthrough_images(result) is frames
+
+
+def test_path_save_image_rgba_reports_preview_entries(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGBA()
+    size = (8, 8)
+    img = torch.zeros(1, size[1], size[0], 3)
+    mask = torch.zeros(1, size[1], size[0])
+
+    result = save_node.save_image_with_mask(img, mask, "alpha", use_prefix_mode=True)
+
+    assert save_ui_images(result) == [{"filename": "alpha_00001_.png", "subfolder": "", "type": "output"}]
+
+
+def test_path_save_image_plain_path_inside_output_dir_is_previewed(tmp_path, monkeypatch):
+    """Plain path mode is previewable as long as the file lands in the output folder."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+
+    result = save_node.save_image(img, str(tmp_path / "sub" / "plain"))
+
+    assert save_ui_images(result) == [{"filename": "plain.png", "subfolder": "sub", "type": "output"}]
+
+
+def test_path_save_image_temp_dir_is_previewed_as_temp(tmp_path, monkeypatch):
+    """Files in ComfyUI's temp folder are reported with ``type: "temp"``."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path / "out"))
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_temp_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+
+    result = save_node.save_image(img, str(tmp_path / "scratch"))
+
+    assert save_ui_images(result) == [{"filename": "scratch.png", "subfolder": "", "type": "temp"}]
+
+
+def test_path_save_image_outside_comfy_folders_has_no_preview(tmp_path, monkeypatch):
+    """The file is still written, but nothing is reported for it: ComfyUI could
+    not serve it through /view, so a preview entry would be a broken image."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path / "out"))
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_temp_directory", lambda: str(tmp_path / "tmp"))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    out = str(tmp_path / "elsewhere" / "image")
+
+    result = save_node.save_image(img, out)
+
+    assert save_success(result) is True
+    assert save_ui_images(result) == []
+    assert os.path.exists(out + ".png")
+
+
+def test_path_save_image_exposes_workflow_inputs_and_image_passthrough():
+    """Drop-in superset of the built-in node: it takes ComfyUI's hidden workflow
+    prompt info and passes the images through as a second output."""
+    for cls in (PathSaveImageRGB, PathSaveImageRGBA):
+        assert cls.INPUT_TYPES()["hidden"] == {"workflow_prompt": "PROMPT", "workflow_extra_pnginfo": "EXTRA_PNGINFO"}
+        assert cls.RETURN_TYPES == ("BOOLEAN", "IMAGE")
+        assert cls.RETURN_NAMES == ("success", "images")
+        assert cls.OUTPUT_NODE is True
+
+
+def test_path_save_image_embeds_workflow_and_explicit_prompt(tmp_path, monkeypatch):
+    """Both metadata channels coexist in a PNG: the workflow (all prompts of the
+    graph, needed so dragging the file back restores the workflow) and the
+    explicit prompt of this save as ``parameters`` (easy to extract, shown by
+    image viewers)."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    frames = _batch_rgb(2)
+    workflow_prompt = {
+        "3": {"class_type": "KSampler", "inputs": {"seed": 1}},
+        "6": {"class_type": "CLIPTextEncode", "inputs": {"text": "prompt of a different node"}},
+    }
+    extra_pnginfo = {"workflow": {"nodes": [{"id": 3}, {"id": 6}]}}
+
+    result = save_node.save_image(
+        frames,
+        "meta",
+        use_prefix_mode=True,
+        prompt="the prompt of this image",
+        negative_prompt="bad",
+        workflow_prompt=workflow_prompt,
+        workflow_extra_pnginfo=extra_pnginfo,
+    )
+    assert save_success(result) is True
+
+    # Every frame of the batch carries both channels.
+    for name in ("meta_00001_.png", "meta_00002_.png"):
+        with Image.open(tmp_path / name) as img:
+            img.load()
+            assert img.text["parameters"] == "the prompt of this image\nNegative prompt: bad"
+            assert json.loads(img.text["prompt"]) == workflow_prompt
+            assert json.loads(img.text["workflow"]) == extra_pnginfo["workflow"]
+
+
+def test_path_save_image_workflow_metadata_in_exif(tmp_path, monkeypatch):
+    """Formats without a native text chunk keep the explicit prompt in
+    UserComment and store the workflow in the fields ComfyUI uses for them."""
+    monkeypatch.setattr("src.basic_data_handling.path_nodes.get_output_directory", lambda: str(tmp_path))
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    workflow_prompt = {"3": {"class_type": "KSampler", "inputs": {}}}
+    extra_pnginfo = {"workflow": {"nodes": [{"id": 3}]}}
+    out = str(tmp_path / "exif_meta")
+
+    result = save_node.save_image(
+        img, out, format="jpg", prompt="explicit", workflow_prompt=workflow_prompt, workflow_extra_pnginfo=extra_pnginfo
+    )
+    assert save_success(result) is True
+
+    with Image.open(out + ".jpg") as loaded:
+        loaded.load()
+        exif = loaded.getexif()
+        assert decode_user_comment(exif.get_ifd(0x8769).get(0x9286)) == "explicit"
+        # ComfyUI's own convention for these formats.
+        assert exif.get(0x0110) == "prompt:" + json.dumps(workflow_prompt)
+        assert exif.get(0x010F) == "workflow:" + json.dumps(extra_pnginfo["workflow"])
+
+
+def test_path_save_image_metadata_can_be_disabled(tmp_path, monkeypatch):
+    """ComfyUI's ``--disable-metadata`` suppresses both metadata channels, like
+    it does in the built-in save node."""
+    import src.basic_data_handling.path_nodes as pn
+
+    monkeypatch.setattr(pn, "_metadata_disabled", lambda: True)
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    out = str(tmp_path / "disabled")
+
+    result = save_node.save_image(img, out, prompt="explicit", workflow_prompt={"1": {}}, workflow_extra_pnginfo={"workflow": {}})
+
+    assert save_success(result) is True
+    with Image.open(out + ".png") as loaded:
+        loaded.load()
+        assert loaded.text.get("parameters") is None
+        assert loaded.text.get("prompt") is None
+        assert loaded.text.get("workflow") is None
 
 
 def test_path_normalize():
