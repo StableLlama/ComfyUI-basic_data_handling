@@ -953,6 +953,173 @@ def test_path_save_image_embeds_workflow_and_explicit_prompt(tmp_path, monkeypat
             assert json.loads(img.text["workflow"]) == extra_pnginfo["workflow"]
 
 
+#: The sampler settings an A1111 infotext reader knows. Readers (Civitai and
+#: similar) scan the ``parameters`` text from its end for a line holding at least
+#: three of them - ``Sampler`` among them - and discard the whole text when there
+#: is no such line, so the prompt would not be extracted either.
+_A1111_SAMPLER_KEYS = ("Sampler", "CFG scale", "Seed", "Steps", "ENSD", "Schedule type")
+
+
+def read_as_a1111_parameters(parameters_text):
+    """Return the sampler settings a reader finds in a ``parameters`` text."""
+    for line in reversed(parameters_text.splitlines()):
+        settings = {}
+        for item in line.split(","):
+            key, separator, value = item.partition(":")
+            if separator and key.strip() in _A1111_SAMPLER_KEYS:
+                settings[key.strip()] = value.strip()
+        if len(settings) >= 3 and "Sampler" in settings:
+            return settings
+    return None
+
+
+def _sampler_workflow(**overrides):
+    """An API workflow prompt holding one KSampler with literal settings."""
+    settings = {"steps": 8, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "seed": 51, "denoise": 1.0}
+    settings.update(overrides)
+    return {"3": {"class_type": "KSampler", "inputs": {"model": ["10", 0], "positive": ["6", 0], **settings}}}
+
+
+def test_path_save_image_parameters_text_carries_the_sampler_settings(tmp_path):
+    """The explicit prompt is only extracted by readers like Civitai when the
+    ``parameters`` text ends with a ``Steps: ...`` line, so the save node adds the
+    sampler settings of the workflow below the prompt."""
+    save_node = PathSaveImageRGB()
+    out = str(tmp_path / "a1111_meta")
+
+    result = save_node.save_image(
+        _batch_rgb(1),
+        out,
+        prompt="the prompt of this image",
+        negative_prompt="bad",
+        workflow_prompt=_sampler_workflow(),
+        workflow_extra_pnginfo={"workflow": {"nodes": [{"id": 3}]}},
+    )
+    assert save_success(result) is True
+
+    with Image.open(out + ".png") as img:
+        img.load()
+        parameters = img.text["parameters"]
+
+    assert parameters == (
+        "the prompt of this image\nNegative prompt: bad\n"
+        "Steps: 8, Sampler: euler, Schedule type: simple, CFG scale: 1, Seed: 51, Size: 16x16"
+    )
+    # Everything above the settings line is the prompt, exactly what a reader
+    # of A1111 parameters text expects.
+    assert read_as_a1111_parameters(parameters) == {
+        "Steps": "8",
+        "Sampler": "euler",
+        "Schedule type": "simple",
+        "CFG scale": "1",
+        "Seed": "51",
+    }
+
+
+def test_path_save_image_with_mask_also_carries_the_sampler_settings(tmp_path):
+    """Both save nodes share the metadata composition."""
+    save_node = PathSaveImageRGBA()
+    out = str(tmp_path / "a1111_rgba")
+
+    result = save_node.save_image_with_mask(
+        _batch_rgb(1), torch.zeros(1, 16, 16), out, prompt="explicit", workflow_prompt=_sampler_workflow()
+    )
+
+    assert save_success(result) is True
+    with Image.open(out + ".png") as img:
+        img.load()
+        assert img.text["parameters"].endswith("\nSteps: 8, Sampler: euler, Schedule type: simple, CFG scale: 1, Seed: 51, Size: 16x16")
+
+
+def test_path_save_image_sampler_settings_follow_value_links(tmp_path):
+    """A sampler widget is often driven by a plain value node (this pack's
+    ``IntCreate`` and the like): such a link carries the setting, while a device
+    that computes a value stays unknown and is left out rather than guessed."""
+    workflow_prompt = {
+        "3": {
+            "class_type": "KSampler",
+            "inputs": {"steps": ["5", 0], "cfg": 3.5, "sampler_name": "dpmpp_2m", "seed": ["7", 0], "scheduler": "karras"},
+        },
+        "5": {"class_type": "Basic data handling: IntCreate", "inputs": {"value": "20"}},
+        "7": {"class_type": "RandomInt", "inputs": {"min": 0, "max": 100}},
+    }
+    out = str(tmp_path / "linked")
+
+    result = PathSaveImageRGB().save_image(_batch_rgb(1), out, prompt="explicit", workflow_prompt=workflow_prompt)
+
+    assert save_success(result) is True
+    with Image.open(out + ".png") as img:
+        img.load()
+        # "Steps: 20" comes from the value node, the seed cannot be resolved and
+        # is therefore missing - which the line itself has to survive.
+        assert img.text["parameters"] == "explicit\nSteps: 20, Sampler: dpmpp_2m, Schedule type: karras, CFG scale: 3.5, Size: 16x16"
+        assert read_as_a1111_parameters(img.text["parameters"]) == {
+            "Steps": "20",
+            "Sampler": "dpmpp_2m",
+            "Schedule type": "karras",
+            "CFG scale": "3.5",
+        }
+
+
+def test_path_save_image_uses_the_last_pass_of_a_multi_sampler_workflow(tmp_path):
+    """A hires fix runs two samplers; like A1111 (which reports its second pass)
+    the settings of the pass that produced the file are the ones written."""
+    workflow_prompt = {
+        "1": _sampler_workflow()["3"],
+        "2": {"class_type": "LatentUpscale", "inputs": {"samples": ["1", 0]}},
+        "3": {
+            "class_type": "KSampler",
+            "inputs": {"steps": 20, "cfg": 7.0, "sampler_name": "dpmpp_2m", "scheduler": "karras", "seed": 52, "latent_image": ["2", 0]},
+        },
+    }
+    out = str(tmp_path / "second_pass")
+
+    result = PathSaveImageRGB().save_image(_batch_rgb(1), out, prompt="explicit", workflow_prompt=workflow_prompt)
+
+    assert save_success(result) is True
+    with Image.open(out + ".png") as img:
+        img.load()
+        assert (
+            img.text["parameters"] == "explicit\nSteps: 20, Sampler: dpmpp_2m, Schedule type: karras, CFG scale: 7, Seed: 52, Size: 16x16"
+        )
+
+
+def test_path_save_image_without_sampler_settings_keeps_the_plain_prompt(tmp_path):
+    """A workflow whose settings are spread over several nodes gets no settings
+    line at all - the text stays the plain prompt of the previous versions."""
+    workflow_prompt = {
+        "3": {"class_type": "SamplerCustomAdvanced", "inputs": {"noise": ["4", 0], "guider": ["5", 0], "sampler": ["6", 0]}},
+        "4": {"class_type": "BasicScheduler", "inputs": {"steps": 20, "scheduler": "simple"}},
+    }
+    out = str(tmp_path / "no_settings")
+
+    result = PathSaveImageRGB().save_image(_batch_rgb(1), out, prompt="explicit", workflow_prompt=workflow_prompt)
+
+    assert save_success(result) is True
+    with Image.open(out + ".png") as img:
+        img.load()
+        assert img.text["parameters"] == "explicit"
+        assert read_as_a1111_parameters(img.text["parameters"]) is None
+
+
+def test_build_generation_parameters_reads_only_what_the_graph_provides():
+    """The settings line is derived from the workflow and never invented."""
+    import src.basic_data_handling.path_nodes as pn
+
+    assert pn.build_generation_parameters(None) == ""
+    assert pn.build_generation_parameters("not a workflow") == ""
+    assert pn.build_generation_parameters({}) == ""
+    # The image size is part of the line only when it is known ...
+    assert pn.build_generation_parameters(_sampler_workflow()) == "Steps: 8, Sampler: euler, Schedule type: simple, CFG scale: 1, Seed: 51"
+    # ... a sampling that only partly denoises is reported like A1111 does ...
+    assert pn.build_generation_parameters(_sampler_workflow(denoise=0.6)).endswith("Denoising strength: 0.6")
+    # ... and without the settings the line is built around there is no line.
+    for missing in ("steps", "cfg", "sampler_name"):
+        workflow_prompt = _sampler_workflow()
+        del workflow_prompt["3"]["inputs"][missing]
+        assert pn.build_generation_parameters(workflow_prompt) == ""
+
+
 def test_path_save_image_workflow_metadata_in_exif(tmp_path, monkeypatch):
     """Formats without a native text chunk keep the explicit prompt in
     UserComment and store the workflow in the fields ComfyUI uses for them."""

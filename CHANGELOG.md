@@ -22,6 +22,14 @@ Fixed:
   and the reduction is reported; the image itself is always written. Should
   embedding metadata ever fail for another reason, the image is written again
   without metadata instead of not at all.
+- "save IMAGE to file" and "save IMAGE+MASK to file": the `parameters` metadata
+  now ends with the sampler settings of the workflow (`Steps: 8, Sampler: euler,
+  Schedule type: simple, CFG scale: 1, Seed: 51, Size: 1024x1024`). Sites like
+  Civitai only read the prompt out of a `parameters` text that contains such a
+  line; without it the whole text is discarded and the explicitly set `prompt`
+  was not extracted at all. The settings are read from the sampler node of the
+  workflow and nothing is invented - when the graph does not provide them, the
+  text stays the plain prompt as before.
 
 ## [2.1.0] - 2026-09-19
 
