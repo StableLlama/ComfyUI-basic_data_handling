@@ -17,6 +17,7 @@ except:
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
+from ._value_utils import as_bool, is_empty_entry
 
 INT_MAX = 2**15 - 1  # the computer can do more but be nice to the eyes
 
@@ -402,6 +403,50 @@ class ListExtend(ComfyNodeABC):
         result = list1.copy()
         result.extend(list2)
         return (result,)
+
+
+class ListFilterEmpty(ComfyNodeABC):
+    """
+    Removes every empty entry of a LIST.
+
+    This node takes a LIST and returns a new LIST without the entries that are
+    empty, i.e. ``None``, an empty STRING and an empty collection (empty LIST,
+    DICT, SET, ...). Numbers and booleans are never empty, so ``0`` and ``False``
+    are kept.
+
+    When ``treat_whitespace_as_empty`` is enabled, a STRING that consists only of
+    whitespace characters (spaces, tabs, line breaks, ...) counts as empty as
+    well and is removed, too.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": ("LIST", {"tooltip": "The LIST whose empty entries are removed."}),
+            },
+            "optional": {
+                "treat_whitespace_as_empty": (
+                    IO.BOOLEAN,
+                    {
+                        "default": False,
+                        "tooltip": "When enabled, STRINGs that consist only of whitespace (spaces, tabs, line breaks) are removed as well.",
+                    },
+                ),
+            },
+        }
+
+    RETURN_TYPES = ("LIST",)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new LIST without the empty entries.",)
+    CATEGORY = "Basic/LIST"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "filter_empty"
+
+    def filter_empty(self, list: list[Any], treat_whitespace_as_empty: bool = False) -> tuple[list[Any]]:
+        list = list if list is not None else []
+        treat = as_bool(treat_whitespace_as_empty)
+        return ([value for value in list if not is_empty_entry(value, treat)],)
 
 
 class ListFirst(ComfyNodeABC):
@@ -1135,6 +1180,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: ListCount": ListCount,
     "Basic data handling: ListEnumerate": ListEnumerate,
     "Basic data handling: ListExtend": ListExtend,
+    "Basic data handling: ListFilterEmpty": ListFilterEmpty,
     "Basic data handling: ListFirst": ListFirst,
     "Basic data handling: ListGetItem": ListGetItem,
     "Basic data handling: ListIndex": ListIndex,
@@ -1171,6 +1217,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: ListCount": "count",
     "Basic data handling: ListEnumerate": "enumerate",
     "Basic data handling: ListExtend": "extend",
+    "Basic data handling: ListFilterEmpty": "filter empty",
     "Basic data handling: ListFirst": "first",
     "Basic data handling: ListGetItem": "get item",
     "Basic data handling: ListIndex": "index",

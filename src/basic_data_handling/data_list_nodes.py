@@ -16,6 +16,7 @@ except:
     ComfyNodeABC = object
 
 from ._dynamic_input import ContainsDynamicDict
+from ._value_utils import as_bool, is_empty_entry
 
 INT_MAX = 2**15 - 1  # the computer can do more but be nice to the eyes
 
@@ -498,6 +499,52 @@ class DataListFilter(ComfyNodeABC):
         # Create a new list with only items where the filter is False
         result = [_val for _val, _filter in zip(values, filters) if not _filter]
 
+        return (result,)
+
+
+class DataListFilterEmpty(ComfyNodeABC):
+    """
+    Removes every empty entry of a Data List.
+
+    This node takes a Data List and returns a new Data List without the entries
+    that are empty, i.e. ``None``, an empty STRING and an empty collection
+    (empty LIST, DICT, SET, ...). Numbers and booleans are never empty, so ``0``
+    and ``False`` are kept.
+
+    When ``treat_whitespace_as_empty`` is enabled, a STRING that consists only of
+    whitespace characters (spaces, tabs, line breaks, ...) counts as empty as
+    well and is removed, too.
+    """
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "list": (IO.ANY, {"tooltip": "The Data List whose empty entries are removed."}),
+            },
+            "optional": {
+                "treat_whitespace_as_empty": (
+                    IO.BOOLEAN,
+                    {
+                        "default": False,
+                        "tooltip": "When enabled, STRINGs that consist only of whitespace (spaces, tabs, line breaks) are removed as well.",
+                    },
+                ),
+            },
+        }
+
+    RETURN_TYPES = (IO.ANY,)
+    RETURN_NAMES = ("list",)
+    OUTPUT_TOOLTIPS = ("A new Data List without the empty entries.",)
+    CATEGORY = "Basic/Data List"
+    DESCRIPTION = cleandoc(__doc__ or "")
+    FUNCTION = "filter_empty"
+    INPUT_IS_LIST = True
+    OUTPUT_IS_LIST = (True,)
+
+    def filter_empty(self, **kwargs: list[Any]) -> tuple[list[Any]]:
+        treat_whitespace_as_empty = as_bool(kwargs.get("treat_whitespace_as_empty"))
+        result = [value for value in (kwargs.get("list") or []) if not is_empty_entry(value, treat_whitespace_as_empty)]
         return (result,)
 
 
@@ -1334,6 +1381,7 @@ NODE_CLASS_MAPPINGS = {
     "Basic data handling: DataListEnumerate": DataListEnumerate,
     "Basic data handling: DataListExtend": DataListExtend,
     "Basic data handling: DataListFilter": DataListFilter,
+    "Basic data handling: DataListFilterEmpty": DataListFilterEmpty,
     "Basic data handling: DataListFilterSelect": DataListFilterSelect,
     "Basic data handling: DataListFirst": DataListFirst,
     "Basic data handling: DataListGetItem": DataListGetItem,
@@ -1373,6 +1421,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "Basic data handling: DataListEnumerate": "enumerate",
     "Basic data handling: DataListExtend": "extend",
     "Basic data handling: DataListFilter": "filter",
+    "Basic data handling: DataListFilterEmpty": "filter empty",
     "Basic data handling: DataListFilterSelect": "filter select",
     "Basic data handling: DataListFirst": "first",
     "Basic data handling: DataListGetItem": "get item",

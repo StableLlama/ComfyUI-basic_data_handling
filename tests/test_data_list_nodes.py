@@ -13,6 +13,7 @@ from src.basic_data_handling.data_list_nodes import (
     DataListEnumerate,
     DataListExtend,
     DataListFilter,
+    DataListFilterEmpty,
     DataListFilterSelect,
     DataListFirst,
     DataListGetItem,
@@ -183,6 +184,20 @@ def test_filter():
     assert node.filter_data(value=[1, 2, 3], filter=[False, True, False]) == ([1, 3],)
     assert node.filter_data(value=[1, 2], filter=[True, True]) == ([],)
     assert node.filter_data(value=[1, 2, 3], filter=[False, False, False]) == ([1, 2, 3],)
+
+
+def test_filter_empty():
+    node = DataListFilterEmpty()
+    assert node.filter_empty(list=[1, 2, 3]) == ([1, 2, 3],)
+    assert node.filter_empty(list=[None, 1, "", 2, [], 3, {}, set()]) == ([1, 2, 3],)
+    assert node.filter_empty(list=[0, False, 0.0, "", None]) == ([0, False, 0.0],)  # 0 and False are not empty
+    assert node.filter_empty(list=["", " ", "\t", "a"]) == ([" ", "\t", "a"],)  # whitespace is kept by default
+    assert node.filter_empty(list=["", " ", "\t", "a"], treat_whitespace_as_empty=[True]) == (["a"],)
+    assert node.filter_empty(list=[], treat_whitespace_as_empty=[True]) == ([],)
+
+    # Entries without a length (e.g. TENSORs) are never regarded as empty
+    opaque = object()
+    assert node.filter_empty(list=[opaque, None, ""]) == ([opaque],)
 
 
 def test_min():
@@ -436,6 +451,7 @@ def test_data_list_none_source():
     assert DataListEnumerate().enumerate_list(list=None) == ([],)
     assert DataListExtend().extend(list_a=None, list_b=None) == ([],)
     assert DataListFilter().filter_data(value=None, filter=None) == ([],)
+    assert DataListFilterEmpty().filter_empty(list=None) == ([],)
     assert DataListFilterSelect().select(value=None, select=None) == ([], [])
     assert DataListFirst().get_first_element(list=None) == (None,)
     assert DataListGetItem().get_item(list=None, index=[0]) == (None,)

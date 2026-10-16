@@ -13,6 +13,7 @@ from src.basic_data_handling.list_nodes import (
     ListCreateFromJSONString,
     ListEnumerate,
     ListExtend,
+    ListFilterEmpty,
     ListFirst,
     ListGetItem,
     ListIndex,
@@ -406,6 +407,18 @@ def test_list_sum():
     assert float_result == 6.5
 
 
+def test_list_filter_empty():
+    node = ListFilterEmpty()
+    assert node.filter_empty([1, None, 2, "", 3]) == ([1, 2, 3],)
+    assert node.filter_empty([None, [], {}, set(), "a"]) == (["a"],)
+    assert node.filter_empty([0, False, 0.0, [], None]) == ([0, False, 0.0],)  # 0 and False are not empty
+    assert node.filter_empty(["", " ", "\t", "a"]) == ([" ", "\t", "a"],)  # whitespace is kept by default
+    assert node.filter_empty(["", " ", "\t", "a"], True) == (["a"],)
+    assert node.filter_empty(["  \n  "], "True") == ([],)  # tolerant with legacy combo widgets
+    assert node.filter_empty([]) == ([],)
+    assert node.filter_empty(None) == ([],)
+
+
 def test_list_none_source():
     """Graceful behaviour when the input LIST source is None."""
     assert ListAll().check_all(None) == (True,)
@@ -415,6 +428,7 @@ def test_list_none_source():
     assert ListCount().count(None, "value") == (0,)
     assert ListEnumerate().enumerate_list(None) == ([[]],)
     assert ListExtend().extend(None, None) == ([],)
+    assert ListFilterEmpty().filter_empty(None) == ([],)
     assert ListFirst().get_first_element(None) == (None,)
     assert ListGetItem().get_item(None, 0) == (None,)
     assert ListIndex().index(None, "value") == (-1,)
