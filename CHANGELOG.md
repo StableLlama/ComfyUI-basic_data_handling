@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Added:
+- Data List and LIST: new "filter empty" node that removes every empty entry
+  (`None`, empty STRING, empty LIST/DICT/SET, ...); `0` and `False` are kept.
+  An optional boolean switch also treats a STRING consisting only of whitespace
+  as empty.
+
+## [2.1.1] - 2026-10-07
+
+Fixed:
+- "save IMAGE to file" and "save IMAGE+MASK to file" no longer fail with
+  "EXIF data is too long" when saving a JPG whose embedded workflow metadata is
+  larger than a single JPEG EXIF block. A JPEG can only carry one 16-bit-sized
+  EXIF segment, so oversized metadata is now reduced step by step - first the
+  full workflow graph, then the workflow prompt info, then the prompt metadata -
+  and the reduction is reported; the image itself is always written. Should
+  embedding metadata ever fail for another reason, the image is written again
+  without metadata instead of not at all.
+
 ## [2.1.0] - 2026-09-19
 
 Backward compatible changes:

@@ -61,7 +61,7 @@ ComfyUI list manipulation nodes (for processing individual items):
 
 - **Creation**: create Data List (generic and type-specific versions)
 - **Modification**: append, extend, insert, set item, shuffle, remove, pop, pop random
-- **Filtering**: filter, filter select
+- **Filtering**: filter, filter empty, filter select
 - **Access**: get item, first, last, slice, index, contains
 - **Information**: length, count
 - **Operations**: sort, reverse, zip, min, max
@@ -106,6 +106,7 @@ Python list manipulation nodes (as a single variable):
 - **Modification**: append, extend, insert, remove, pop, pop random, set_item, shuffle
 - **Access**: get_item, first, last, slice, index, contains
 - **Information**: length, count
+- **Filtering**: filter empty (optionally treating whitespace-only STRINGs as empty)
 - **Operations**: sort, reverse, min, max
 - **Conversion**: convert to data list, convert to SET
 
