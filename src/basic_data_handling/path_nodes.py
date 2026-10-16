@@ -1084,26 +1084,150 @@ class PathSaveStringFile(ComfyNodeABC):
             return (False,)
 
 
-def compose_prompt_text(prompt: str, negative_prompt: str) -> str:
+def compose_prompt_text(prompt: str, negative_prompt: str, generation_parameters: str = "") -> str:
     """
     Build the generation-parameter text embedded into saved images.
 
     Follows the Stable Diffusion WebUI convention: the (optional) positive
-    prompt is written first, followed by an optional ``Negative prompt:``
-    line::
+    prompt is written first, followed by an optional ``Negative prompt:`` line
+    and the optional ``generation_parameters`` line (see
+    ``build_generation_parameters``)::
 
         <positive prompt>
         Negative prompt: <negative prompt>
+        Steps: 8, Sampler: euler, ...
 
-    Returns an empty string when neither value is provided, in which case no
-    metadata is embedded into the file.
+    Returns an empty string when nothing is provided, in which case no metadata
+    is embedded into the file.
     """
     lines = []
     if prompt.strip():
         lines.append(prompt.strip())
     if negative_prompt.strip():
         lines.append(f"Negative prompt: {negative_prompt.strip()}")
+    if generation_parameters:
+        lines.append(generation_parameters)
     return "\n".join(lines)
+
+
+def _is_node_link(value: Any) -> bool:
+    """True for a ComfyUI ``[node_id, output_index]`` input link."""
+    return isinstance(value, (list, tuple)) and len(value) == 2 and isinstance(value[0], str) and isinstance(value[1], int)
+
+
+def _static_input_value(value: Any, workflow_prompt: Any) -> Any:
+    """
+    Return a sampler setting as the value the graph was run with.
+
+    An input that is not driven by a link is serialised as its plain value: that
+    is the value. A driven one is a link instead, and what it carries is unknown
+    in general - but when the link points at a node consisting of nothing but a
+    ``value`` input (ComfyUI's primitives, this pack's ``IntCreate``/
+    ``FloatCreate``, ...) then that ``value`` *is* the setting the user typed, so
+    it is taken. Anything computed stays unknown (``None``) instead of being
+    guessed, and the same holds for everything that is not a single value (a
+    list input feeding a sampler is a batch, not a setting).
+    """
+    if not _is_node_link(value):
+        return value
+    if not isinstance(workflow_prompt, dict):
+        return None
+    node = workflow_prompt.get(value[0])
+    inputs = node.get("inputs") if isinstance(node, dict) else None
+    if isinstance(inputs, dict) and len(inputs) == 1:
+        source = inputs.get("value")
+        if isinstance(source, (str, int, float)):
+            return source
+    return None
+
+
+def _ancestor_node_ids(node_id: str, workflow_prompt: dict) -> set[str]:
+    """All node ids reachable from ``node_id`` by following its input links."""
+    seen: set[str] = set()
+    stack = [node_id]
+    while stack:
+        node = workflow_prompt.get(stack.pop())
+        inputs = node.get("inputs") if isinstance(node, dict) else None
+        if not isinstance(inputs, dict):
+            continue
+        for value in inputs.values():
+            if _is_node_link(value) and value[0] not in seen:
+                seen.add(value[0])
+                stack.append(value[0])
+    return seen
+
+
+def _format_setting(value: Any) -> str:
+    """Format one sampler setting the way A1111 writes it (``1.0`` -> ``1``)."""
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
+
+
+def build_generation_parameters(workflow_prompt: Any, width: int = 0, height: int = 0) -> str:
+    """
+    Compose the A1111-style generation-parameters line of a save.
+
+    Readers of the ``parameters`` text look for a line holding the sampler
+    settings (``Steps:``, ``Sampler:``, ``CFG scale:``, ...) and treat the whole
+    text as unreadable when there is none - the explicitly set prompt would then
+    not be extracted at all (which is what Civitai did with the saved files).
+    The settings are therefore read from the sampler node of ComfyUI's own
+    workflow prompt (``PROMPT``), so the line describes the graph that produced
+    the image, e.g.::
+
+        Steps: 8, Sampler: euler, Schedule type: simple, CFG scale: 1, Seed: 51, Size: 1024x1024
+
+    Only settings the graph really provides are written, and only when they are
+    known without guessing (see ``_static_input_value``). Returns an empty
+    string when the three settings the line is built around (``steps``, ``cfg``,
+    ``sampler_name``) are not all available; the ``parameters`` text then stays
+    the plain prompt text.
+    """
+    if not isinstance(workflow_prompt, dict):
+        return ""
+
+    samplers: dict[str, dict] = {}
+    for node_id, node in workflow_prompt.items():
+        inputs = node.get("inputs") if isinstance(node, dict) else None
+        if isinstance(inputs, dict) and all(key in inputs for key in ("steps", "cfg", "sampler_name")):
+            samplers[str(node_id)] = inputs
+    if not samplers:
+        return ""
+
+    # A graph may hold several samplers (hires fix and other multi-pass
+    # workflows). The pass that ran last describes the file, exactly like A1111
+    # reports the settings of its second pass: that is a sampler whose output no
+    # other sampler consumed (it is no other sampler's ancestor), and among those
+    # the one with the deepest dependency chain.
+    ancestors = {node_id: _ancestor_node_ids(node_id, workflow_prompt) for node_id in samplers}
+    consumed_by_a_later_pass = set().union(*ancestors.values())
+    last_pass = [node_id for node_id in samplers if node_id not in consumed_by_a_later_pass]
+    chosen = max(last_pass or list(samplers), key=lambda node_id: len(ancestors[node_id]))
+    inputs = samplers[chosen]
+
+    steps = _static_input_value(inputs["steps"], workflow_prompt)
+    cfg = _static_input_value(inputs["cfg"], workflow_prompt)
+    sampler = _static_input_value(inputs["sampler_name"], workflow_prompt)
+    if steps is None or cfg is None or not sampler:
+        return ""
+
+    settings = [f"Steps: {_format_setting(steps)}", f"Sampler: {sampler}"]
+    scheduler = _static_input_value(inputs.get("scheduler"), workflow_prompt)
+    if scheduler:
+        settings.append(f"Schedule type: {scheduler}")
+    settings.append(f"CFG scale: {_format_setting(cfg)}")
+    seed = _static_input_value(inputs.get("seed"), workflow_prompt)
+    if seed is None:
+        seed = _static_input_value(inputs.get("noise_seed"), workflow_prompt)
+    if seed is not None:
+        settings.append(f"Seed: {_format_setting(seed)}")
+    if width and height:
+        settings.append(f"Size: {width}x{height}")
+    denoise = _static_input_value(inputs.get("denoise"), workflow_prompt)
+    if isinstance(denoise, (int, float)) and not isinstance(denoise, bool) and float(denoise) != 1.0:
+        settings.append(f"Denoising strength: {_format_setting(denoise)}")
+    return ", ".join(settings)
 
 
 def _metadata_disabled() -> bool:
@@ -1145,7 +1269,7 @@ def build_workflow_metadata(workflow_prompt: Any, workflow_extra_pnginfo: Any) -
 
 
 def compose_save_metadata(
-    prompt: str, negative_prompt: str, workflow_prompt: Any, workflow_extra_pnginfo: Any
+    prompt: str, negative_prompt: str, workflow_prompt: Any, workflow_extra_pnginfo: Any, width: int = 0, height: int = 0
 ) -> tuple[str, dict[str, str]]:
     """
     Build both metadata channels of an image save.
@@ -1154,13 +1278,21 @@ def compose_save_metadata(
     ``parameters`` text of the explicit prompt(s) and the ``{key: json}`` mapping
     of ComfyUI's workflow prompt info.
 
+    The prompt text is completed by the sampler settings of the workflow (see
+    ``build_generation_parameters``): without that line readers like Civitai
+    discard the whole ``parameters`` text as unreadable, so the explicitly set
+    prompt would not be extracted.
+
     ComfyUI's ``--disable-metadata`` flag suppresses *all* metadata, exactly like
     the built-in save node does, so a run started with it writes files without
     either channel.
     """
     if _metadata_disabled():
         return "", {}
-    return compose_prompt_text(prompt, negative_prompt), build_workflow_metadata(workflow_prompt, workflow_extra_pnginfo)
+    generation_parameters = build_generation_parameters(workflow_prompt, width, height)
+    return compose_prompt_text(prompt, negative_prompt, generation_parameters), build_workflow_metadata(
+        workflow_prompt, workflow_extra_pnginfo
+    )
 
 
 def build_png_info(metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None):
@@ -1272,6 +1404,50 @@ def build_xmp_packet(metadata_text: str) -> bytes:
     return packet.encode("utf-8")
 
 
+# A JPEG file carries EXIF in a single APP1 marker, whose length field is 16 bit:
+# Pillow refuses to write anything bigger than this with "EXIF data is too long".
+# The full workflow JSON of a non-trivial graph exceeds that easily, so JPEG EXIF
+# must be trimmed (see ``_fit_jpeg_exif``) instead of failing the whole save.
+_JPEG_MAX_EXIF_BYTES = 65533
+
+
+def _fit_jpeg_exif(metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None) -> Optional[bytes]:
+    """
+    Build a JPEG EXIF block that fits into Pillow's single-APP1-marker limit.
+
+    A JPEG's EXIF lives in one 16-bit-sized segment, so anything beyond
+    ``_JPEG_MAX_EXIF_BYTES`` makes Pillow raise "EXIF data is too long" and fail
+    the entire save. As the full-graph workflow JSON of a real graph is much
+    larger than that, the metadata channels are dropped one by one - least
+    essential first - until the block fits, and what was dropped is reported.
+    The image itself is always written.
+
+    Returns the EXIF bytes, or ``None`` when even the plain prompt does not fit
+    (nothing is embedded then).
+    """
+    workflow_metadata = workflow_metadata or {}
+
+    # Richest first: everything, then without the (usually huge) full-graph
+    # "workflow" entry, then without any workflow info, then without the prompt.
+    without_workflow_graph = {key: value for key, value in workflow_metadata.items() if key != "workflow"}
+    candidates: list[tuple[str, dict[str, str], str]] = [(metadata_text, dict(workflow_metadata), "")]
+    if len(without_workflow_graph) != len(workflow_metadata):
+        candidates.append((metadata_text, without_workflow_graph, 'had to drop the full "workflow" graph'))
+    if workflow_metadata:
+        candidates.append((metadata_text, {}, "had to drop the workflow prompt info"))
+    if metadata_text:
+        candidates.append(("", {}, "had to drop the prompt metadata"))
+
+    for text, wf_meta, note in candidates:
+        exif = build_image_exif(text, include_description=True, workflow_metadata=wf_meta)
+        if exif is not None and len(exif) <= _JPEG_MAX_EXIF_BYTES:
+            if note:
+                print(f"Basic data handling: The metadata is too large for a JPEG EXIF block; {note}.")
+            return exif
+    print("Basic data handling: The metadata is too large for a JPEG EXIF block; saving the image without metadata.")
+    return None
+
+
 def metadata_save_kwargs(metadata_text: str, fmt: str, workflow_metadata: Optional[dict[str, str]] = None) -> dict:
     """
     Return the extra keyword arguments that embed ``metadata_text`` (the explicit
@@ -1288,7 +1464,7 @@ def metadata_save_kwargs(metadata_text: str, fmt: str, workflow_metadata: Option
         pnginfo = build_png_info(metadata_text, workflow_metadata)
         return {"pnginfo": pnginfo} if pnginfo is not None else {}
     if fmt in ("jpg", "jpeg"):
-        exif = build_image_exif(metadata_text, include_description=True, workflow_metadata=workflow_metadata)
+        exif = _fit_jpeg_exif(metadata_text, workflow_metadata)
         return {"exif": exif} if exif is not None else {}
     if fmt in ("webp", "jxl"):
         exif = build_image_exif(metadata_text, include_description=False, workflow_metadata=workflow_metadata)
@@ -1626,34 +1802,57 @@ def _has_jxl_support() -> bool:
         return False
 
 
+def _save_pil_image(
+    pil_img, path: str, fmt: str, quality: int, metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None
+) -> None:
+    """
+    Write ``pil_img`` to ``path`` once, letting any error propagate. ``fmt`` is a
+    canonical save token (see ``_PIL_FORMAT_BY_TOKEN``). For the lossy/metadata-
+    capable set (png/jpg/webp/jxl) the prompt text and the workflow metadata are
+    embedded and ``quality`` is honoured; all other discovered formats are
+    written plainly.
+    """
+    if fmt == "png":
+        pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "jpg":
+        # JPEG cannot carry alpha; drop it so an RGBA input still saves.
+        pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "webp":
+        pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "jxl":
+        pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    else:
+        if metadata_text or workflow_metadata:
+            print("Basic data handling: Prompt/workflow metadata is not supported for this format; skipping it.")
+        pil_img.save(path, format=_PIL_FORMAT_BY_TOKEN.get(fmt, fmt.upper()))
+
+
 def _write_pil_image(
     pil_img, path: str, fmt: str, quality: int, metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None
 ) -> bool:
     """
-    Write ``pil_img`` to ``path``. ``fmt`` is a canonical save token (see
-    ``_PIL_FORMAT_BY_TOKEN``). For the lossy/metadata-capable set (png/jpg/webp/
-    jxl) the prompt text and the workflow metadata are embedded and ``quality``
-    is honoured; all other discovered formats are written plainly. Returns True
-    on success.
+    Write ``pil_img`` to ``path``, returning True on success.
+
+    Embedded metadata must never cost the user their image: when the first
+    attempt fails and metadata was involved, the image is written again without
+    any metadata (a format/library limit on the metadata side, e.g. a container
+    that cannot hold the requested block) and that is reported. Formats without
+    metadata support are written plainly from the start.
     """
     try:
-        if fmt == "png":
-            pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "jpg":
-            # JPEG cannot carry alpha; drop it so an RGBA input still saves.
-            pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "webp":
-            pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "jxl":
-            pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        else:
-            if metadata_text or workflow_metadata:
-                print("Basic data handling: Prompt/workflow metadata is not supported for this format; skipping it.")
-            pil_img.save(path, format=_PIL_FORMAT_BY_TOKEN.get(fmt, fmt.upper()))
+        _save_pil_image(pil_img, path, fmt, quality, metadata_text, workflow_metadata)
         return True
     except Exception as e:
-        print(f"Basic data handling: Error saving image: {e}")
-        return False
+        if not metadata_text and not workflow_metadata:
+            print(f"Basic data handling: Error saving image: {e}")
+            return False
+        try:
+            print(f"Basic data handling: Saving with metadata failed ({e}); retrying without metadata.")
+            _save_pil_image(pil_img, path, fmt, quality, "", None)
+            return True
+        except Exception as retry_error:
+            print(f"Basic data handling: Error saving image: {retry_error}")
+            return False
 
 
 def _ui_image_entry(path: str) -> Optional[dict[str, str]]:
@@ -1709,12 +1908,18 @@ class PathSaveImageRGB(ComfyNodeABC):
     Two independent metadata channels are embedded, so both stay usable: with
     ``prompt``/``negative_prompt`` the A1111-style ``parameters`` text is written
     (PNG text chunk, EXIF ``UserComment``, XMP for JPEG XL) which image viewers
-    display and which is easy to extract afterwards, and in addition ComfyUI's
-    hidden workflow prompt info (``prompt``/``workflow`` chunks) is stored, which
-    is what makes a saved file drag-and-drop back into ComfyUI as a workflow.
+    display and which is easy to extract afterwards - completed by the
+    ``Steps: ...`` line of the workflow's sampler settings, without which readers
+    like Civitai discard the whole text as unreadable - and in addition
+    ComfyUI's hidden workflow prompt info (``prompt``/``workflow`` chunks) is
+    stored, which is what makes a saved file drag-and-drop back into ComfyUI as
+    a workflow.
     When a batch is saved from a data list the workflow necessarily contains
     every prompt of the graph; the prompt of the individual image is the one in
     ``parameters``. Formats that cannot carry text metadata ignore both.
+    A JPEG can only hold one 16-bit-sized EXIF block, so for very large
+    workflows the workflow info is reduced (largest channel first) instead of
+    failing the save; the image itself is always written.
     """
 
     @classmethod
@@ -1740,8 +1945,20 @@ class PathSaveImageRGB(ComfyNodeABC):
                 ),
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (jpg/webp/jxl)."}),
                 "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories (plain path mode only)."}),
-                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
-                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
+                "prompt": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Optional positive prompt embedded as "parameters" metadata, together with the sampler settings of the workflow (readers like Civitai need them to extract the prompt).',
+                    },
+                ),
+                "negative_prompt": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Optional negative prompt embedded as "parameters" metadata, together with the sampler settings of the workflow (readers like Civitai need them to extract the prompt).',
+                    },
+                ),
                 # Appended last on purpose: the node stores widget values
                 # positionally, so adding before the existing widgets would shift
                 # old workflows and mis-assign their saved values.
@@ -1806,8 +2023,11 @@ class PathSaveImageRGB(ComfyNodeABC):
         paths, create_dirs = _plan_save_paths(path, fmt, use_prefix_mode, batch, width, height)
 
         # Compose both metadata channels: the explicit prompt(s) of this save
-        # (the A1111-style "parameters" text) and ComfyUI's workflow prompt info.
-        metadata_text, workflow_metadata = compose_save_metadata(prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo)
+        # (the A1111-style "parameters" text, completed by the sampler settings
+        # of the workflow) and ComfyUI's workflow prompt info.
+        metadata_text, workflow_metadata = compose_save_metadata(
+            prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo, width, height
+        )
 
         # Reporting the written files makes the frontend preview them and list
         # them with the generated images (same payload as the built-in node).
@@ -1855,12 +2075,18 @@ class PathSaveImageRGBA(ComfyNodeABC):
     Two independent metadata channels are embedded, so both stay usable: with
     ``prompt``/``negative_prompt`` the A1111-style ``parameters`` text is written
     (PNG text chunk, EXIF ``UserComment``, XMP for JPEG XL) which image viewers
-    display and which is easy to extract afterwards, and in addition ComfyUI's
-    hidden workflow prompt info (``prompt``/``workflow`` chunks) is stored, which
-    is what makes a saved file drag-and-drop back into ComfyUI as a workflow.
+    display and which is easy to extract afterwards - completed by the
+    ``Steps: ...`` line of the workflow's sampler settings, without which readers
+    like Civitai discard the whole text as unreadable - and in addition
+    ComfyUI's hidden workflow prompt info (``prompt``/``workflow`` chunks) is
+    stored, which is what makes a saved file drag-and-drop back into ComfyUI as
+    a workflow.
     When a batch is saved from a data list the workflow necessarily contains
     every prompt of the graph; the prompt of the individual image is the one in
     ``parameters``. Formats that cannot carry text metadata ignore both.
+    A JPEG can only hold one 16-bit-sized EXIF block, so for very large
+    workflows the workflow info is reduced (largest channel first) instead of
+    failing the save; the image itself is always written.
     """
 
     @classmethod
@@ -1888,8 +2114,20 @@ class PathSaveImageRGBA(ComfyNodeABC):
                 "quality": (IO.INT, {"default": 95, "min": 1, "max": 100, "tooltip": "Quality for lossy formats (webp/jxl)."}),
                 "invert_mask": (IO.BOOLEAN, {"default": False, "tooltip": "Invert the mask before using it as the alpha channel."}),
                 "create_dirs": (IO.BOOLEAN, {"default": True, "tooltip": "Create missing parent directories (plain path mode only)."}),
-                "prompt": (IO.STRING, {"default": "", "tooltip": "Optional positive prompt embedded as parameters metadata."}),
-                "negative_prompt": (IO.STRING, {"default": "", "tooltip": "Optional negative prompt embedded as parameters metadata."}),
+                "prompt": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Optional positive prompt embedded as "parameters" metadata, together with the sampler settings of the workflow (readers like Civitai need them to extract the prompt).',
+                    },
+                ),
+                "negative_prompt": (
+                    IO.STRING,
+                    {
+                        "default": "",
+                        "tooltip": 'Optional negative prompt embedded as "parameters" metadata, together with the sampler settings of the workflow (readers like Civitai need them to extract the prompt).',
+                    },
+                ),
                 # Appended last on purpose: the node stores widget values
                 # positionally, so adding before the existing widgets would shift
                 # old workflows and mis-assign their saved values.
@@ -1965,8 +2203,11 @@ class PathSaveImageRGBA(ComfyNodeABC):
         mask_frames = mask.cpu()
 
         # Compose both metadata channels: the explicit prompt(s) of this save
-        # (the A1111-style "parameters" text) and ComfyUI's workflow prompt info.
-        metadata_text, workflow_metadata = compose_save_metadata(prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo)
+        # (the A1111-style "parameters" text, completed by the sampler settings
+        # of the workflow) and ComfyUI's workflow prompt info.
+        metadata_text, workflow_metadata = compose_save_metadata(
+            prompt, negative_prompt, workflow_prompt, workflow_extra_pnginfo, width, height
+        )
 
         # Reporting the written files makes the frontend preview them and list
         # them with the generated images (same payload as the built-in node).
