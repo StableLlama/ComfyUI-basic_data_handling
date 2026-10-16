@@ -5,15 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.0] - 2026-10-16
 
 Added:
 - Data List and LIST: new "filter empty" node that removes every empty entry
   (`None`, empty STRING, empty LIST/DICT/SET, ...); `0` and `False` are kept.
   An optional boolean switch also treats a STRING consisting only of whitespace
   as empty.
-
-## [2.1.1] - 2026-10-07
 
 Fixed:
 - "save IMAGE to file" and "save IMAGE+MASK to file" no longer fail with
@@ -34,8 +32,8 @@ Backward compatible changes:
   it saved and the images appear in ComfyUI's generated-images list. In addition
   both nodes got a second `images` output that passes the images through
   unchanged, like the built-in node does.
-  - files written somewhere else (plain `path` mode) are still saved, they just
-    cannot be previewed, as ComfyUI can only serve files from its own folders
+- files written somewhere else (plain `path` mode) are still saved, they just
+  cannot be previewed, as ComfyUI can only serve files from its own folders
 - Both save nodes now embed ComfyUI's workflow metadata (the API prompt and the
   full workflow) in addition to the existing prompt metadata. Dragging a saved
   file back onto the canvas therefore restores the workflow, while the explicitly
@@ -44,8 +42,8 @@ Backward compatible changes:
   two channels worth having when a whole batch is saved from a data list: the
   workflow then contains every prompt of the graph, whereas `parameters` always
   holds the prompt of the image that was actually written.
-  - ComfyUI's `--disable-metadata` option suppresses both channels, exactly like
-    it does for the built-in save node
+- ComfyUI's `--disable-metadata` option suppresses both channels, exactly like
+  it does for the built-in save node
 - No widget was added, removed or reordered, so existing workflows keep their
   saved widget values.
 
@@ -54,7 +52,7 @@ Backward compatible changes:
 
 Critical change that ensures reliablity and **should** have no bad side 
 effects, but when you see any, please report:
--  DICT, LIST, SET and Data List nodes (plus the DICT/LIST-taking STRING nodes)
+- DICT, LIST, SET and Data List nodes (plus the DICT/LIST-taking STRING nodes)
   now degrade gracefully when their data source is not connected (`None`) instead
   of raising: read/query nodes return their natural "no data" result (the `get`
   default, an empty list, `False`, `0`, `None`), and transform nodes behave as if
@@ -69,7 +67,7 @@ effects, but when you see any, please report:
   as `%date:yyyy-MM-dd%`
 
 Backward compatible changes:
-  - Add a "continue if not empty" flow-control node: it passes a value through
+- Add a "continue if not empty" flow-control node: it passes a value through
   unchanged when it is non-empty, and blocks execution (via an execution blocker)
   when the value is empty. It is list-aware (`INPUT_IS_LIST` / `OUTPUT_IS_LIST`),
   so it is immune to ComfyUI's empty-input batching crash and passes data lists
