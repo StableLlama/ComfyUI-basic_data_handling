@@ -1272,6 +1272,50 @@ def build_xmp_packet(metadata_text: str) -> bytes:
     return packet.encode("utf-8")
 
 
+# A JPEG file carries EXIF in a single APP1 marker, whose length field is 16 bit:
+# Pillow refuses to write anything bigger than this with "EXIF data is too long".
+# The full workflow JSON of a non-trivial graph exceeds that easily, so JPEG EXIF
+# must be trimmed (see ``_fit_jpeg_exif``) instead of failing the whole save.
+_JPEG_MAX_EXIF_BYTES = 65533
+
+
+def _fit_jpeg_exif(metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None) -> Optional[bytes]:
+    """
+    Build a JPEG EXIF block that fits into Pillow's single-APP1-marker limit.
+
+    A JPEG's EXIF lives in one 16-bit-sized segment, so anything beyond
+    ``_JPEG_MAX_EXIF_BYTES`` makes Pillow raise "EXIF data is too long" and fail
+    the entire save. As the full-graph workflow JSON of a real graph is much
+    larger than that, the metadata channels are dropped one by one - least
+    essential first - until the block fits, and what was dropped is reported.
+    The image itself is always written.
+
+    Returns the EXIF bytes, or ``None`` when even the plain prompt does not fit
+    (nothing is embedded then).
+    """
+    workflow_metadata = workflow_metadata or {}
+
+    # Richest first: everything, then without the (usually huge) full-graph
+    # "workflow" entry, then without any workflow info, then without the prompt.
+    without_workflow_graph = {key: value for key, value in workflow_metadata.items() if key != "workflow"}
+    candidates: list[tuple[str, dict[str, str], str]] = [(metadata_text, dict(workflow_metadata), "")]
+    if len(without_workflow_graph) != len(workflow_metadata):
+        candidates.append((metadata_text, without_workflow_graph, 'had to drop the full "workflow" graph'))
+    if workflow_metadata:
+        candidates.append((metadata_text, {}, "had to drop the workflow prompt info"))
+    if metadata_text:
+        candidates.append(("", {}, "had to drop the prompt metadata"))
+
+    for text, wf_meta, note in candidates:
+        exif = build_image_exif(text, include_description=True, workflow_metadata=wf_meta)
+        if exif is not None and len(exif) <= _JPEG_MAX_EXIF_BYTES:
+            if note:
+                print(f"Basic data handling: The metadata is too large for a JPEG EXIF block; {note}.")
+            return exif
+    print("Basic data handling: The metadata is too large for a JPEG EXIF block; saving the image without metadata.")
+    return None
+
+
 def metadata_save_kwargs(metadata_text: str, fmt: str, workflow_metadata: Optional[dict[str, str]] = None) -> dict:
     """
     Return the extra keyword arguments that embed ``metadata_text`` (the explicit
@@ -1288,7 +1332,7 @@ def metadata_save_kwargs(metadata_text: str, fmt: str, workflow_metadata: Option
         pnginfo = build_png_info(metadata_text, workflow_metadata)
         return {"pnginfo": pnginfo} if pnginfo is not None else {}
     if fmt in ("jpg", "jpeg"):
-        exif = build_image_exif(metadata_text, include_description=True, workflow_metadata=workflow_metadata)
+        exif = _fit_jpeg_exif(metadata_text, workflow_metadata)
         return {"exif": exif} if exif is not None else {}
     if fmt in ("webp", "jxl"):
         exif = build_image_exif(metadata_text, include_description=False, workflow_metadata=workflow_metadata)
@@ -1626,34 +1670,57 @@ def _has_jxl_support() -> bool:
         return False
 
 
+def _save_pil_image(
+    pil_img, path: str, fmt: str, quality: int, metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None
+) -> None:
+    """
+    Write ``pil_img`` to ``path`` once, letting any error propagate. ``fmt`` is a
+    canonical save token (see ``_PIL_FORMAT_BY_TOKEN``). For the lossy/metadata-
+    capable set (png/jpg/webp/jxl) the prompt text and the workflow metadata are
+    embedded and ``quality`` is honoured; all other discovered formats are
+    written plainly.
+    """
+    if fmt == "png":
+        pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "jpg":
+        # JPEG cannot carry alpha; drop it so an RGBA input still saves.
+        pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "webp":
+        pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    elif fmt == "jxl":
+        pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
+    else:
+        if metadata_text or workflow_metadata:
+            print("Basic data handling: Prompt/workflow metadata is not supported for this format; skipping it.")
+        pil_img.save(path, format=_PIL_FORMAT_BY_TOKEN.get(fmt, fmt.upper()))
+
+
 def _write_pil_image(
     pil_img, path: str, fmt: str, quality: int, metadata_text: str, workflow_metadata: Optional[dict[str, str]] = None
 ) -> bool:
     """
-    Write ``pil_img`` to ``path``. ``fmt`` is a canonical save token (see
-    ``_PIL_FORMAT_BY_TOKEN``). For the lossy/metadata-capable set (png/jpg/webp/
-    jxl) the prompt text and the workflow metadata are embedded and ``quality``
-    is honoured; all other discovered formats are written plainly. Returns True
-    on success.
+    Write ``pil_img`` to ``path``, returning True on success.
+
+    Embedded metadata must never cost the user their image: when the first
+    attempt fails and metadata was involved, the image is written again without
+    any metadata (a format/library limit on the metadata side, e.g. a container
+    that cannot hold the requested block) and that is reported. Formats without
+    metadata support are written plainly from the start.
     """
     try:
-        if fmt == "png":
-            pil_img.save(path, format="PNG", **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "jpg":
-            # JPEG cannot carry alpha; drop it so an RGBA input still saves.
-            pil_img.convert("RGB").save(path, format="JPEG", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "webp":
-            pil_img.save(path, format="WEBP", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        elif fmt == "jxl":
-            pil_img.save(path, format="JXL", quality=quality, **metadata_save_kwargs(metadata_text, fmt, workflow_metadata))
-        else:
-            if metadata_text or workflow_metadata:
-                print("Basic data handling: Prompt/workflow metadata is not supported for this format; skipping it.")
-            pil_img.save(path, format=_PIL_FORMAT_BY_TOKEN.get(fmt, fmt.upper()))
+        _save_pil_image(pil_img, path, fmt, quality, metadata_text, workflow_metadata)
         return True
     except Exception as e:
-        print(f"Basic data handling: Error saving image: {e}")
-        return False
+        if not metadata_text and not workflow_metadata:
+            print(f"Basic data handling: Error saving image: {e}")
+            return False
+        try:
+            print(f"Basic data handling: Saving with metadata failed ({e}); retrying without metadata.")
+            _save_pil_image(pil_img, path, fmt, quality, "", None)
+            return True
+        except Exception as retry_error:
+            print(f"Basic data handling: Error saving image: {retry_error}")
+            return False
 
 
 def _ui_image_entry(path: str) -> Optional[dict[str, str]]:
@@ -1715,6 +1782,9 @@ class PathSaveImageRGB(ComfyNodeABC):
     When a batch is saved from a data list the workflow necessarily contains
     every prompt of the graph; the prompt of the individual image is the one in
     ``parameters``. Formats that cannot carry text metadata ignore both.
+    A JPEG can only hold one 16-bit-sized EXIF block, so for very large
+    workflows the workflow info is reduced (largest channel first) instead of
+    failing the save; the image itself is always written.
     """
 
     @classmethod
@@ -1861,6 +1931,9 @@ class PathSaveImageRGBA(ComfyNodeABC):
     When a batch is saved from a data list the workflow necessarily contains
     every prompt of the graph; the prompt of the individual image is the one in
     ``parameters``. Formats that cannot carry text metadata ignore both.
+    A JPEG can only hold one 16-bit-sized EXIF block, so for very large
+    workflows the workflow info is reduced (largest channel first) instead of
+    failing the save; the image itself is always written.
     """
 
     @classmethod

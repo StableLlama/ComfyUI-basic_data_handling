@@ -977,6 +977,101 @@ def test_path_save_image_workflow_metadata_in_exif(tmp_path, monkeypatch):
         assert exif.get(0x010F) == "workflow:" + json.dumps(extra_pnginfo["workflow"])
 
 
+def _oversized_workflow_metadata():
+    """A workflow whose full graph JSON comfortably exceeds one JPEG EXIF block
+    (a JPEG carries EXIF in a single 16-bit-sized APP1 marker)."""
+    big_graph = {"nodes": [{"id": i, "type": "SomeNode", "widgets_values": ["x" * 200]} for i in range(300)]}
+    workflow_prompt = {"3": {"class_type": "KSampler", "inputs": {"text": "a" * 500}}}
+    return workflow_prompt, {"workflow": big_graph}
+
+
+def test_path_save_image_oversized_jpeg_metadata_keeps_prompt(tmp_path, capsys):
+    """Too much metadata for a JPEG EXIF block must not fail the save: the
+    largest (full-graph) channel is dropped, the rest is kept, and it is
+    reported."""
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    workflow_prompt, extra_pnginfo = _oversized_workflow_metadata()
+    out = str(tmp_path / "oversized")
+
+    result = save_node.save_image(
+        img, out, format="jpg", prompt="explicit", workflow_prompt=workflow_prompt, workflow_extra_pnginfo=extra_pnginfo
+    )
+    assert save_success(result) is True
+    assert os.path.exists(out + ".jpg")
+
+    with Image.open(out + ".jpg") as loaded:
+        loaded.load()
+        assert loaded.format == "JPEG"
+        exif = loaded.getexif()
+        # The explicit prompt (and the smaller API prompt) survive ...
+        assert decode_user_comment(exif.get_ifd(0x8769).get(0x9286)) == "explicit"
+        assert exif.get(0x0110) == "prompt:" + json.dumps(workflow_prompt)
+        # ... while the oversized full workflow graph was dropped.
+        assert 0x010F not in exif
+
+    assert 'had to drop the full "workflow" graph' in capsys.readouterr().out
+
+
+def test_path_save_image_oversized_jpeg_drops_all_metadata_but_saves(tmp_path, capsys):
+    """When even the remaining channels do not fit, the image is still written -
+    just without metadata."""
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    _, extra_pnginfo = _oversized_workflow_metadata()
+    out = str(tmp_path / "huge")
+
+    # The explicit prompt itself is far beyond a single EXIF block.
+    result = save_node.save_image(img, out, format="jpg", prompt="x" * 70000, workflow_extra_pnginfo=extra_pnginfo)
+    assert save_success(result) is True
+    assert os.path.exists(out + ".jpg")
+
+    with Image.open(out + ".jpg") as loaded:
+        loaded.load()
+        assert loaded.format == "JPEG"
+        assert not loaded.getexif()
+
+    assert "saving the image without metadata" in capsys.readouterr().out
+
+
+def test_path_save_image_png_keeps_oversized_workflow(tmp_path):
+    """Formats with room enough (PNG text chunks) keep the metadata untouched."""
+    save_node = PathSaveImageRGB()
+    img = _batch_rgb(1)
+    workflow_prompt, extra_pnginfo = _oversized_workflow_metadata()
+    out = str(tmp_path / "big_png")
+
+    result = save_node.save_image(img, out, format="png", workflow_prompt=workflow_prompt, workflow_extra_pnginfo=extra_pnginfo)
+    assert save_success(result) is True
+
+    with Image.open(out + ".png") as loaded:
+        loaded.load()
+        assert json.loads(loaded.text["workflow"]) == extra_pnginfo["workflow"]
+
+
+def test_write_pil_image_retries_without_metadata(tmp_path, monkeypatch):
+    """If embedding metadata fails for an unexpected reason, the image is saved
+    again without it instead of losing the image."""
+    import src.basic_data_handling.path_nodes as pn
+
+    attempts = []
+
+    def fake_save(pil_img, path, fmt, quality, metadata_text, workflow_metadata=None):
+        attempts.append(bool(metadata_text or workflow_metadata))
+        if metadata_text or workflow_metadata:
+            raise ValueError("EXIF data is too long")
+        pil_img.save(path, format="PNG")
+
+    monkeypatch.setattr(pn, "_save_pil_image", fake_save)
+    img = Image.new("RGB", (8, 8), (255, 0, 0))
+    out = str(tmp_path / "retry.png")
+
+    assert pn._write_pil_image(img, out, "png", 95, "prompt", {"workflow": "{}"}) is True
+    assert attempts == [True, False]
+    with Image.open(out) as loaded:
+        loaded.load()
+
+
 def test_path_save_image_metadata_can_be_disabled(tmp_path, monkeypatch):
     """ComfyUI's ``--disable-metadata`` suppresses both metadata channels, like
     it does in the built-in save node."""
