@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2026-11-03
+
+Fixed:
+- Dynamic input nodes (e.g. "create DICT"): clearing a key/value pair could
+  leave the node with input names and widget names out of sync. The prompt was
+  then built from the stale widget names, so the container was created empty
+  and the connection was drawn next to the wrong row. Removed widgets are now
+  also removed from ComfyUI's widget value store, which keeps both in sync.
+- Dynamic input nodes (e.g. "create DICT" and "create LIST") lost their extra
+  key/value pairs when the workflow was recreated by dragging a produced image
+  or video back into ComfyUI: the workflow that ComfyUI embeds into those files
+  drops unconnected widget inputs, and for these nodes that slot is what keeps
+  a pair alive, so the values ended up on the wrong rows and the container was
+  created with only its first entry. The dynamic inputs are now kept in that
+  embedded workflow, also for workflows that were saved before this fix.
+
 ## [2.2.0] - 2026-10-16
 
 Added:
