@@ -266,6 +266,11 @@ app.registerExtension({
             if (isWidgetFlag) {
                 addStandardWidget.call(this, name, widgetGuiType, widgetDefaultVal, widgetConfOpts);
                 this.addInput(name, comfyInputType, { shape, widget: { name } });
+                // ComfyUI drops widget inputs that are not connected from the workflow it
+                // embeds into saved images/videos (compressWidgetInputSlots) unless the slot
+                // carries a label. For dynamic inputs the slot is what keeps the whole
+                // key/value pair alive, so label it with its own name to survive the round trip.
+                this.inputs[this.inputs.length - 1].label = name;
             } else {
                 this.addInput(name, comfyInputType, { shape });
             }
@@ -312,10 +317,12 @@ app.registerExtension({
                     const widget = this.widgets.find(w => w.name === widgetName);
                     if (widget) {
                         widget.name = newName;
+                        if (widget.label) widget.label = newName;
                     }
                     if (inputRef.widget) inputRef.widget.name = newName;
                 }
                 inputRef.name = newName;
+                if (inputRef.label) inputRef.label = newName;
             }
             updateSlotIndices(this);
         };
@@ -500,7 +507,7 @@ app.registerExtension({
             this.setDirtyCanvas(true, true);
         };
 
-        // --- Event Handlers (onConnectionsChange, onConnectInput, onRemoved, onWidgetChanged) ---
+        // --- Event Handlers (onConnectionsChange, onConnectInput, onConfigure, onRemoved, onWidgetChanged) ---
         const onConnectionsChange = nodeType.prototype.onConnectionsChange;
         nodeType.prototype.onConnectionsChange = function (type, slotIndex, isConnected, link, ioSlot) {
             const originalReturn = onConnectionsChange?.apply(this, arguments);
@@ -531,6 +538,22 @@ app.registerExtension({
             }
             return result;
         }
+
+        const onConfigure = nodeType.prototype.onConfigure;
+        nodeType.prototype.onConfigure = function () {
+            const originalReturn = onConfigure?.apply(this, arguments);
+            // Inputs restored from a workflow may not carry the label yet, e.g. when the
+            // workflow was saved before it was introduced. Without the label ComfyUI
+            // drops the slot again when the workflow is embedded into an image/video, so
+            // stamp it here for every dynamic widget input.
+            for (const input of this.inputs ?? []) {
+                if (!input.widget || input.label || !isDynamicInput(input.name)) continue;
+                input.label = input.name;
+                const widget = this.widgets?.find((w) => w.name === input.widget.name);
+                if (widget && !widget.label) widget.label = input.name;
+            }
+            return originalReturn;
+        };
 
         const onRemoved = nodeType.prototype.onRemoved;
         nodeType.prototype.onRemoved = function () {
