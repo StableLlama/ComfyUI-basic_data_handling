@@ -218,9 +218,17 @@ app.registerExtension({
         };
 
         const removeWidgetForInput = (node, inputIdx) => {
-            if (node.inputs[inputIdx].widget && node.inputs[inputIdx].widget.name) {
-                const widgetName = node.inputs[inputIdx].widget.name;
-                const widgetIdx = node.widgets.findIndex((w) => w.name === widgetName);
+            const widgetName = node.inputs[inputIdx]?.widget?.name;
+            if (!widgetName) return;
+            const widget = node.widgets?.find((w) => w.name === widgetName);
+            if (!widget) return;
+            // Use the node API so ComfyUI's widget value store is cleaned up as well.
+            // A plain array splice leaves a stale store entry behind which blocks the
+            // rename in renumberDynamicInputs, desyncing widget names from input names.
+            if (typeof node.removeWidget === "function") {
+                node.removeWidget(widget);
+            } else {
+                const widgetIdx = node.widgets.indexOf(widget);
                 if (widgetIdx !== -1) {
                     node.widgets.splice(widgetIdx, 1);
                 }
